@@ -9,8 +9,9 @@ erDiagram
     races ||--o{ teams : ""
     races ||--o{ stations : ""
     races ||--o{ gallery_photos : ""
-    teams ||--o{ team_members : ""
-    profiles ||--o{ team_members : ""
+    races ||--o{ race_participants : "רשימת משתתפים"
+    teams ||--o{ race_participants : "שיוך לקבוצה"
+    profiles ||--o{ race_participants : ""
     teams ||--o{ team_stations : "סדר תחנות"
     stations ||--o{ team_stations : ""
     teams ||--o{ team_progress : ""
@@ -24,13 +25,14 @@ erDiagram
 ## 2. טבלאות
 
 ### `profiles` — משתמשים
-נוצר אוטומטית מהתחברות Google.
+נוצר אוטומטית בהתחברות ראשונה — דרך Google **או** הרשמה עם טלפון+סיסמה.
 
 | שדה | סוג | הערות |
 |---|---|---|
 | id | uuid PK | = auth.users.id |
-| full_name, avatar_url | text | מ-Google, ניתן לעריכה |
-| birth_year | int | לחלוקה מאוזנת |
+| full_name | text | מ-Google או משדה החובה בהרשמה; ניתן לעריכה |
+| avatar_url | text | מ-Google אם יש |
+| phone | text unique nullable | מזהה התחברות בהרשמה עם טלפון (E.164) |
 | is_owner | bool | מנהל-על |
 
 ### `races` — מירוצים
@@ -44,6 +46,7 @@ erDiagram
 | game_code | text unique | קוד משחק בסגנון Kahoot |
 | status | enum | `draft` / `open` / `live` / `finished` / `archived` |
 | start_lat, start_lng | float | בית סבא — זינוק וסיום |
+| show_distance | bool default true | האם להציג למשתתפים מד מרחק לתחנה (הגדרת מנהל תורן) |
 
 ### `race_admins` — מנהלים תורנים
 `(race_id, user_id)` — הרשאת ניהול פר-מירוץ. הבסיס לכל מדיניות ה-RLS.
@@ -59,16 +62,18 @@ erDiagram
 | animal | text | חיה מייצגת + אימוג'י ("🐬 דולפינים") |
 | join_code | text | ספרה-שתיים, ייחודי בתוך המירוץ |
 
-### `team_members` — חברי קבוצה
-תומך גם במשתתפים רשומים וגם בידניים (ילדים קטנים):
+### `race_participants` — משתתפי המירוץ
+רשימת המשתתפים ברמת המירוץ. תומכת גם ברשומים (בחירה מרשימת משתמשי האתר)
+וגם בידניים (ילדים קטנים / בלי חשבון). השיוך לקבוצה הוא עדכון `team_id` —
+כולל עדכון קבוצתי לכמה מסומנים בבת אחת (בחירה מרובה):
 
 | שדה | סוג | הערות |
 |---|---|---|
-| team_id | uuid FK | |
-| user_id | uuid FK **nullable** | null = משתתף ידני |
-| display_name | text | שם להצגה (חובה לידניים) |
-| birth_year | int | לחלוקה מאוזנת |
-| ability | int 1–5 | הערכת יכולת לחלוקה מאוזנת |
+| id | uuid PK | |
+| race_id | uuid FK | |
+| user_id | uuid FK **nullable** | null = משתתף ידני; אחרת הפניה למשתמש רשום |
+| display_name | text | שם להצגה (נגזר מהפרופיל לרשומים, חובה לידניים) |
+| team_id | uuid FK **nullable** | null = ברשימה אך עדיין לא שויך לקבוצה |
 
 ### `join_requests` — בקשות הצטרפות
 
@@ -78,7 +83,7 @@ erDiagram
 | status | enum | `pending` / `approved` / `rejected` |
 | decided_by, decided_at | | מי מהמנהלים אישר |
 
-אישור בקשה ⇐ יצירת שורת `team_members`.
+אישור בקשה ⇐ יצירת/עדכון שורת `race_participants` עם ה-`team_id` המבוקש.
 
 ### `stations` — תחנות (קטעי מירוץ)
 
