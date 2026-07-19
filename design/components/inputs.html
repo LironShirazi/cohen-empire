@@ -1,0 +1,75 @@
+<!-- @dsCard group="רכיבים" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>התחברות וקודים</title>
+<style>
+:root{
+  --bg:#FDF6EC; --surface:#FFFFFF; --ink:#33241C; --muted:#8A7466; --line:#EADFD2;
+  --brand:#E8542F; --brand-soft:#FBE3DA; --accent:#F2B705; --sky:#2380BF;
+  --ok:#27AE60; --danger:#D64545;
+  --t-red:#E23D3D; --t-blue:#2E86DE; --t-green:#27AE60;
+  --t-orange:#F39C12; --t-purple:#8E5AC8; --t-yellow:#F1C40F;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 6px 24px rgba(51,36,28,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{direction:rtl}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Rubik","Heebo",-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+  font-size:17px; line-height:1.55; padding:24px;
+}
+h1{font-size:26px;font-weight:800} h2{font-size:20px;font-weight:700}
+.small{font-size:14px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px}
+.stack>*+*{margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);
+  color:var(--brand);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:60px;border-radius:999px;border:none;font:inherit;font-size:20px;
+  font-weight:800;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--brand);border:2.5px solid var(--brand)}
+.btn-quiet{background:transparent;color:var(--muted);min-height:48px;font-size:17px}
+
+.field{display:block}
+.field span{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+.field input{width:100%;height:56px;border:2px solid var(--line);border-radius:var(--radius-sm);
+  padding:0 14px;font:inherit;font-size:18px;background:#fff}
+.field input:focus{outline:none;border-color:var(--brand)}
+.divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.codes{display:flex;gap:8px;justify-content:center}
+.codes b{width:46px;height:56px;display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px}
+.codes-team b{border-color:var(--brand);color:var(--brand)}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>🔑 התחברות והרשמה</h1>
+  <div class="card stack">
+    <button class="btn btn-secondary">🔵 התחברות עם Google</button>
+    <div class="divider"><span>או הרשמה קלילה</span></div>
+    <label class="field"><span>טלפון נייד</span><input type="tel" placeholder="050-1234567"></label>
+    <label class="field"><span>שם מלא</span><input placeholder="שרה כהן"></label>
+    <label class="field"><span>סיסמה</span><input type="password" placeholder="••••••••"></label>
+    <button class="btn btn-primary">הרשמה</button>
+    <div class="small" style="text-align:center">שלושה שדות וזהו — בלי אימייל, בלי SMS</div>
+  </div>
+  <div class="card stack">
+    <h2>קוד משחק</h2>
+    <div class="codes">
+      <b>ר</b><b>ץ</b><b>2</b><b>0</b><b>2</b><b>6</b>
+    </div>
+    <h2>קוד קבוצה</h2>
+    <div class="codes codes-team"><b>7</b></div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!-- @dsCard group="יסודות" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>צבעים</title>
+<style>
+:root{
+  --bg:#FDF6EC; --surface:#FFFFFF; --ink:#33241C; --muted:#8A7466; --line:#EADFD2;
+  --brand:#E8542F; --brand-soft:#FBE3DA; --accent:#F2B705; --sky:#2380BF;
+  --ok:#27AE60; --danger:#D64545;
+  --t-red:#E23D3D; --t-blue:#2E86DE; --t-green:#27AE60;
+  --t-orange:#F39C12; --t-purple:#8E5AC8; --t-yellow:#F1C40F;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 6px 24px rgba(51,36,28,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{direction:rtl}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Rubik","Heebo",-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+  font-size:17px; line-height:1.55; padding:24px;
+}
+h1{font-size:26px;font-weight:800} h2{font-size:20px;font-weight:700}
+.small{font-size:14px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px}
+.stack>*+*{margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);
+  color:var(--brand);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:60px;border-radius:999px;border:none;font:inherit;font-size:20px;
+  font-weight:800;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--brand);border:2.5px solid var(--brand)}
+.btn-quiet{background:transparent;color:var(--muted);min-height:48px;font-size:17px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:12px}
+.sw{display:flex;gap:10px;align-items:center}
+.dot{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);flex:none}
+</style>
+</head>
+<body>
+
+<div class="stack">
+  <h1>🎨 פלטת צבעים</h1>
+  <div class="card"><h2>מותג</h2><div class="grid">
+    
+<div class="sw"><div class="dot" style="background:var(--brand)"></div>
+<div><b>כתום שקיעה</b><div class="small">--brand · צבע ראשי — כפתורים, הדגשות</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--accent)"></div>
+<div><b>זהב</b><div class="small">--accent · ספירה לאחור, גביעים</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--sky)"></div>
+<div><b>תכלת דרומי</b><div class="small">--sky · קישורים, מפה</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--bg)"></div>
+<div><b>קרם</b><div class="small">--bg · רקע כללי חם</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--ink)"></div>
+<div><b>חום כהה</b><div class="small">--ink · טקסט</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--muted)"></div>
+<div><b>חום עמום</b><div class="small">--muted · טקסט משני</div></div></div>
+  </div></div>
+  <div class="card"><h2>צבעי קבוצות (6)</h2><div class="grid">
+    
+<div class="sw"><div class="dot" style="background:var(--t-red)"></div>
+<div><b>האדומים 🦅</b><div class="small">--t-red</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--t-blue)"></div>
+<div><b>הכחולים 🐬</b><div class="small">--t-blue</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--t-green)"></div>
+<div><b>הירוקים 🐢</b><div class="small">--t-green</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--t-orange)"></div>
+<div><b>הכתומים 🦁</b><div class="small">--t-orange</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--t-purple)"></div>
+<div><b>הסגולים 🦄</b><div class="small">--t-purple</div></div></div>
+    
+<div class="sw"><div class="dot" style="background:var(--t-yellow)"></div>
+<div><b>הצהובים 🐝</b><div class="small">--t-yellow</div></div></div>
+  </div></div>
+</div>
+</body>
+</html>

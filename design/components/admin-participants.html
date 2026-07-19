@@ -1,0 +1,71 @@
+<!-- @dsCard group="ניהול" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ניהול משתתפים</title>
+<style>
+:root{
+  --bg:#FDF6EC; --surface:#FFFFFF; --ink:#33241C; --muted:#8A7466; --line:#EADFD2;
+  --brand:#E8542F; --brand-soft:#FBE3DA; --accent:#F2B705; --sky:#2380BF;
+  --ok:#27AE60; --danger:#D64545;
+  --t-red:#E23D3D; --t-blue:#2E86DE; --t-green:#27AE60;
+  --t-orange:#F39C12; --t-purple:#8E5AC8; --t-yellow:#F1C40F;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 6px 24px rgba(51,36,28,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{direction:rtl}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Rubik","Heebo",-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+  font-size:17px; line-height:1.55; padding:24px;
+}
+h1{font-size:26px;font-weight:800} h2{font-size:20px;font-weight:700}
+.small{font-size:14px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px}
+.stack>*+*{margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);
+  color:var(--brand);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:60px;border-radius:999px;border:none;font:inherit;font-size:20px;
+  font-weight:800;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--brand);border:2.5px solid var(--brand)}
+.btn-quiet{background:transparent;color:var(--muted);min-height:48px;font-size:17px}
+
+.add{display:flex;gap:8px;align-items:center;border:2px dashed var(--line);border-radius:var(--radius-sm);padding:12px}
+.add i{color:var(--muted);font-style:normal}
+.sugg{font-size:13px;color:var(--muted);padding:8px 4px 2px}
+.p{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.p:last-child{border-bottom:none}
+.p input{width:24px;height:24px;accent-color:var(--brand)}
+.p b{flex:1}
+.src{font-size:12px;background:#E4EEF7;color:var(--sky);border-radius:999px;padding:2px 10px}
+.src.manual{background:var(--bg);color:var(--muted)}
+.team{font-size:13px;font-weight:700;color:var(--team)}
+.team.none{color:var(--muted);font-weight:400}
+.bar{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;
+  background:var(--ink);color:#fff;border-radius:var(--radius);padding:10px 16px}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>🧑‍💼 רשימת משתתפים (מנהל תורן)</h1>
+  <div class="card" style="padding:12px">
+    <div class="add"><span>➕</span><i>הוספת משתתף — חיפוש או שם חופשי…</i></div>
+    <div class="sugg"><b>משתמשי האתר:</b> שרה כהן · דוד כהן · נועה לוי · ⌨️ הקלדה חופשית</div>
+  </div>
+  <div class="card" style="padding:6px 0">
+    <div class="p"><input type="checkbox" checked><b>שרה כהן</b><span class="src">רשומה</span><span class="team" style="--team:var(--t-blue)">🐬 הכחולים</span></div>
+    <div class="p"><input type="checkbox" checked><b>תמר (3)</b><span class="src manual">ידני</span><span class="team none">לא שויכה</span></div>
+    <div class="p"><input type="checkbox" checked><b>סבא אלי</b><span class="src manual">ידני</span><span class="team none">לא שויך</span></div>
+    <div class="p"><input type="checkbox"><b>דוד כהן</b><span class="src">רשום</span><span class="team" style="--team:var(--t-green)">🐢 הירוקים</span></div>
+  </div>
+  <div class="bar"><b>3 נבחרו</b><button class="btn btn-primary" style="min-height:48px;font-size:17px;width:auto;padding:0 22px">שייך לקבוצה…</button></div>
+</div>
+</body>
+</html>

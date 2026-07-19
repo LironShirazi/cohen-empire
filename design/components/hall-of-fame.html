@@ -1,0 +1,65 @@
+<!-- @dsCard group="מורשת" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>היכל התהילה</title>
+<style>
+:root{
+  --bg:#FDF6EC; --surface:#FFFFFF; --ink:#33241C; --muted:#8A7466; --line:#EADFD2;
+  --brand:#E8542F; --brand-soft:#FBE3DA; --accent:#F2B705; --sky:#2380BF;
+  --ok:#27AE60; --danger:#D64545;
+  --t-red:#E23D3D; --t-blue:#2E86DE; --t-green:#27AE60;
+  --t-orange:#F39C12; --t-purple:#8E5AC8; --t-yellow:#F1C40F;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 6px 24px rgba(51,36,28,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{direction:rtl}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Rubik","Heebo",-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+  font-size:17px; line-height:1.55; padding:24px;
+}
+h1{font-size:26px;font-weight:800} h2{font-size:20px;font-weight:700}
+.small{font-size:14px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px}
+.stack>*+*{margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);
+  color:var(--brand);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:60px;border-radius:999px;border:none;font:inherit;font-size:20px;
+  font-weight:800;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--brand);border:2.5px solid var(--brand)}
+.btn-quiet{background:transparent;color:var(--muted);min-height:48px;font-size:17px}
+
+.fame{display:flex;gap:12px;align-items:center;border-inline-start:8px solid var(--team)}
+.year{font-size:20px;font-weight:800;color:var(--brand);min-width:52px}
+.photo{width:52px;height:52px;border-radius:12px;background:var(--bg);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>🏆 היכל התהילה</h1>
+  <div class="card fame" style="--team:var(--t-purple)">
+    <div class="year">2025</div><div class="photo">📸</div>
+    <div><b>הסגולים · חדי־קרן 🦄</b><div class="small">רות, יואב, מיכל, אבי ועוד 4</div></div>
+  </div>
+  <div class="card fame" style="--team:var(--t-red)">
+    <div class="year">2024</div><div class="photo">📸</div>
+    <div><b>האדומים · נשרים 🦅</b><div class="small">דני, שירה, עומר ועוד 5</div></div>
+  </div>
+  <div class="card fame" style="--team:var(--t-blue)">
+    <div class="year">2023</div><div class="photo">📸</div>
+    <div><b>הכחולים · לווייתנים 🐋</b><div class="small">משפחת כהן הצעירה</div></div>
+  </div>
+  <div class="card small">כולל 20 שנות היסטוריה שיוזנו ידנית · סטטיסטיקות:
+  שיאן הזכיות, שיאן ההשתתפויות</div>
+</div>
+</body>
+</html>

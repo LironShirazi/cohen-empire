@@ -1,0 +1,63 @@
+<!-- @dsCard group="מירוץ חי" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>רמז ומשימה</title>
+<style>
+:root{
+  --bg:#FDF6EC; --surface:#FFFFFF; --ink:#33241C; --muted:#8A7466; --line:#EADFD2;
+  --brand:#E8542F; --brand-soft:#FBE3DA; --accent:#F2B705; --sky:#2380BF;
+  --ok:#27AE60; --danger:#D64545;
+  --t-red:#E23D3D; --t-blue:#2E86DE; --t-green:#27AE60;
+  --t-orange:#F39C12; --t-purple:#8E5AC8; --t-yellow:#F1C40F;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 6px 24px rgba(51,36,28,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{direction:rtl}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Rubik","Heebo",-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+  font-size:17px; line-height:1.55; padding:24px;
+}
+h1{font-size:26px;font-weight:800} h2{font-size:20px;font-weight:700}
+.small{font-size:14px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px}
+.stack>*+*{margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);
+  color:var(--brand);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:60px;border-radius:999px;border:none;font:inherit;font-size:20px;
+  font-weight:800;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--brand);border:2.5px solid var(--brand)}
+.btn-quiet{background:transparent;color:var(--muted);min-height:48px;font-size:17px}
+
+.dist{background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;
+  text-align:center;font-size:20px;font-weight:800}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>🧭 מהלך המשחק</h1>
+  <div class="card stack">
+    <div class="chip">🔒 בדרך לתחנה</div>
+    <h2>הרמז</h2>
+    <div style="font-size:18px">״המקום שבו סבא קנה פיתות חמות בכל שישי,
+    והריח היה מגיע עד הכביש…״</div>
+    <div class="dist">📍 עוד 340 מ׳ 🔥</div>
+    <div class="small">מד המרחק מוצג רק אם המנהל התורן בחר בכך (ברירת מחדל: מוצג)</div>
+  </div>
+  <div class="card stack" style="border-color:var(--ok)">
+    <div class="chip" style="background:#DFF3E7;color:var(--ok)">🎉 הגעתם! המשימה נפתחה</div>
+    <h2>המשימה</h2>
+    <div>מצאו את הלחמנייה הכי גדולה במאפייה וצלמו את כל הקבוצה נוגסת בה יחד 📸</div>
+    <button class="btn btn-primary">צלמו והעלו תמונה</button>
+  </div>
+</div>
+</body>
+</html>
