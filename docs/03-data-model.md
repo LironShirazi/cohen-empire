@@ -18,6 +18,8 @@ erDiagram
     teams ||--o{ join_requests : ""
     profiles ||--o{ join_requests : ""
     teams ||--o{ messages : "צ'אט"
+    messages ||--o{ notifications : "אזכור ⇐ התראה"
+    profiles ||--o{ notifications : ""
     races ||--o| hall_of_fame : "זוכה"
 ```
 
@@ -117,6 +119,23 @@ erDiagram
 | id, team_id, sender_id | | המנהל התורן יכול לשלוח לכל קבוצה במירוץ שלו |
 | body | text | |
 | attachment_url, attachment_type | text | קבצים מכל סוג (Storage) |
+| mentioned_user_ids | uuid[] | מי אוזכר ב-@ (חברי קבוצה רשומים / מנהלי המירוץ) |
+| created_at | timestamptz | |
+
+### `notifications` — התראות In-App
+
+נוצרות ע"י **טריגר DB** על INSERT ל-`messages` (שורה לכל מאוזכר),
+כדי שהיצירה תהיה בצד השרת ולא ניתנת לזיוף. מבנה גנרי — מוכן גם
+לסוגי התראות עתידיים (אישור משימה, הודעת מנהל רוחבית):
+
+| שדה | סוג | הערות |
+|---|---|---|
+| id | uuid PK | |
+| user_id | uuid FK | הנמען — הבסיס לסינון Realtime ול-RLS |
+| type | enum | `mention` (בהמשך: `task_approved`, `admin_broadcast`...) |
+| race_id, team_id | uuid FK | להקשר וניווט |
+| message_id | uuid FK | ההודעה המאזכרת — לחיצה מנווטת אליה בצ'אט |
+| read_at | timestamptz nullable | null = לא נקראה ⇐ באדג' `@` דולק |
 | created_at | timestamptz | |
 
 ### תוכן משפחתי
@@ -148,4 +167,6 @@ for all using (
 - **קריאה:** קבוצות והרכבן — פתוח לכל משתמש מחובר (דרישה: כולם רואים את כל הקבוצות);
   `task_content` של תחנה — רק לחברי קבוצה שהגיעו אליה, ולמנהלים
 - **צ'אט:** קריאה/כתיבה רק לחברי קבוצה מאושרים + מנהלי המירוץ
+- **התראות:** משתמש קורא ומעדכן (`read_at`) רק שורות שבהן `user_id = auth.uid()`;
+  INSERT רק דרך הטריגר (אין הרשאת כתיבה ישירה מהקליינט)
 - **לידרבורד:** view ציבורי שמחזיר דירוג בלבד, בלי מספרי משימות
