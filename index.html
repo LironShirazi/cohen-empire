@@ -1,0 +1,80 @@
+<!doctype html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>🏁 המירוץ למיליון — אימפריית כהן</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, "Heebo", "Arial Hebrew", Arial, sans-serif;
+      background: linear-gradient(170deg, #23422f 0%, #2e5a3d 55%, #1d3626 100%);
+      color: #f6e7c1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px 20px;
+      text-align: center;
+      gap: 10px;
+    }
+    .flag { font-size: 54px; }
+    h1 { font-size: 30px; line-height: 1.25; }
+    .sub { font-size: 15px; opacity: 0.85; max-width: 420px; margin-bottom: 18px; }
+    .buttons { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 360px; }
+    .big-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f7f1e6;
+      color: #2f2a1f;
+      border-radius: 18px;
+      padding: 18px 20px;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      transition: transform 0.15s ease;
+    }
+    .big-btn:active { transform: scale(0.98); }
+    .big-btn .emoji { font-size: 30px; }
+    .big-btn small { display: block; font-size: 12px; font-weight: 400; color: #7a715c; }
+    .big-btn.disabled { opacity: 0.55; pointer-events: none; }
+    .soon {
+      font-size: 11px;
+      background: #c9962e;
+      color: #fff;
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-inline-start: auto;
+    }
+    footer { margin-top: 26px; font-size: 12px; opacity: 0.65; }
+  </style>
+</head>
+<body>
+  <div class="flag">🏁</div>
+  <h1>המירוץ למיליון<br>אימפריית כהן</h1>
+  <p class="sub">מסורת משפחתית של 20+ שנה. אפליקציית המירוץ בבנייה — ובינתיים, העץ המשפחתי כבר חי ובועט 🌳</p>
+
+  <div class="buttons">
+    <a class="big-btn" href="family-tree/index.html">
+      <span class="emoji">🌳</span>
+      <span>העץ המשפחתי<small>מי אנחנו ומאיפה באנו — לכל הדורות</small></span>
+    </a>
+    <a class="big-btn disabled" href="#">
+      <span class="emoji">📸</span>
+      <span>גלריית התמונות<small>תמונות מכל השנים</small></span>
+      <span class="soon">בקרוב</span>
+    </a>
+    <a class="big-btn disabled" href="#">
+      <span class="emoji">🏆</span>
+      <span>היכל התהילה<small>זוכי כל השנים</small></span>
+      <span class="soon">בקרוב</span>
+    </a>
+  </div>
+
+  <footer>באהבה, לזכר סבא וסבתא ז״ל ❤️</footer>
+</body>
+</html>

@@ -125,6 +125,9 @@ erDiagram
 - **`gallery_photos`** — גלריה: `race_id`, `url`, `caption`, `uploaded_by`
 - **`hall_of_fame`** — היכל התהילה: `year`, `race_id?`, `team_name`, `team_color`,
   `members` (jsonb), `photo_url` — כולל הזנה ידנית של 20 שנות היסטוריה שקדמו לאפליקציה
+- **`family_members`** — העץ המשפחתי: `name`, `gender`, `birth_year`, `phone`,
+  `photo_url`, `father_id`, `mother_id`, `partner_id`, `profile_id?` (קישור "זה אני"),
+  `is_root`, `sort_order` — פירוט מלא ב-[06 — העץ המשפחתי](06-family-tree.md)
 
 ## 3. מדיניות RLS — עקרונות
 
