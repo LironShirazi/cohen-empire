@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/*
+ * ערכת נושא — "המירוץ למיליון" של משפחת כהן.
+ * שפה חמה ומשפחתית: חול הנגב, שמש של יום העצמאות — לא "אפליקציית משרד".
+ * הטוקנים כאן הם ברירת מחדל עד שמערכת העיצוב מ-Claude Design תיטמע.
+ */
+@theme {
+  --font-sans: var(--font-heebo), "Heebo", system-ui, sans-serif;
+
+  --color-cream: #fdf6ec;
+  --color-ink: #2d2118;
+  --color-ink-soft: #6b5a4a;
+
+  --color-primary: #c2410c;
+  --color-primary-dark: #9a3412;
+  --color-primary-soft: #ffedd5;
+
+  --color-accent: #0e7490;
+  --color-accent-soft: #cffafe;
+
+  --color-gold: #d97706;
+  --color-success: #15803d;
+  --color-danger: #b91c1c;
+
+  --radius-card: 1.25rem;
+
+  --shadow-card: 0 4px 20px rgb(45 33 24 / 0.08);
+}

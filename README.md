@@ -13,6 +13,19 @@
 | [04 — מסכים וחוויית משתמש](docs/04-screens-ux.md) | כל המסכים, זרימות משתמש, עיצוב |
 | [05 — תוכנית פיתוח](docs/05-roadmap.md) | חלוקה לשלבים: MVP ← מירוץ מלא ← פיצ'רים עתידיים |
 
+## 🚀 הרצה מקומית
+
+```bash
+cd app
+cp .env.example .env.local   # למלא מפתחות Supabase
+npm install
+npm run dev                  # http://localhost:3000
+```
+
+- הקוד יושב ב-[`app/`](app) — Next.js + TypeScript + Tailwind (RTL, עברית)
+- סכמת ה-DB ב-[`supabase/migrations/`](supabase/migrations) — להריץ ב-SQL Editor
+  של פרויקט Supabase חדש (או עם `supabase db push`)
+
 ## 🎯 תמצית
 
 - **מי משתמש:** ~40 בני משפחה בגילאי +3, מחולקים ל~6 קבוצות (משתנה משנה לשנה)
