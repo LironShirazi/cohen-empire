@@ -2,3 +2,6 @@
 .DS_Store
 
 # תלויות ופלטי build של האפליקציה מנוהלים ב-web/.gitignore
+
+# מצב מקומי של Supabase CLI (project-ref, גרסאות) — לא שייך לרפו
+supabase/.temp/
