@@ -1,0 +1,40 @@
+<!-- @dsCard group="מסך הבית" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>משפטי סבא וסבתא</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+.quote{display:flex;gap:10px;align-items:flex-end}
+.bubble{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  border-bottom-right-radius:4px;padding:14px 16px;box-shadow:var(--shadow);font-size:18px;flex:1}
+.granny-row{flex-direction:row-reverse}
+.granny-row .bubble{border-bottom-right-radius:var(--radius);border-bottom-left-radius:4px}
+.feature{background:var(--yellow);border-radius:var(--radius);padding:20px;position:relative}
+.feature .mark{font-family:var(--font-display);font-size:56px;line-height:.6;color:#1A1206;opacity:.25}
+.feature .txt{font-family:var(--font-display);font-size:23px;color:#1A1206;margin-top:-10px}
+</style>
+</head>
+<body>
+<div class="stack" style="max-width:342px">
+  <h1>💬 משפטי סבא וסבתא</h1>
+  <div class="feature">
+    <div class="mark">״</div>
+    <div class="txt">מי שלא רץ — שילך ברגל, העיקר שיגיע לאכול.</div>
+    <div class="row-flex" style="margin-top:12px;gap:8px"><span class="gp">👴</span><b>סבא אלי · הגיבור של המירוץ</b></div>
+  </div>
+  <div class="quote">
+    <span class="gp granny">👵</span>
+    <div class="bubble">״שתו מים! גם המנצחים צריכים לשתות.״<div class="small">— סבתא רחל</div></div>
+  </div>
+  <div class="quote granny-row">
+    <span class="gp">👴</span>
+    <div class="bubble">״בזמננו רצנו בלי אפליקציה, ועדיין ניצחנו.״<div class="small">— סבא אלי</div></div>
+  </div>
+  <div class="note">מופיעים באקראי בדף הבית, במסכי המתנה ובין משימות.
+  במקום האימוג׳י — קריקטורה או תמונה אמיתית של סבא וסבתא, גיבורי האפליקציה.</div>
+</div>
+</body>
+</html>

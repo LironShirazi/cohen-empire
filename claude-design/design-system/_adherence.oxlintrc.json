@@ -1,0 +1,129 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": []
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Secular One|Rubik|Heebo))/i]",
+        "message": "Font not provided by the design system. Available: Secular One, Rubik, Heebo."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {},
+    "tokens": [
+      "--accent",
+      "--bg",
+      "--bg-2",
+      "--brand",
+      "--brand-deep",
+      "--brand-soft",
+      "--danger",
+      "--font",
+      "--font-display",
+      "--gold",
+      "--gold-lite",
+      "--ink",
+      "--line",
+      "--muted",
+      "--navy",
+      "--navy-2",
+      "--ok",
+      "--radius",
+      "--radius-lg",
+      "--radius-sm",
+      "--shadow",
+      "--shadow-lg",
+      "--shadow-navy",
+      "--sky",
+      "--surface",
+      "--t-blue",
+      "--t-brown",
+      "--t-green",
+      "--t-orange",
+      "--t-pink",
+      "--t-purple",
+      "--t-red",
+      "--t-sky",
+      "--t-teal",
+      "--t-yellow",
+      "--yellow",
+      "--yellow-deep",
+      "--yellow-soft"
+    ],
+    "tokenKinds": {
+      "--bg": "color",
+      "--bg-2": "color",
+      "--surface": "color",
+      "--ink": "color",
+      "--muted": "color",
+      "--line": "color",
+      "--brand": "color",
+      "--brand-deep": "color",
+      "--brand-soft": "color",
+      "--yellow": "color",
+      "--yellow-deep": "color",
+      "--yellow-soft": "color",
+      "--accent": "color",
+      "--gold": "color",
+      "--gold-lite": "color",
+      "--navy": "color",
+      "--navy-2": "color",
+      "--sky": "color",
+      "--ok": "color",
+      "--danger": "color",
+      "--t-red": "color",
+      "--t-blue": "color",
+      "--t-green": "color",
+      "--t-orange": "color",
+      "--t-purple": "color",
+      "--t-yellow": "color",
+      "--t-pink": "color",
+      "--t-teal": "color",
+      "--t-brown": "color",
+      "--t-sky": "color",
+      "--radius": "radius",
+      "--radius-sm": "radius",
+      "--radius-lg": "radius",
+      "--shadow": "shadow",
+      "--shadow-lg": "shadow",
+      "--shadow-navy": "shadow",
+      "--font": "font",
+      "--font-display": "font"
+    },
+    "fontFamilies": [
+      "Heebo",
+      "Rubik",
+      "Secular One"
+    ]
+  }
+}

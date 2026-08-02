@@ -1,0 +1,43 @@
+<!-- @dsCard group="ניהול" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ניהול משתתפים</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+
+.add{display:flex;gap:8px;align-items:center;border:2px dashed var(--line);border-radius:var(--radius-sm);padding:12px}
+.add i{color:var(--muted);font-style:normal}
+.sugg{font-size:13px;color:var(--muted);padding:8px 4px 2px}
+.p{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.p:last-child{border-bottom:none}
+.p input{width:24px;height:24px;accent-color:var(--brand)}
+.p b{flex:1}
+.src{font-size:12px;background:#E4EEF7;color:var(--sky);border-radius:999px;padding:2px 10px}
+.src.manual{background:var(--bg);color:var(--muted)}
+.team{font-size:13px;font-weight:700;color:var(--team)}
+.team.none{color:var(--muted);font-weight:400}
+.bar{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;
+  background:var(--ink);color:#fff;border-radius:var(--radius);padding:10px 16px}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>🧑‍💼 רשימת משתתפים (מנהל תורן)</h1>
+  <div class="card" style="padding:12px">
+    <div class="add"><span>➕</span><i>הוספת משתתף — חיפוש או שם חופשי…</i></div>
+    <div class="sugg"><b>משתמשי האתר:</b> שרה כהן · דוד כהן · נועה לוי · ⌨️ הקלדה חופשית</div>
+  </div>
+  <div class="card" style="padding:6px 0">
+    <div class="p"><input type="checkbox" checked><b>שרה כהן</b><span class="src">רשומה</span><span class="team" style="--team:var(--t-blue)">🐬 הדולפינים</span></div>
+    <div class="p"><input type="checkbox" checked><b>תמר (3)</b><span class="src manual">ידני</span><span class="team none">לא שויכה</span></div>
+    <div class="p"><input type="checkbox" checked><b>רותי לוי</b><span class="src manual">ידני</span><span class="team none">לא שויכה</span></div>
+    <div class="p"><input type="checkbox"><b>דוד כהן</b><span class="src">רשום</span><span class="team" style="--team:var(--t-green)">🐢 הצבים</span></div>
+  </div>
+  <div class="bar"><b>3 נבחרו</b><button class="btn btn-primary" style="min-height:48px;font-size:17px;width:auto;padding:0 22px">שייך לקבוצה…</button></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+/* ==========================================================================
+   המירוץ למיליון — מערכת עיצוב · Global stylesheet (single source of truth)
+   Brand: Amazing-Race yellow + race red + warm black, cosmic navy + gold.
+   Heroes: סבא וסבתא. Built big & readable — for ages 3 to 70+.
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Secular+One&family=Rubik:wght@400;500;600;700;800;900&family=Heebo:wght@400;700;900&display=swap');
+
+:root{
+  /* Surfaces & ink */
+  --bg:#FCF8EF;            /* warm paper */
+  --bg-2:#F5ECD8;          /* deeper paper / wells */
+  --surface:#FFFFFF;
+  --ink:#1A1206;           /* warm near-black (flag black) */
+  --muted:#7A6A55;
+  --line:#ECE2CE;
+
+  /* Brand */
+  --brand:#E4002B;         /* race red — primary action, urgency */
+  --brand-deep:#B60022;
+  --brand-soft:#FBE0E4;
+  --yellow:#FFD400;        /* the flag — energy, highlights */
+  --yellow-deep:#F5B300;
+  --yellow-soft:#FFF3C4;
+  --accent:#F2B705;        /* gold — trophies, countdown */
+  --gold:#F2B705;
+  --gold-lite:#FBD968;
+  --navy:#0B1B3F;          /* cosmic hero background */
+  --navy-2:#16305F;
+  --sky:#2E86DE;           /* globe blue — links, map */
+  --ok:#1FA363;
+  --danger:#D64545;
+
+  /* Team colors (6) */
+  --t-red:#E23D3D; --t-blue:#2E86DE; --t-green:#27AE60;
+  --t-orange:#F39C12; --t-purple:#8E5AC8; --t-yellow:#F1C40F;
+  --t-pink:#E84A8A; --t-teal:#129C9C; --t-brown:#9C6B3C; --t-sky:#5DBBEB;
+
+  /* Geometry */
+  --radius:18px; --radius-sm:12px; --radius-lg:26px;
+  --shadow:0 8px 28px rgba(26,18,6,.12);
+  --shadow-lg:0 16px 44px rgba(26,18,6,.16);
+  --shadow-navy:0 14px 44px rgba(11,27,63,.38);
+
+  --font:"Rubik","Heebo",-apple-system,"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+  --font-display:"Secular One","Rubik","Heebo",sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{direction:rtl}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--font);
+  font-size:17px; line-height:1.55; padding:24px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Type scale */
+h1{font-family:var(--font-display);font-size:28px;font-weight:400;line-height:1.15}
+h2{font-family:var(--font-display);font-size:21px;font-weight:400;line-height:1.2}
+.display{font-family:var(--font-display)}
+.small{font-size:14px;color:var(--muted);line-height:1.5}
+a{color:var(--brand);text-decoration:none;font-weight:700}
+a:hover{color:var(--brand-deep);text-decoration:underline}
+
+/* Layout helpers */
+.stack>*+*{margin-top:14px}
+.row-flex{display:flex;align-items:center;gap:12px}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px}
+.card-tight{padding:12px}
+.note{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px 14px;font-size:14px;color:var(--muted)}
+
+/* Chips / badges */
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);
+  color:var(--brand);border-radius:999px;padding:5px 13px;font-size:14px;font-weight:800}
+.chip-yellow{background:var(--yellow);color:#1A1206}
+.chip-navy{background:var(--navy);color:var(--gold-lite)}
+.chip-ok{background:#DBF3E6;color:var(--ok)}
+.chip-ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25)}
+
+/* Buttons — min 60px tall, big text; comfortable for a 3-year-old and a 70-year-old */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:60px;border-radius:999px;border:none;font:inherit;font-family:var(--font);
+  font-size:20px;font-weight:800;cursor:pointer;transition:filter .12s,transform .06s}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px);filter:brightness(.94)}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 6px 0 var(--brand-deep)}
+.btn-primary:active{box-shadow:0 3px 0 var(--brand-deep)}
+.btn-accent{background:var(--yellow);color:#1A1206;box-shadow:0 6px 0 var(--yellow-deep)}
+.btn-accent:active{box-shadow:0 3px 0 var(--yellow-deep)}
+.btn-navy{background:var(--navy);color:var(--gold-lite);box-shadow:0 6px 0 #05102a}
+.btn-navy:active{box-shadow:0 3px 0 #05102a}
+.btn-secondary{background:var(--surface);color:var(--brand);border:2.5px solid var(--brand);box-shadow:none}
+.btn-quiet{background:transparent;color:var(--muted);min-height:48px;font-size:17px;box-shadow:none}
+
+/* Form fields */
+.field{display:block}
+.field span{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+.field input{width:100%;height:56px;border:2px solid var(--line);border-radius:var(--radius-sm);
+  padding:0 14px;font:inherit;font-size:18px;background:#fff}
+.field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft)}
+
+/* ---- Brand utilities -------------------------------------------------- */
+
+/* Cosmic hero (the show logo backdrop) */
+.cosmic{
+  background:
+    radial-gradient(1.5px 1.5px at 18% 24%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1.5px 1.5px at 72% 16%, rgba(255,255,255,.6), transparent),
+    radial-gradient(2px 2px at 42% 68%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.5px 1.5px at 86% 62%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 30% 88%, rgba(255,255,255,.45), transparent),
+    radial-gradient(140% 120% at 50% -10%, #234a94 0%, var(--navy-2) 34%, var(--navy) 72%);
+  color:#fff;
+}
+
+/* Shiny gold wordmark (the "המירוץ" lettering) */
+.goldtext{
+  background:linear-gradient(180deg,#FFF1B0 0%,#F6CB4B 45%,#E19100 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.25));
+}
+
+/* The yellow independence-race flag */
+.flag{position:relative;background:var(--yellow);color:#1A1206;border-radius:var(--radius);overflow:hidden}
+.flag-band{background:#1A1206;color:var(--yellow);font-weight:800}
+
+/* Compass badge (red/yellow rings, from the app mark) */
+.compass{position:relative;width:120px;height:120px;border-radius:50%;flex:none;
+  background:conic-gradient(var(--yellow) 0 50%, var(--brand) 50% 100%);
+  padding:11px;box-shadow:var(--shadow)}
+.compass::before{content:"";position:absolute;inset:6px;border-radius:50%;
+  border:2px solid #1A1206;pointer-events:none}
+.compass-core{width:100%;height:100%;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:44px;
+  border:2px solid #1A1206}
+
+/* Grandparent avatar (photo/caricature drop-in) */
+.gp{width:56px;height:56px;border-radius:50%;flex:none;display:flex;
+  align-items:center;justify-content:center;font-size:30px;border:2px solid var(--line);
+  background:var(--yellow-soft)}
+.gp.granny{background:#F6E3F7}
+
+/* Striped image placeholder (drop real photos / caricatures here) */
+.ph{background:
+  repeating-linear-gradient(45deg,var(--bg-2) 0 10px,#EFE4CC 10px 20px);
+  border:1px dashed #CDBE9F;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-family:ui-monospace,"SF Mono",Menlo,monospace;
+  font-size:12px;text-align:center;padding:8px}

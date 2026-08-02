@@ -1,0 +1,79 @@
+<!-- @dsCard group="מירוץ חי" name="פתיחת רמז" subtitle="מעטפת הדגל — אנימציית פתיחה" viewport="380x760" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פתיחת רמז — מעטפת הדגל</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+.scene{position:relative;height:430px;perspective:1100px}
+/* the envelope = the yellow flag letter */
+.env{position:absolute;inset:0;margin:auto;width:312px;height:208px;cursor:pointer;
+  border-radius:12px;box-shadow:var(--shadow-lg);
+  transform-origin:50% 100%;transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .4s;
+  animation:arrive .6s cubic-bezier(.34,1.56,.64,1) both}
+.env img{width:100%;height:100%;object-fit:cover;display:block;border-radius:12px}
+.env .tap{position:absolute;inset-inline:0;top:-38px;text-align:center;font-weight:800;
+  color:#1A1206;font-size:15px;animation:pulse 1.4s ease-in-out infinite}
+.env .tap span{background:var(--yellow);border:2px solid #1A1206;border-radius:999px;
+  padding:4px 14px;box-shadow:var(--shadow)}
+@keyframes arrive{from{transform:translateY(-60px) rotate(-6deg) scale(.6);opacity:0}}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.scene:not(.open) .env:hover{transform:rotate(-2deg) scale(1.03)}
+/* opening: flag flips up and away like a flap */
+.scene.open .env{transform:rotateX(102deg) translateY(-26px);opacity:0;pointer-events:none;
+  transition:transform .7s cubic-bezier(.5,0,.75,0),opacity .3s .45s}
+/* the clue itself, revealed beneath */
+.clue{position:absolute;inset:0;margin:auto;width:296px;height:fit-content;
+  background:var(--surface);border:3px solid #1A1206;border-radius:var(--radius);
+  padding:18px;text-align:center;opacity:0;transform:translateY(46px) scale(.82);
+  box-shadow:var(--shadow-lg)}
+.scene.open .clue{opacity:1;transform:none;
+  transition:transform .6s .35s cubic-bezier(.34,1.56,.64,1),opacity .4s .35s}
+.clue .band{background:#1A1206;color:var(--yellow);font-family:var(--font-display);
+  font-size:18px;border-radius:8px;padding:6px 10px;margin-bottom:12px}
+.clue .q{font-size:19px;font-weight:700;line-height:1.5}
+.burst{position:absolute;inset:0;margin:auto;width:10px;height:10px;pointer-events:none}
+.burst i{position:absolute;width:10px;height:10px;border-radius:2px;opacity:0}
+.scene.open .burst i{animation:pop .8s .4s ease-out both}
+@keyframes pop{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(200deg)}}
+</style>
+</head>
+<body>
+<div class="stack" style="max-width:342px">
+  <h1>✉️ פתיחת רמז</h1>
+  <div class="scene" id="scene">
+    <div class="clue">
+      <div class="band">🏁 תחנה 3 · רמז</div>
+      <div class="q">סעו אל המקום שבו סבא נהג לקנות פיתות חמות בכל יום שישי.</div>
+      <button class="btn btn-primary" style="margin-top:14px">יצאנו לדרך! 🏃</button>
+    </div>
+    <div class="burst">
+      <i style="--dx:-90px;--dy:-70px;background:var(--yellow)"></i>
+      <i style="--dx:80px;--dy:-90px;background:var(--brand)"></i>
+      <i style="--dx:-110px;--dy:20px;background:var(--gold)"></i>
+      <i style="--dx:100px;--dy:30px;background:#1A1206"></i>
+      <i style="--dx:-40px;--dy:-110px;background:var(--brand)"></i>
+      <i style="--dx:40px;--dy:90px;background:var(--yellow)"></i>
+    </div>
+    <div class="env" id="env">
+      <img src="../uploads/yellow_flag-0347634a.JPG" alt="מכתב הרמז — דגל מירוץ העצמאות">
+      <div class="tap"><span>👆 לחצו לפתיחה</span></div>
+    </div>
+  </div>
+  <button class="btn btn-quiet" id="replay">↻ הפעלה מחדש</button>
+  <div class="note"><b>מתי:</b> בכל פתיחת תחנה, שאלה או משימה חדשה — קודם מכתב הדגל, הקשה,
+  הדגל מתרומם כמו דש מעטפה + קונפטי, והרמז נחשף. הכפתור מוביל ישר למשימה.</div>
+</div>
+<script>
+const scene=document.getElementById('scene');
+document.getElementById('env').addEventListener('click',()=>scene.classList.add('open'));
+document.getElementById('replay').addEventListener('click',()=>{
+  scene.classList.remove('open');
+  const env=scene.querySelector('.env');
+  env.style.animation='none';env.offsetHeight;env.style.animation='';
+});
+</script>
+</body>
+</html>

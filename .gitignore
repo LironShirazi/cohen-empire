@@ -1,0 +1,4 @@
+# macOS
+.DS_Store
+
+# תלויות ופלטי build של האפליקציה מנוהלים ב-web/.gitignore

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/ds-08a89147-2089-4a4c-b7e0-c115b18a7af5/styles.css">
+<script src="_ds/ds-08a89147-2089-4a4c-b7e0-c115b18a7af5/_ds_bundle.js"></script>
+<style>
+body{margin:0;padding:0;background:#EFE7D2}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font-family:var(--font-display);font-size:17px;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;margin-bottom:34px}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.1);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 var(--font);color:rgba(0,0,0,.6)}
+.dv-opt:target .dv-oid{background:#E4002B;color:#fff}
+.dv-next{margin:10px 0 0;font:13px/1.6 var(--font);color:rgba(0,0,0,.55)}
+.dv-group{font-family:var(--font-display);font-size:15px;color:rgba(0,0,0,.45);margin:0 0 14px}
+@keyframes walkcycle{to{background-position:calc(var(--h)*-2416/420) 0}}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+@keyframes pulse{50%{transform:scale(1.07)}}
+@keyframes arrive{from{transform:translateY(-60px) rotate(-6deg) scale(.6);opacity:0}}
+@keyframes pop{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(200deg)}}
+@keyframes cross{from{left:-90px}to{left:110%}}
+@keyframes distpulse{50%{transform:scale(1.04)}}
+</style>
+</helmet>
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">סבב 4 — העץ המשפחתי: המודול החי מ-GitHub (master) עם כל הפונקציונליות</span></div>
+<div class="card" style="max-width:760px;margin-bottom:30px;padding:16px 20px;font-size:14.5px;color:var(--muted)">
+<b style="color:var(--ink)">העץ המשפחתי 🌳</b> — פיצ'ר עצמאי, נגיש תמיד מדף הבית (לפני / בזמן / אחרי המירוץ). זהו <b style="color:var(--ink)">המודול החי מ-GitHub</b> (<code>docs/06-family-tree.md</code> + <code>family-tree/</code>) מוטמע כאן ופועל במלואו: השורש הוא <b>סבא אורגני ראובן ♥ סבתא טראקי</b> (״העיקר״, טבעת זהב) עם דור הסבים־רבא מעליו. אינטראקטיבי לגמרי — ✏️ עריכת העץ (הוספת הורים / ילדים / בן־זוג, מחיקת עלה ללא צאצאים), 🙋 ״אני בעץ״, ⬇️ ייצוא PNG / PDF וגיבוי־ייבוא JSON, 🔍 חיפוש, גרירה וזום, והקשה על עלה לתצוגה מוגדלת או עריכה. הנתונים נשמרים ב-localStorage.
+</div>
+
+<div class="dv-group">🌳 העץ החי — מובייל ומחשב</div>
+<div class="dv-opts" style="margin-bottom:0">
+<div class="dv-opt" id="4a" data-screen-label="העץ המשפחתי — מובייל">
+<div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>▶ במובייל — צביטה לזום, Bottom Sheet · אפליקציה חיה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div style="height:100%;background:#23422f;padding-top:46px;box-sizing:border-box">
+  <iframe src="family-tree/index.html" title="העץ המשפחתי — מובייל" style="width:100%;height:100%;border:0;display:block;background:#f7f1e6"></iframe>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="4b" data-screen-label="העץ המשפחתי — מחשב">
+<div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>▶ במחשב — אותו מודול, סרגל מלא · אפליקציה חיה</div>
+<x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ 1060 }}" height="{{ 720 }}" url="cohen-empire.family/family-tree" hint-size="1060px,720px">
+<iframe src="family-tree/index.html" title="העץ המשפחתי — מחשב" style="width:100%;height:100%;border:0;display:block;background:#f7f1e6"></iframe>
+</x-import>
+</div>
+</div>
+
+<p class="dv-next">להמשך: ״עריכת בן־משפחה למנהל־על (הוספת בן/בת זוג, לידה, תמונה)״ · ״חיפוש בעץ״ · ״קישור בן־משפחה לחשבון המשתמש שלו״</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">סבב 3 — מסכי הניהול (מנהל תורן): לוח בקרה, תחנות, קבוצות, מהלך המירוץ חי</span></div>
+<div class="card" style="max-width:760px;margin-bottom:30px;padding:16px 20px;font-size:14.5px;color:var(--muted)">
+<b style="color:var(--ink)">מצב ניהול</b> — כל המסכים כאן זמינים למנהל התורן בלבד, לגבי המירוץ שהוא מנהל. סרגל עליון כהה (navy) מסמן שאתם ״מאחורי הקלעים״. אינטראקטיבי: אישור המצטרפים <a class="dv-oid" href="#3b">3b</a> ותור אישורי המשימות <a class="dv-oid" href="#3h">3h</a> — לחצו אשרו/דחו. ה־Tweak <code>raceStatus</code> משנה את שלב המירוץ בלוח הבקרה <a class="dv-oid" href="#3a">3a</a>.
+</div>
+
+<div class="dv-group">🎛 לוח בקרה + אישור מצטרפים</div>
+<div class="dv-opts">
+<div class="dv-opt" id="3a" data-screen-label="לוח בקרה">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>לוח בקרה — סטטוס, קוד משחק, סטטיסטיקות</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:68px 20px 22px;border-radius:0 0 24px 24px;box-shadow:var(--shadow-navy)">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="chip chip-ghost">🎛 מצב ניהול</span>
+      <span style="margin-inline-start:auto;font-size:13px;color:#c9d3ea">מנהל תורן · שרה</span>
+    </div>
+    <div style="font-family:var(--font-display);font-size:27px;margin-top:12px">המירוץ למיליון 2027</div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:14px">
+      <sc-for list="{{ pipeline }}" as="p" hint-placeholder-count="4">
+        <div style="flex:1;text-align:center;border-radius:999px;padding:8px 4px;font-size:12px;font-weight:800;background:{{ p.bg }};color:{{ p.col }}">{{ p.mark }} {{ p.label }}</div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:14px;flex:1">
+    <div class="flag" style="padding:16px 18px;text-align:center">
+      <div style="font-size:13px;font-weight:800;color:#1A1206;opacity:.7">קוד המשחק לשיתוף</div>
+      <div style="font-family:var(--font-display);font-size:50px;letter-spacing:7px;color:#1A1206;direction:ltr;line-height:1.1">42 83 19</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><span style="background:#1A1206;color:var(--yellow);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:800">📺 הצג בענק</span><span style="background:#1A1206;color:var(--yellow);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:800">🔗 שיתוף</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="card card-tight" style="text-align:center"><div style="font-family:var(--font-display);font-size:30px;color:var(--brand)">6</div><div class="small">קבוצות</div></div>
+      <div class="card card-tight" style="text-align:center"><div style="font-family:var(--font-display);font-size:30px;color:var(--brand)">41</div><div class="small">משתתפים</div></div>
+      <div class="card card-tight" style="text-align:center"><div style="font-family:var(--font-display);font-size:30px;color:var(--brand)">8</div><div class="small">תחנות</div></div>
+      <div class="card card-tight" style="text-align:center;border:2px solid var(--gold)"><div style="font-family:var(--font-display);font-size:30px;color:var(--gold)">4</div><div class="small">ממתינים לאישור</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
+      <button class="btn btn-primary" style="min-height:60px">🔴 מהלך המירוץ (Live)</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-navy" style="flex:1;min-height:58px;font-size:17px">📍 תחנות</button>
+        <button class="btn btn-navy" style="flex:1;min-height:58px;font-size:17px">👥 קבוצות</button>
+      </div>
+      <button class="btn btn-quiet">📣 שליחת הודעה לכל הקבוצות</button>
+    </div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="3b" data-screen-label="אישור מצטרפים">
+<div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>▶ אישור מצטרפים — אשרו או דחו</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:66px 20px 16px;display:flex;align-items:center;gap:10px">
+    <div><b style="font-size:20px">בקשות הצטרפות</b><div style="font-size:13px;color:#c9d3ea">מאשרים כדי לפתוח לחברים את תוכן הקבוצה</div></div>
+    <span class="chip chip-ok" style="margin-inline-start:auto;justify-content:center"><span style="direction:ltr">{{ reqHandled }}/4</span> טופלו</span>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:12px;flex:1">
+    <sc-for list="{{ joinReqs }}" as="r" hint-placeholder-count="4">
+      <div class="card card-tight" style="display:flex;flex-direction:column;gap:12px;border-inline-start:8px solid {{ r.color }}">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="width:48px;height:48px;border-radius:50%;background:{{ r.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800;flex:none">{{ r.initial }}</span>
+          <div style="flex:1;text-align:start"><b style="font-size:18px">{{ r.name }}</b><div class="small">מבקש/ת להצטרף · {{ r.animal }} {{ r.group }}</div></div>
+          <span class="small" style="opacity:.7">Google 🔵</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn" onClick="{{ r.reject }}" style="flex:1;min-height:50px;font-size:16px;background:var(--bg-2);color:var(--muted);box-shadow:none">דחייה</button>
+          <button class="btn btn-primary" onClick="{{ r.approve }}" style="flex:2;min-height:50px;font-size:16px">✔ אישור</button>
+        </div>
+      </div>
+    </sc-for>
+    <sc-if value="{{ reqAllDone }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;margin:auto;display:flex;flex-direction:column;gap:10px;align-items:center;padding:30px 10px">
+        <div style="font-size:52px">🎉</div>
+        <div style="font-family:var(--font-display);font-size:24px">כל הבקשות טופלו!</div>
+        <div class="small">כשמישהו חדש יבקש להצטרף — הבקשה תופיע כאן</div>
+        <button class="btn btn-quiet" onClick="{{ resetReqs }}">↻ איפוס ההדגמה</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-import>
+</div>
+</div>
+
+<div class="dv-group">🗺 ניהול תחנות + קבוצות</div>
+<div class="dv-opts">
+<div class="dv-opt" id="3c" data-screen-label="ניהול תחנות">
+<div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>ניהול תחנות — רשימה, מפה וסדר</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:66px 20px 16px;display:flex;align-items:baseline;gap:8px">
+    <b style="font-size:21px">ניהול תחנות</b><span style="font-size:13px;color:#c9d3ea">8 תחנות · דרום</span>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:14px;flex:1">
+    <div class="ph" style="height:150px;position:relative;overflow:hidden">
+      <span style="position:absolute;top:22px;inset-inline-end:40px">📍</span>
+      <span style="position:absolute;top:70px;inset-inline-start:60px">📍</span>
+      <span style="position:absolute;bottom:26px;inset-inline-end:90px">🏁</span>
+      מפת התחנות — לחיצה על סיכה לעריכה
+    </div>
+    <div>
+      <div class="small" style="margin-bottom:6px;font-weight:700;color:var(--ink)">סדר התחנות</div>
+      <div style="display:flex;gap:6px">
+        <span class="chip" style="flex:1;justify-content:center;text-align:center;white-space:nowrap;background:var(--bg-2);color:var(--muted)">זהה לכולם</span>
+        <span class="chip" style="flex:1;justify-content:center;text-align:center;white-space:nowrap">אקראי לקבוצה</span>
+        <span class="chip" style="flex:1;justify-content:center;text-align:center;white-space:nowrap;background:var(--bg-2);color:var(--muted)">ידני</span>
+      </div>
+      <div class="note" style="margin-top:8px">בסדר אקראי — סמנו 📌 תחנות שיישארו קבועות לכל הקבוצות (הזינוק, הסיום, או תחנת שיא)</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="card card-tight" style="display:flex;align-items:center;gap:8px"><b style="width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none">1</b><div style="flex:1"><b style="font-size:16px">הזינוק · בית סבא</b><div class="small">🔑 קוד סודי</div></div><span style="background:var(--brand-soft);color:var(--brand);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;flex:none">📌 קבוע</span><span style="color:var(--muted);font-size:20px">⠿</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:8px"><b style="width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none">2</b><div style="flex:1"><b style="font-size:16px">הכיכר בנתיבות</b><div class="small">📸 העלאת תמונה</div></div><span style="background:var(--bg-2);color:var(--muted);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;flex:none">🎲 אקראי</span><span style="color:var(--muted);font-size:20px">⠿</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:8px"><b style="width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none">3</b><div style="flex:1"><b style="font-size:16px">המאפייה של שישי</b><div class="small">📸 העלאת תמונה</div></div><span style="background:var(--bg-2);color:var(--muted);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;flex:none">🎲 אקראי</span><span style="color:var(--muted);font-size:20px">⠿</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:8px"><b style="width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none">4</b><div style="flex:1"><b style="font-size:16px">גבעת התחמושת</b><div class="small">✔️ אישור מנהל</div></div><span style="background:var(--bg-2);color:var(--muted);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;flex:none">🎲 אקראי</span><span style="color:var(--muted);font-size:20px">⠿</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:8px"><b style="width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none">5</b><div style="flex:1"><b style="font-size:16px">האנדרטה בשדות נגב</b><div class="small">🔑 קוד סודי</div></div><span style="background:var(--brand-soft);color:var(--brand);border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;flex:none">📌 קבוע</span><span style="color:var(--muted);font-size:20px">⠿</span></div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:auto">➕ תחנה חדשה</button>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="3d" data-screen-label="עריכת תחנה">
+<div class="dv-olabel"><a class="dv-oid" href="#3d">3d</a>עריכת תחנה — טופס מלא</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:66px 20px 16px;display:flex;align-items:center;gap:8px">
+    <span style="font-size:20px">✎</span><b style="font-size:20px">עריכת תחנה 3</b><span style="margin-inline-start:auto;font-size:13px;color:#c9d3ea">שמור אוטומטי כטיוטה</span>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:14px;flex:1">
+    <label class="field"><span>שם התחנה</span><input value="המאפייה של שישי" style="text-align:start"></label>
+    <label class="field"><span>סיפור הרקע של המקום</span><div style="min-height:74px;border:2px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:16px;background:#fff;color:var(--ink);line-height:1.5">לכאן סבא היה מגיע בכל שישי בשש בבוקר, וחוזר עם שקית פיתות חמות וסיפור חדש.</div></label>
+    <label class="field"><span>הרמז (מוביל לתחנה)</span><div style="min-height:56px;border:2px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:16px;background:#fff;color:var(--ink);line-height:1.5">״המקום שבו סבא קנה פיתות חמות בכל שישי…״</div></label>
+    <label class="field"><span>המשימה בתחנה</span><div style="min-height:56px;border:2px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:16px;background:#fff;color:var(--ink);line-height:1.5">מצאו את הלחמנייה הכי גדולה וצלמו את כל הקבוצה נוגסת בה יחד!</div></label>
+    <div class="field"><span>מיקום ורדיוס נעילה</span>
+      <div class="ph" style="height:130px;position:relative;overflow:hidden;margin-bottom:8px">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:104px;height:104px;border-radius:50%;background:rgba(228,0,43,.12);border:2px dashed var(--brand)"></div>
+        <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:24px">📍</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px"><span class="small" style="flex:none">רדיוס</span><div style="flex:1;height:6px;background:var(--bg-2);border-radius:999px;position:relative"><div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:45%;background:var(--brand);border-radius:999px"></div><div style="position:absolute;inset-inline-start:45%;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--brand)"></div></div><b style="flex:none;font-size:15px">60 מ׳</b></div>
+    </div>
+    <div class="field"><span>אופן ההשלמה (אפשר לשלב כמה)</span>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px;border:2px solid var(--brand);background:var(--brand-soft);border-radius:var(--radius-sm);padding:11px 13px"><span style="width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none">✓</span><b style="flex:1;font-size:16px">📸 העלאת תמונה</b><span style="background:var(--brand);color:#fff;border-radius:999px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">1</span></div>
+        <div style="display:flex;align-items:center;gap:10px;border:2px solid var(--brand);background:var(--brand-soft);border-radius:var(--radius-sm);padding:11px 13px"><span style="width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none">✓</span><b style="flex:1;font-size:16px">✔️ אישור מנהל</b><span style="background:var(--brand);color:#fff;border-radius:999px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">2</span></div>
+        <div style="display:flex;align-items:center;gap:10px;border:2px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:11px 13px"><span style="width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:none"></span><b style="flex:1;font-size:16px;color:var(--muted)">🔑 קוד סודי בתחנה</b></div>
+        <div style="display:flex;align-items:center;gap:10px;border:2px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:11px 13px"><span style="width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:none"></span><b style="flex:1;font-size:16px;color:var(--muted)">⚡ אוטומטי (בהגעה לרדיוס)</b></div>
+      </div>
+      <div class="note" style="margin-top:8px">נבחרו 2 — הסדר: קודם תמונה 📸, ואז אישור מנהל ✔️</div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:4px">💾 שמירת התחנה</button>
+    <button class="btn btn-quiet" style="color:var(--brand)">🗑 מחיקת התחנה</button>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="3e" data-screen-label="ניהול קבוצות">
+<div class="dv-olabel"><a class="dv-oid" href="#3e">3e</a>ניהול קבוצות — רשימה + חלוקה אוטומטית</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:66px 20px 16px;display:flex;align-items:baseline;gap:8px">
+    <b style="font-size:21px">ניהול קבוצות</b><span style="font-size:13px;color:#c9d3ea">6 קבוצות · 41 משתתפים</span>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:12px;flex:1">
+    <button class="btn btn-accent" style="min-height:64px;font-size:19px">✨ חלוקה אוטומטית מאוזנת</button>
+    <div class="note" style="text-align:center">מאזן את המשתתפים (רשומים + ידניים) לפי גיל ויכולת</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <div class="card card-tight" style="display:flex;align-items:center;gap:10px;border-inline-start:8px solid var(--t-blue)"><span style="font-size:22px">🐬</span><div style="flex:1"><b style="font-size:16px">הדולפינים</b><div class="small">קוד 7 · 8 חברים</div></div><span style="color:var(--muted)">✎</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:10px;border-inline-start:8px solid var(--t-green)"><span style="font-size:22px">🐸</span><div style="flex:1"><b style="font-size:16px">הצפרדעים</b><div class="small">קוד 3 · 7 חברים</div></div><span style="color:var(--muted)">✎</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:10px;border-inline-start:8px solid var(--t-orange)"><span style="font-size:22px">🦁</span><div style="flex:1"><b style="font-size:16px">האריות</b><div class="small">קוד 5 · 7 חברים</div></div><span style="color:var(--muted)">✎</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:10px;border-inline-start:8px solid var(--t-pink)"><span style="font-size:22px">🦩</span><div style="flex:1"><b style="font-size:16px">הפלמינגו</b><div class="small">קוד 2 · 6 חברים</div></div><span style="color:var(--muted)">✎</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:10px;border-inline-start:8px solid var(--t-purple)"><span style="font-size:22px">🦉</span><div style="flex:1"><b style="font-size:16px">הינשופים</b><div class="small">קוד 8 · 7 חברים</div></div><span style="color:var(--muted)">✎</span></div>
+      <div class="card card-tight" style="display:flex;align-items:center;gap:10px;border-inline-start:8px solid var(--t-red)"><span style="font-size:22px">🦂</span><div style="flex:1"><b style="font-size:16px">העקרבים</b><div class="small">קוד 4 · 6 חברים</div></div><span style="color:var(--muted)">✎</span></div>
+    </div>
+    <button class="btn btn-navy" style="margin-top:auto">➕ הוספת קבוצה / משתתף ידני</button>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="3f" data-screen-label="חלוקה אוטומטית">
+<div class="dv-olabel"><a class="dv-oid" href="#3f">3f</a>חלוקה אוטומטית — טיוטה מאוזנת + גרירה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:66px 20px 16px">
+    <div style="display:flex;align-items:center;gap:8px"><span class="chip chip-ghost">✨ טיוטת חלוקה</span></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+      <span style="font-size:14px;color:#c9d3ea">מספר קבוצות</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-inline-start:auto">
+        <span style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:22px">−</span>
+        <b style="font-family:var(--font-display);font-size:26px;min-width:24px;text-align:center">6</b>
+        <span style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:22px">+</span>
+      </div>
+    </div>
+  </div>
+  <div style="padding:14px 20px 40px;display:flex;flex-direction:column;gap:12px;flex:1">
+    <div style="display:flex;gap:8px">
+      <span class="chip chip-ok" style="flex:1;justify-content:center">⚖️ גיל מאוזן</span>
+      <span class="chip chip-ok" style="flex:1;justify-content:center">💪 יכולת מאוזנת</span>
+    </div>
+    <div class="card card-tight" style="border-inline-start:8px solid var(--t-blue)">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🐬</span><b style="font-size:16px">הדולפינים</b><span class="small" style="margin-inline-start:auto">גיל ממוצע 24</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">שרה 34</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">דוד 41</span>
+        <span style="background:#FFF3D6;border:1px solid var(--accent);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">🧒 תמר 3</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">איתן 12</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">יעל 29</span>
+      </div>
+    </div>
+    <div class="card card-tight" style="border-inline-start:8px solid var(--t-green)">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🐸</span><b style="font-size:16px">הצפרדעים</b><span class="small" style="margin-inline-start:auto">גיל ממוצע 26</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">מיכל 38</span>
+        <span style="background:#FFF3D6;border:1px solid var(--accent);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">🧒 עדן 5</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">יוסי 45</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">שירה 22</span>
+      </div>
+    </div>
+    <div class="card card-tight" style="border-inline-start:8px solid var(--t-orange)">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🦁</span><b style="font-size:16px">האריות</b><span class="small" style="margin-inline-start:auto">גיל ממוצע 25</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">רמי 52</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">הילה 27</span>
+        <span style="background:#FFF3D6;border:1px solid var(--accent);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">🧒 טל 7</span>
+        <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600">מאיה 19</span>
+      </div>
+    </div>
+    <div class="note" style="text-align:center">גררו שם בין הקבוצות כדי לתקן ידנית</div>
+    <div style="display:flex;gap:10px;margin-top:auto">
+      <button class="btn btn-quiet" style="flex:1">↻ ערבוב מחדש</button>
+      <button class="btn btn-primary" style="flex:2">✔ אישור החלוקה</button>
+    </div>
+  </div>
+</div>
+</x-import>
+</div>
+</div>
+
+<div class="dv-group">🔴 מהלך המירוץ (Live) + סיום</div>
+<div class="dv-opts" style="margin-bottom:0">
+<div class="dv-opt" id="3g" data-screen-label="מהלך המירוץ Live">
+<div class="dv-olabel"><a class="dv-oid" href="#3g">3g</a>מהלך המירוץ (Live) — מפת הקבוצות</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div class="cosmic" style="min-height:100%;padding:66px 18px 40px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="width:10px;height:10px;border-radius:50%;background:var(--brand);animation:pulse 1.2s infinite"></span>
+    <b style="font-size:20px;color:#fff">מהלך המירוץ · חי</b>
+    <span style="margin-inline-start:auto;font-size:13px;color:#c9d3ea">14:52</span>
+  </div>
+  <div style="position:relative;height:230px;border-radius:var(--radius);background:linear-gradient(180deg,#0d1b3a,#12244d);border:1px solid rgba(255,255,255,.12);overflow:hidden">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px"></div>
+    <span style="position:absolute;top:26px;inset-inline-end:34px;width:38px;height:38px;border-radius:12px;background:var(--t-green);display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #fff">🐸</span>
+    <span style="position:absolute;top:88px;inset-inline-start:50px;width:38px;height:38px;border-radius:12px;background:var(--t-blue);display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #fff">🐬</span>
+    <span style="position:absolute;top:140px;inset-inline-end:80px;width:38px;height:38px;border-radius:12px;background:var(--t-orange);display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #fff">🦁</span>
+    <span style="position:absolute;bottom:30px;inset-inline-start:90px;width:34px;height:34px;border-radius:12px;background:var(--t-pink);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff">🦩</span>
+    <span style="position:absolute;bottom:60px;inset-inline-end:40px;width:34px;height:34px;border-radius:12px;background:var(--t-purple);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff">🦉</span>
+    <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #1A1206">🏁</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:10px 14px"><span style="font-size:20px">🐸</span><div style="flex:1"><b style="color:#fff;font-size:15px">הצפרדעים</b><div style="font-size:12.5px;color:#c9d3ea">תחנה 5 · 5 משימות · לפני 40ש׳</div></div><span style="font-size:18px">🥇</span></div>
+    <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:10px 14px"><span style="font-size:20px">🐬</span><div style="flex:1"><b style="color:#fff;font-size:15px">הדולפינים</b><div style="font-size:12.5px;color:#c9d3ea">תחנה 3 · 4 משימות · לפני 2ד׳</div></div><span style="font-size:18px">🥈</span></div>
+    <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:10px 14px"><span style="font-size:20px">🦁</span><div style="flex:1"><b style="color:#fff;font-size:15px">האריות</b><div style="font-size:12.5px;color:#c9d3ea">תחנה 3 · 4 משימות · לפני 6ד׳</div></div><span style="font-size:18px">🥉</span></div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:auto">
+    <button class="btn btn-accent" style="flex:1;min-height:56px;font-size:16px">⚡ פתיחת משימה ידנית</button>
+    <button class="btn" style="flex:1;min-height:56px;font-size:16px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)">📣 הודעה</button>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="3h" data-screen-label="תור אישורי משימות">
+<div class="dv-olabel"><a class="dv-oid" href="#3h">3h</a>▶ תור אישורי משימות — אשרו את התמונות</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="background:var(--navy);color:#fff;padding:66px 20px 16px;display:flex;align-items:center;gap:8px">
+    <div><b style="font-size:20px">אישורי משימות</b><div style="font-size:13px;color:#c9d3ea">תמונות שהעלו הקבוצות</div></div>
+    <span class="chip chip-yellow" style="margin-inline-start:auto">⏳ {{ taskCount }} בתור</span>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:12px;flex:1">
+    <sc-for list="{{ taskQueue }}" as="t" hint-placeholder-count="3">
+      <div class="card card-tight" style="display:flex;flex-direction:column;gap:10px;border-inline-start:8px solid {{ t.color }}">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">{{ t.animal }}</span><div style="flex:1;text-align:start"><b style="font-size:16px">{{ t.group }}</b><div class="small">{{ t.station }}</div></div></div>
+        <div class="ph" style="height:120px">{{ t.task }}</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn" onClick="{{ t.reject }}" style="flex:1;min-height:50px;font-size:16px;background:var(--bg-2);color:var(--muted);box-shadow:none">❌ נסו שוב</button>
+          <button class="btn btn-primary" onClick="{{ t.approve }}" style="flex:2;min-height:50px;font-size:16px">✔ אשרו והמשיכו</button>
+        </div>
+      </div>
+    </sc-for>
+    <sc-if value="{{ taskAllDone }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;margin:auto;display:flex;flex-direction:column;gap:10px;align-items:center;padding:30px 10px">
+        <div style="font-size:52px">✅</div>
+        <div style="font-family:var(--font-display);font-size:24px">התור ריק!</div>
+        <div class="small">כל המשימות שהוגשו אושרו · הקבוצות בדרך לתחנה הבאה</div>
+        <button class="btn btn-quiet" onClick="{{ resetTasks }}">↻ איפוס ההדגמה</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="3i" data-screen-label="סיום המירוץ">
+<div class="dv-olabel"><a class="dv-oid" href="#3i">3i</a>סיום המירוץ — הכרזת זוכים וארכוב</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div class="cosmic" style="min-height:100%;padding:72px 22px 40px;display:flex;flex-direction:column;gap:16px;text-align:center">
+  <div style="font-size:44px">🏁</div>
+  <div class="display goldtext" style="font-size:34px;line-height:1.05">סיום המירוץ<br>והכרזת הזוכים</div>
+  <div style="background:rgba(251,217,104,.14);border:2px solid var(--gold);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:center;text-align:start">
+    <span style="width:52px;height:52px;border-radius:15px;background:color-mix(in srgb,var(--t-green) 30%,#0d1b3a);border:2px solid var(--t-green);display:flex;align-items:center;justify-content:center;font-size:28px;flex:none">🐸</span>
+    <div style="flex:1"><div style="font-size:13px;color:#c9d3ea">המובילים כרגע</div><b style="font-size:20px;color:#fff">הצפרדעים · 5 משימות</b></div>
+    <span style="font-size:26px">🥇</span>
+  </div>
+  <div style="background:rgba(228,0,43,.14);border:1px solid var(--brand);border-radius:var(--radius);padding:14px 16px;font-size:14.5px;color:#fff;text-align:start;line-height:1.5">
+    ⚠️ <b>פעולה בלתי הפיכה.</b> סיום המירוץ ננעל לעריכה עבור כולם ומתועד כארכיון לקריאה בלבד.
+  </div>
+  <div style="font-size:14px;color:#c9d3ea">✓ המירוץ יתווסף אוטומטית ל<b style="color:#fff">היכל התהילה 🏛</b></div>
+  <button class="btn btn-accent" style="min-height:66px;font-size:20px;margin-top:auto">🏆 סיום מירוץ והכרזת זוכים</button>
+  <button class="btn btn-quiet" style="color:#c9d3ea">ביטול — חזרה לניהול</button>
+</div>
+</x-import>
+</div>
+</div>
+
+<p class="dv-next">להמשך: ״מסכי מנהל-על — מינוי מנהלים תורנים ועריכת התוכן הקבוע״ · ״עריכת קבוצה בודדת (צבע + חיה)״ · ״מסך שליחת הודעה לקבוצה ספציפית״</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">סבב 2 — מסך הקבוצה, טבלאות, השלמה וסיום (בכיוון <a class="dv-oid" href="#1g">1g</a>/<a class="dv-oid" href="#1h">1h</a>/<a class="dv-oid" href="#1i">1i</a>)</span></div>
+
+<div class="dv-group">👥 מסך הקבוצה + טבלאות</div>
+<div class="dv-opts">
+<div class="dv-opt" id="2a" data-screen-label="מסך הקבוצה">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>מסך הקבוצה — שני כפתורים גדולים</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="padding:70px 20px 18px;background:color-mix(in srgb,var(--t-blue) 12%,#fff);border-bottom:1px solid var(--line);text-align:center">
+    <span style="width:74px;height:74px;border-radius:22px;background:color-mix(in srgb,var(--t-blue) 18%,#fff);border:2px solid var(--t-blue);display:inline-flex;align-items:center;justify-content:center;font-size:44px">🐬</span>
+    <div style="font-family:var(--font-display);font-size:30px;margin-top:6px">הדולפינים</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
+      <span class="chip">🏅 מקום 2</span><span class="chip chip-ok">✔ 4 משימות הושלמו</span>
+    </div>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:12px;flex:1">
+    <button class="btn btn-primary" style="min-height:88px;font-size:24px;display:flex;flex-direction:column;gap:2px">▶️ מהלך המשחק<span style="font-size:14px;font-weight:600;opacity:.85">בדרך לתחנה 3 · עוד 340 מ׳</span></button>
+    <button class="btn btn-navy" style="min-height:88px;font-size:24px;display:flex;flex-direction:column;gap:2px">💬 צ'אט קבוצתי<span style="font-size:14px;font-weight:600;opacity:.85">3 הודעות חדשות</span></button>
+    <div class="card card-tight" style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0">🏅 לוח מובילים</h2><span class="small" style="margin-inline-start:auto">מתעדכן חי</span></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:15.5px"><b style="width:22px;color:var(--muted)">1</b><span>🐸 הצפרדעים</span><span class="small" style="margin-inline-start:auto">5 משימות</span></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:15.5px;background:var(--brand-soft);border-radius:8px;padding:4px 6px;margin:0 -6px"><b style="width:22px;color:var(--brand)">2</b><b>🐬 הדולפינים</b><span class="small" style="margin-inline-start:auto">4 משימות</span></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:15.5px"><b style="width:22px;color:var(--muted)">3</b><span>🦁 האריות</span><span class="small" style="margin-inline-start:auto">4 משימות</span></div>
+      <button class="btn btn-quiet" style="min-height:44px;font-size:15px">לטבלה המלאה</button>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:auto">
+      <span class="gp" style="flex:none">👴</span>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);border-bottom-right-radius:4px;padding:10px 14px;box-shadow:var(--shadow);font-size:15px;flex:1;text-align:start">״העיקר שכולם ביחד — המיליון כבר יסתדר.״<div class="small">— סבא אלי</div></div>
+    </div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="2b" data-screen-label="לידרבורד חי">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>לידרבורד חי — דירוג בלבד, בלי חשיפת תחנות</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div class="cosmic" style="min-height:100%;padding:76px 20px 40px;display:flex;flex-direction:column;gap:12px;text-align:center">
+  <div class="display goldtext" style="font-size:34px">לוח מובילים</div>
+  <div style="font-size:13.5px;color:#c9d3ea;margin-top:-6px">לפי סדר השלמת משימות · מתעדכן בזמן אמת</div>
+  <div style="display:flex;flex-direction:column;gap:9px;margin-top:8px">
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(251,217,104,.14);border:1px solid var(--gold);border-radius:var(--radius);padding:14px 16px;text-align:start">
+      <b style="font-family:var(--font-display);font-size:26px;color:var(--gold-lite);width:28px;font-weight:400">1</b>
+      <span style="width:46px;height:46px;border-radius:14px;background:color-mix(in srgb,var(--t-green) 30%,#0d1b3a);border:2px solid var(--t-green);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none">🐸</span>
+      <div style="flex:1"><b style="font-size:19px;color:#fff">הצפרדעים</b><div style="font-size:13px;color:#c9d3ea">השלימו לאחרונה 14:42</div></div>
+      <span style="font-size:24px">🥇</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:var(--radius);padding:14px 16px;text-align:start">
+      <b style="font-family:var(--font-display);font-size:26px;color:var(--gold-lite);width:28px;font-weight:400">2</b>
+      <span style="width:46px;height:46px;border-radius:14px;background:color-mix(in srgb,var(--t-blue) 30%,#0d1b3a);border:2px solid var(--t-blue);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none">🐬</span>
+      <div style="flex:1"><b style="font-size:19px;color:#fff">הדולפינים <span style="font-size:12px;background:var(--brand);border-radius:999px;padding:2px 8px;vertical-align:2px">אתם</span></b><div style="font-size:13px;color:#c9d3ea">השלימו לאחרונה 14:47</div></div>
+      <span style="font-size:24px">🥈</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:var(--radius);padding:14px 16px;text-align:start">
+      <b style="font-family:var(--font-display);font-size:26px;color:var(--gold-lite);width:28px;font-weight:400">3</b>
+      <span style="width:46px;height:46px;border-radius:14px;background:color-mix(in srgb,var(--t-orange) 30%,#0d1b3a);border:2px solid var(--t-orange);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none">🦁</span>
+      <div style="flex:1"><b style="font-size:19px;color:#fff">האריות</b><div style="font-size:13px;color:#c9d3ea">השלימו לאחרונה 14:51</div></div>
+      <span style="font-size:24px">🥉</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:12px 16px;text-align:start">
+      <b style="font-family:var(--font-display);font-size:22px;color:#c9d3ea;width:28px;font-weight:400">4</b>
+      <span style="width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--t-pink) 30%,#0d1b3a);border:2px solid var(--t-pink);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">🦩</span>
+      <b style="font-size:17px;color:#fff;flex:1">הפלמינגו</b>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:12px 16px;text-align:start">
+      <b style="font-family:var(--font-display);font-size:22px;color:#c9d3ea;width:28px;font-weight:400">5</b>
+      <span style="width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--t-purple) 30%,#0d1b3a);border:2px solid var(--t-purple);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">🦉</span>
+      <b style="font-size:17px;color:#fff;flex:1">הינשופים</b>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:12px 16px;text-align:start">
+      <b style="font-family:var(--font-display);font-size:22px;color:#c9d3ea;width:28px;font-weight:400">6</b>
+      <span style="width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--t-red) 30%,#0d1b3a);border:2px solid var(--t-red);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">🦂</span>
+      <b style="font-size:17px;color:#fff;flex:1">העקרבים</b>
+    </div>
+  </div>
+  <div style="margin-top:auto;font-size:13px;color:#c9d3ea;opacity:.8">🤫 לא מגלים באיזו תחנה כל קבוצה — כדי לשמור על המתח</div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="2c" data-screen-label="כל הקבוצות">
+<div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>כל הקבוצות והרכבן</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:70px 20px 40px;display:flex;flex-direction:column;gap:12px">
+  <h1 style="font-size:28px;text-align:center">הקבוצות של 2027</h1>
+  <div class="small" style="text-align:center;margin-top:-8px">6 קבוצות · 41 משתתפים</div>
+  <div class="card card-tight" style="border-inline-start:8px solid var(--t-blue)">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--t-blue) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none">🐬</span><b style="font-size:19px">הדולפינים</b><span class="chip" style="margin-inline-start:auto">הקבוצה שלי · 8</span></div>
+    <div class="small" style="margin-top:6px">שרה · דוד · נועה · איתן · תמר · יעל · רוני · אבי</div>
+  </div>
+  <div class="card card-tight" style="border-inline-start:8px solid var(--t-green)">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--t-green) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none">🐸</span><b style="font-size:19px">הצפרדעים</b><span class="chip" style="margin-inline-start:auto;background:var(--bg-2);color:var(--muted)">7</span></div>
+    <div class="small" style="margin-top:6px">מיכל · יוסי · עדן · ליאור · שירה · גיל · דנה</div>
+  </div>
+  <div class="card card-tight" style="border-inline-start:8px solid var(--t-orange)">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--t-orange) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none">🦁</span><b style="font-size:19px">האריות</b><span class="chip" style="margin-inline-start:auto;background:var(--bg-2);color:var(--muted)">7</span></div>
+    <div class="small" style="margin-top:6px">אבא רמי · אורי · הילה · נדב · טל · מאיה · עומר</div>
+  </div>
+  <div class="card card-tight" style="border-inline-start:8px solid var(--t-pink)">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--t-pink) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none">🦩</span><b style="font-size:19px">הפלמינגו</b><span class="chip" style="margin-inline-start:auto;background:var(--bg-2);color:var(--muted)">6</span></div>
+    <div class="small" style="margin-top:6px">רותם · אלון · נגה · עידו · ענת · דור</div>
+  </div>
+  <div class="card card-tight" style="border-inline-start:8px solid var(--t-purple)">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--t-purple) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none">🦉</span><b style="font-size:19px">הינשופים</b><span class="chip" style="margin-inline-start:auto;background:var(--bg-2);color:var(--muted)">7</span></div>
+    <div class="small" style="margin-top:6px">דודה חני · ברק · אמיר · לירון · אסף · קרן · יובל</div>
+  </div>
+  <div class="card card-tight" style="border-inline-start:8px solid var(--t-red)">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:color-mix(in srgb,var(--t-red) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none">🦂</span><b style="font-size:19px">העקרבים</b><span class="chip" style="margin-inline-start:auto;background:var(--bg-2);color:var(--muted)">6</span></div>
+    <div class="small" style="margin-top:6px">שי · מורן · איילת · יונתן · צחי · אפרת</div>
+  </div>
+</div>
+</x-import>
+</div>
+</div>
+
+<div class="dv-group">🏛 מסכים ציבוריים — היכל התהילה + גלריה</div>
+<div class="dv-opts">
+<div class="dv-opt" id="2d" data-screen-label="היכל התהילה">
+<div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>היכל התהילה — 20 שנות זוכים</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div class="cosmic" style="padding:74px 20px 24px;border-radius:0 0 26px 26px;text-align:center;box-shadow:var(--shadow-navy)">
+    <div style="font-size:40px">🏆</div>
+    <div class="display goldtext" style="font-size:36px;line-height:1.05">היכל התהילה</div>
+    <div style="font-size:14px;color:#c9d3ea;margin-top:6px">20 שנות מירוץ בבית סבא וסבתא</div>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:12px;flex:1">
+    <div class="card" style="border:2px solid var(--gold);display:flex;gap:12px;align-items:center">
+      <span style="font-family:var(--font-display);font-size:22px;background:var(--yellow);border-radius:10px;padding:6px 10px">2026</span>
+      <div style="flex:1"><b style="font-size:19px">🦉 הינשופים</b><div class="small">דודה חני, ברק, אמיר, קרן +3</div></div>
+      <div class="ph" style="width:64px;height:64px;font-size:11px">תמונה</div>
+    </div>
+    <div class="card card-tight" style="display:flex;gap:12px;align-items:center">
+      <span style="font-family:var(--font-display);font-size:19px;background:var(--bg-2);border-radius:10px;padding:5px 9px">2025</span>
+      <div style="flex:1"><b style="font-size:17px">🐬 הדולפינים</b><div class="small">שרה, דוד, נועה +4</div></div>
+      <div class="ph" style="width:56px;height:56px;font-size:11px">תמונה</div>
+    </div>
+    <div class="card card-tight" style="display:flex;gap:12px;align-items:center">
+      <span style="font-family:var(--font-display);font-size:19px;background:var(--bg-2);border-radius:10px;padding:5px 9px">2024</span>
+      <div style="flex:1"><b style="font-size:17px">הבלתי מנוצחים</b><div class="small">שי, מורן, צחי +4</div></div>
+      <div class="ph" style="width:56px;height:56px;font-size:11px">תמונה</div>
+    </div>
+    <div class="card card-tight" style="display:flex;gap:12px;align-items:center">
+      <span style="font-family:var(--font-display);font-size:19px;background:var(--bg-2);border-radius:10px;padding:5px 9px">2023</span>
+      <div style="flex:1"><b style="font-size:17px">רמי והזומבים</b><div class="small">אבא רמי, אורי, טל +5</div></div>
+      <div class="ph" style="width:56px;height:56px;font-size:11px">תמונה</div>
+    </div>
+    <button class="btn btn-quiet" style="min-height:48px;font-size:15px">כל 20 השנים ⌄</button>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="2e" data-screen-label="גלריה">
+<div class="dv-olabel"><a class="dv-oid" href="#2e">2e</a>גלריה — תמונות לפי שנים</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:70px 20px 40px;display:flex;flex-direction:column;gap:14px">
+  <h1 style="font-size:28px;text-align:center">📸 הגלריה</h1>
+  <div style="display:flex;gap:8px;overflow:auto;padding-bottom:2px">
+    <span class="chip" style="background:var(--brand);color:#fff;flex:none">2026</span>
+    <span class="chip" style="background:var(--bg-2);color:var(--muted);flex:none">2025</span>
+    <span class="chip" style="background:var(--bg-2);color:var(--muted);flex:none">2024</span>
+    <span class="chip" style="background:var(--bg-2);color:var(--muted);flex:none">2023</span>
+    <span class="chip" style="background:var(--bg-2);color:var(--muted);flex:none">כל השנים</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:8px">
+    <div class="ph" style="min-width:0;grid-column:span 2;grid-row:span 2;font-size:13px">הזינוק 🏁</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+    <div class="ph" style="min-width:0;min-height:110px;grid-column:span 2;font-size:12px">המאפייה של שישי 🥖</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+    <div class="ph" style="min-width:0;aspect-ratio:1;font-size:12px">תמונה</div>
+  </div>
+  <div class="note" style="text-align:center">כל משתתף יכול להעלות · מנהלים עורכים כותרות ומוחקים</div>
+  <button class="btn btn-primary" style="margin-top:auto">➕ העלאת תמונות</button>
+</div>
+</x-import>
+</div>
+</div>
+
+<div class="dv-group">🏁 השלמת משימה + סיום המירוץ</div>
+<div class="dv-opts" style="margin-bottom:0">
+<div class="dv-opt" id="2f" data-screen-label="השלמה בקוד סודי">
+<div class="dv-olabel"><a class="dv-oid" href="#2f">2f</a>השלמת משימה — קוד סודי בתחנה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div class="flag" style="padding:74px 20px 20px;border-radius:0 0 26px 26px;text-align:center">
+    <div style="font-family:var(--font-display);font-size:24px;color:#1A1206">תחנה 5 · האנדרטה בשדות נגב</div>
+    <span style="background:#1A1206;color:var(--yellow);font-weight:800;border-radius:999px;padding:5px 16px;font-size:14px;display:inline-block;margin-top:6px">🔑 השלמה בקוד סודי</span>
+  </div>
+  <div style="padding:18px 22px 40px;display:flex;flex-direction:column;gap:16px;flex:1;text-align:center">
+    <div class="card" style="text-align:start">
+      <h2>המשימה</h2>
+      <div style="font-size:17px;line-height:1.55;margin-top:6px">מצאו על האנדרטה את שנת ההקמה — היא הקוד הסודי שלכם 🔍</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;direction:ltr">
+      <b style="width:56px;height:68px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:30px">1</b>
+      <b style="width:56px;height:68px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:30px">9</b>
+      <b style="width:56px;height:68px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--brand);border-radius:var(--radius-sm);font-size:30px;color:var(--brand)">5</b>
+      <b style="width:56px;height:68px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px dashed var(--line);border-radius:var(--radius-sm);font-size:30px"></b>
+    </div>
+    <button class="btn btn-primary">בדיקת הקוד ✔</button>
+    <div class="small">טעיתם? אפשר לנסות שוב — בלי קנס זמן</div>
+    <div style="margin-top:auto;display:flex;gap:10px;align-items:flex-end;text-align:start">
+      <span class="gp granny" style="flex:none">👵</span>
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);border-bottom-right-radius:4px;padding:10px 14px;box-shadow:var(--shadow);font-size:15px;flex:1">״תסתכלו טוב טוב, העיניים זה המוח של הרגליים.״<div class="small">— סבתא רחל</div></div>
+    </div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="2g" data-screen-label="חזרו לבית סבא">
+<div class="dv-olabel"><a class="dv-oid" href="#2g">2g</a>סיום התחנות — חזרו לבית סבא!</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div class="flag" style="min-height:100%;border-radius:0;padding:76px 22px 40px;display:flex;flex-direction:column;gap:14px;text-align:center;position:relative;overflow:hidden">
+  <div style="position:absolute;inset-inline:-10px;top:150px;height:26px;background:#1A1206"></div>
+  <img src="assets/emblem-heads-tight.png" alt="סבא וסבתא" style="width:110px;height:110px;margin:0 auto;position:relative;z-index:2;border:4px solid #1A1206;border-radius:50%;background:var(--yellow)">
+  <div class="display" style="font-size:42px;line-height:1.05;color:#1A1206">חזרו לבית<br>סבא וסבתא!</div>
+  <div style="font-size:17px;color:#1A1206;opacity:.8;font-weight:600">סיימתם את כל התחנות 🎉 הראשונים שחוצים את הקו — מנצחים</div>
+  <div style="background:#1A1206;color:var(--yellow);border-radius:999px;padding:12px 20px;font-size:22px;font-weight:800;align-self:center;animation:distpulse 2s ease-in-out infinite">📍 עוד 1.2 ק״מ הביתה</div>
+  <div style="position:relative;height:96px;overflow:hidden;border-radius:var(--radius);background:rgba(0,0,0,.06);margin-top:auto">
+    <div style="position:absolute;inset-inline:0;bottom:0;height:13px;background:#1A1206"></div>
+    <div style="--h:80px;height:80px;width:calc(80px*302/420);background:url(assets/walk-strip.png) 0 0 no-repeat;background-size:calc(80px*2416/420) 80px;position:absolute;bottom:9px;animation:walkcycle .8s steps(8) infinite,cross 7s linear infinite"></div>
+  </div>
+  <button class="btn btn-navy" onClick="{{ onNavTap }}">🗺️ ניווט לבית סבא</button>
+  <sc-if value="{{ navModal }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(26,18,6,.55);display:flex;align-items:center;justify-content:center;padding:28px;z-index:5" onClick="{{ onNavClose }}">
+      <div class="card" style="text-align:center;padding:26px 22px;display:flex;flex-direction:column;gap:12px;animation:arrive .45s cubic-bezier(.34,1.56,.64,1) both">
+        <div style="font-size:44px">🤨</div>
+        <div style="font-family:var(--font-display);font-size:24px;line-height:1.25">מה, אתם לא יודעים את הכתובת?!</div>
+        <div class="small">כל שנה אותו בית. פשוט תתחילו ללכת 😄</div>
+        <button class="btn btn-primary" style="min-height:48px" onClick="{{ onNavClose }}">צודקים, זזנו 🏃</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="2h" data-screen-label="מסך הזוכים">
+<div class="dv-olabel"><a class="dv-oid" href="#2h">2h</a>סיום המירוץ — מסך הזוכים 🏆</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div class="cosmic" style="min-height:100%;padding:76px 22px 40px;display:flex;flex-direction:column;gap:12px;text-align:center;position:relative;overflow:hidden">
+  <div style="position:absolute;top:46%;left:50%;width:10px;height:10px;pointer-events:none">
+    <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:-110px;--dy:-90px;background:var(--yellow);animation:pop 1.7s ease-out infinite"></i>
+    <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:100px;--dy:-110px;background:var(--brand);animation:pop 1.7s .3s ease-out infinite"></i>
+    <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:-130px;--dy:30px;background:var(--gold);animation:pop 1.7s .6s ease-out infinite"></i>
+    <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:120px;--dy:40px;background:#fff;animation:pop 1.7s .9s ease-out infinite"></i>
+    <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:-50px;--dy:-130px;background:var(--brand);animation:pop 1.7s 1.2s ease-out infinite"></i>
+    <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:60px;--dy:110px;background:var(--yellow);animation:pop 1.7s 1.5s ease-out infinite"></i>
+  </div>
+  <div style="font-size:48px;animation:pulse 1.6s ease-in-out infinite">🏆</div>
+  <div class="display goldtext" style="font-size:40px;line-height:1.05">האלופים<br>של 2027!</div>
+  <div style="background:rgba(251,217,104,.14);border:2px solid var(--gold);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:center;text-align:start">
+    <span style="width:58px;height:58px;border-radius:16px;background:color-mix(in srgb,var(--t-green) 30%,#0d1b3a);border:2px solid var(--t-green);display:flex;align-items:center;justify-content:center;font-size:32px;flex:none">🐸</span>
+    <div style="flex:1"><b style="font-size:23px;color:#fff">הצפרדעים</b><div style="font-size:13.5px;color:#c9d3ea">7 משימות · חצו ראשונים את הקו ב־16:24</div></div>
+    <span style="font-size:30px">🥇</span>
+  </div>
+  <div style="display:flex;align-items:flex-end;gap:8px;justify-content:center;margin-top:6px;direction:ltr">
+    <div style="width:84px"><div style="font-size:26px">🐬</div><div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:10px 10px 0 0;height:56px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;color:#c9d3ea">2</div></div>
+    <div style="width:92px"><div style="font-size:30px">🐸</div><div style="background:rgba(251,217,104,.2);border:1px solid var(--gold);border-radius:10px 10px 0 0;height:82px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:28px;color:var(--gold-lite)">1</div></div>
+    <div style="width:84px"><div style="font-size:24px">🦁</div><div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:10px 10px 0 0;height:40px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;color:#c9d3ea">3</div></div>
+  </div>
+  <div style="font-size:13.5px;color:#c9d3ea;opacity:.9">המירוץ נוסף אוטומטית להיכל התהילה 🏛</div>
+  <button class="btn btn-accent" style="margin-top:auto">📸 תמונת הזוכים לגלריה</button>
+</div>
+</x-import>
+</div>
+</div>
+
+<p class="dv-next">להמשך: ״סבב מסכי הניהול — לוח בקרה, תחנות, קבוצות, Live״ · ״וריאציות למסך הזוכים <a class="dv-oid" href="#2h">2h</a>״</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">המירוץ למיליון — סקיצות ראשונות</span></div>
+<div class="card" style="max-width:760px;margin-bottom:30px;padding:16px 20px;font-size:14.5px;color:var(--muted)">
+<b style="color:var(--ink)">הנחות עבודה:</b> תוכן דוגמה ברוח מסמכי התכנון (הדולפינים 🐬, המאפייה של שישי, ציטוטי סבא אלי וסבתא רחל) · קריקטורות וספרייט הצעידה נלקחו ממערכת העיצוב · ספירה לאחור ליום העצמאות 2027 · מסכי ניהול — בסבב הבא. אינטראקטיבי: הספירה חיה, <a class="dv-oid" href="#1e">1e</a> מדגים את זרימת הכניסה, <a class="dv-oid" href="#1i">1i</a> את פתיחת הרמז, ובצ'אט <a class="dv-oid" href="#1j">1j</a> אפשר לשלוח הודעה.
+</div>
+
+<div class="dv-group">🏠 דף הבית + זרימת הכניסה</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1a" data-screen-label="דף הבית">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>דף הבית — ספירה לאחור + ציטוט</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div class="cosmic" style="padding:78px 22px 30px;border-radius:0 0 30px 30px;text-align:center;box-shadow:var(--shadow-navy)">
+    <span class="chip chip-yellow">🏁 יום העצמאות · בית סבא וסבתא</span>
+    <div class="display goldtext" style="font-size:46px;line-height:1;margin-top:14px">המירוץ<br>למיליון</div>
+    <div style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:var(--brand);color:#fff;font-family:var(--font-display);font-size:18px;padding:4px 20px;clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%)">2027</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:20px;direction:ltr">
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(251,217,104,.35);border-radius:14px;min-width:72px;padding:12px 6px"><b style="display:block;font-family:var(--font-display);font-size:36px;color:var(--gold-lite);font-variant-numeric:tabular-nums;line-height:1;font-weight:400">{{ cdD }}</b><span style="font-size:12px;color:#dfe6f5;opacity:.8">ימים</span></div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(251,217,104,.35);border-radius:14px;min-width:72px;padding:12px 6px"><b style="display:block;font-family:var(--font-display);font-size:36px;color:var(--gold-lite);font-variant-numeric:tabular-nums;line-height:1;font-weight:400">{{ cdH }}</b><span style="font-size:12px;color:#dfe6f5;opacity:.8">שעות</span></div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(251,217,104,.35);border-radius:14px;min-width:72px;padding:12px 6px"><b style="display:block;font-family:var(--font-display);font-size:36px;color:var(--gold-lite);font-variant-numeric:tabular-nums;line-height:1;font-weight:400">{{ cdM }}</b><span style="font-size:12px;color:#dfe6f5;opacity:.8">דקות</span></div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(251,217,104,.35);border-radius:14px;min-width:72px;padding:12px 6px"><b style="display:block;font-family:var(--font-display);font-size:36px;color:var(--gold-lite);font-variant-numeric:tabular-nums;line-height:1;font-weight:400">{{ cdS }}</b><span style="font-size:12px;color:#dfe6f5;opacity:.8">שניות</span></div>
+    </div>
+    <button class="btn btn-accent" style="margin-top:22px">כניסה למשחק 🏁</button>
+  </div>
+  <div style="padding:18px 20px 8px;display:flex;flex-direction:column;gap:14px;flex:1">
+    <div style="background:var(--yellow);border-radius:var(--radius);padding:18px 18px 14px;position:relative;display:flex;gap:12px;align-items:center">
+      <img src="assets/walk-frame.png" alt="קריקטורת סבא וסבתא" style="width:72px;flex:none">
+      <div>
+        <div style="font-family:var(--font-display);font-size:19px;color:#1A1206">״מי שלא רץ — שילך ברגל, העיקר שיגיע לאכול.״</div>
+        <b style="font-size:14px;color:#1A1206;opacity:.75">— סבא אלי ז״ל</b>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <div class="card card-tight" style="flex:1;text-align:center;padding:14px 6px"><div style="font-size:26px">🏆</div><b style="font-size:14px">היכל התהילה</b></div>
+      <div class="card card-tight" style="flex:1;text-align:center;padding:14px 6px"><div style="font-size:26px">📸</div><b style="font-size:14px">גלריה</b></div>
+      <div class="card card-tight" style="flex:1;text-align:center;padding:14px 6px"><div style="font-size:26px">👥</div><b style="font-size:14px">הקבוצות</b></div>
+    </div>
+    <sc-if value="{{ walker }}" hint-placeholder-val="{{ true }}">
+    <div style="position:relative;height:88px;overflow:hidden;border-radius:var(--radius);background:var(--yellow);margin-top:auto;margin-bottom:26px">
+      <div style="position:absolute;inset-inline:0;bottom:0;height:13px;background:#1A1206"></div>
+      <div style="--h:76px;height:76px;width:calc(76px*302/420);background:url(assets/walk-strip.png) 0 0 no-repeat;background-size:calc(76px*2416/420) 76px;position:absolute;bottom:9px;animation:walkcycle .9s steps(8) infinite,cross 9s linear infinite"></div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1b" data-screen-label="קוד משחק">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>כניסה · שלב 1 — קוד משחק</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:76px 24px 30px;display:flex;flex-direction:column;gap:16px;text-align:center">
+  <span class="chip" style="align-self:center">שלב 1 מתוך 3</span>
+  <div class="compass" style="width:96px;height:96px;margin:4px auto 0;padding:9px"><div class="compass-core" style="font-size:36px">🌍</div></div>
+  <h1 style="font-size:30px">מה קוד המשחק?</h1>
+  <div class="small" style="margin-top:-8px">המנהל התורן מציג אותו בענק — כמו בקהוט</div>
+  <div style="display:flex;gap:8px;justify-content:center;direction:ltr">
+    <b style="width:46px;height:58px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:26px">4</b>
+    <b style="width:46px;height:58px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:26px">2</b>
+    <b style="width:46px;height:58px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:26px">8</b>
+    <b style="width:46px;height:58px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--brand);border-radius:var(--radius-sm);font-size:26px;color:var(--brand)">3</b>
+    <b style="width:46px;height:58px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px dashed var(--line);border-radius:var(--radius-sm);font-size:26px"></b>
+    <b style="width:46px;height:58px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px dashed var(--line);border-radius:var(--radius-sm);font-size:26px"></b>
+  </div>
+  <button class="btn btn-primary">המשך</button>
+  <div class="small">מחוברים כ־<b>שרה כהן</b> · Google 🔵</div>
+  <div style="margin-top:auto;background:var(--bg-2);border-radius:var(--radius) var(--radius) 0 0;padding:14px 10px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;direction:ltr">
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">1</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">2</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">3</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">4</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">5</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">6</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">7</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">8</div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">9</div>
+    <div></div>
+    <div style="background:#fff;border-radius:10px;height:52px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.1)">0</div>
+    <div style="display:flex;align-items:center;justify-content:center;font-size:22px">⌫</div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1c" data-screen-label="קוד קבוצה">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>כניסה · שלב 2 — קוד קבוצה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:76px 24px 40px;display:flex;flex-direction:column;gap:16px;text-align:center">
+  <span class="chip" style="align-self:center">שלב 2 מתוך 3</span>
+  <h1 style="font-size:30px;margin-top:6px">מה קוד הקבוצה שלכם?</h1>
+  <div class="small" style="margin-top:-8px">ספרה אחת או שתיים — קיבלתם מהמנהל התורן</div>
+  <b style="width:84px;height:96px;display:flex;align-items:center;justify-content:center;background:#fff;border:3px solid var(--brand);border-radius:var(--radius);font-size:52px;color:var(--brand);margin:8px auto;box-shadow:0 0 0 5px var(--brand-soft)">7</b>
+  <button class="btn btn-primary">הצטרפות לקבוצה</button>
+  <button class="btn btn-quiet">👥 צפייה בכל הקבוצות</button>
+  <div style="margin-top:auto;display:flex;gap:10px;align-items:flex-end">
+    <span class="gp granny" style="flex:none">👵</span>
+    <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);border-bottom-right-radius:4px;padding:12px 14px;box-shadow:var(--shadow);font-size:16px;flex:1;text-align:start">״שתו מים! גם המנצחים צריכים לשתות.״<div class="small">— סבתא רחל</div></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1d" data-screen-label="המתנה לאישור">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>כניסה · שלב 3 — ממתינים לאישור</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:76px 24px 40px;display:flex;flex-direction:column;gap:16px;text-align:center">
+  <span class="chip chip-yellow" style="align-self:center">⏳ ממתינים לאישור המנהל…</span>
+  <div class="card" style="border-inline-start:8px solid var(--t-blue);text-align:start">
+    <div style="display:flex;gap:12px;align-items:center">
+      <span style="width:56px;height:56px;border-radius:16px;background:color-mix(in srgb,var(--t-blue) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:32px;flex:none">🐬</span>
+      <div><b style="font-size:22px">הדולפינים</b><div class="small">הקבוצה שלכם · קוד 7</div></div>
+      <span class="chip" style="margin-inline-start:auto">8 חברים</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">שרה</span>
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">דוד</span>
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">נועה</span>
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">איתן</span>
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">תמר (3)</span>
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">יעל</span>
+      <span style="background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600">+2</span>
+    </div>
+  </div>
+  <div style="margin:10px auto 0;--h:118px;height:118px;width:calc(118px*302/420);background:url(assets/walk-strip.png) 0 0 no-repeat;background-size:calc(118px*2416/420) 118px;animation:walkcycle .9s steps(8) infinite"></div>
+  <div style="font-weight:800;font-size:18px">סבא וסבתא כבר מחכים לכם…</div>
+  <div><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin:0 3px;animation:blink 1.2s infinite"></span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin:0 3px;animation:blink 1.2s .2s infinite"></span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin:0 3px;animation:blink 1.2s .4s infinite"></span></div>
+  <button class="btn btn-quiet" style="margin-top:auto">ביטול הבקשה</button>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1e" data-screen-label="זרימה חיה">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>▶ זרימה חיה — הקישו על הכפתורים</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:76px 24px 40px;display:flex;flex-direction:column;gap:16px;text-align:center">
+  <sc-if value="{{ flow0 }}" hint-placeholder-val="{{ true }}">
+    <span class="chip" style="align-self:center">שלב 1 מתוך 3</span>
+    <h1 style="font-size:28px">מה קוד המשחק?</h1>
+    <div style="display:flex;gap:8px;justify-content:center;direction:ltr">
+      <b style="width:44px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px">4</b>
+      <b style="width:44px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px">2</b>
+      <b style="width:44px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px">8</b>
+      <b style="width:44px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px">3</b>
+      <b style="width:44px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px">1</b>
+      <b style="width:44px;height:56px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px">9</b>
+    </div>
+    <button class="btn btn-primary" onClick="{{ goFlow1 }}">המשך</button>
+  </sc-if>
+  <sc-if value="{{ flow1 }}" hint-placeholder-val="{{ false }}">
+    <span class="chip" style="align-self:center">שלב 2 מתוך 3</span>
+    <h1 style="font-size:28px">מה קוד הקבוצה?</h1>
+    <b style="width:80px;height:92px;display:flex;align-items:center;justify-content:center;background:#fff;border:3px solid var(--brand);border-radius:var(--radius);font-size:48px;color:var(--brand);margin:6px auto;box-shadow:0 0 0 5px var(--brand-soft)">7</b>
+    <button class="btn btn-primary" onClick="{{ goFlow2 }}">הצטרפות לקבוצה</button>
+  </sc-if>
+  <sc-if value="{{ flow2 }}" hint-placeholder-val="{{ false }}">
+    <span class="chip chip-yellow" style="align-self:center">⏳ ממתינים לאישור המנהל…</span>
+    <div style="margin:14px auto 0;--h:110px;height:110px;width:calc(110px*302/420);background:url(assets/walk-strip.png) 0 0 no-repeat;background-size:calc(110px*2416/420) 110px;animation:walkcycle .9s steps(8) infinite"></div>
+    <div style="font-weight:800;font-size:18px">סבא וסבתא כבר מחכים לכם…</div>
+    <button class="btn btn-accent" onClick="{{ goFlow3 }}" style="margin-top:12px">✓ המנהל אישר (הדגמה)</button>
+  </sc-if>
+  <sc-if value="{{ flow3 }}" hint-placeholder-val="{{ false }}">
+    <span class="chip chip-ok" style="align-self:center">🎉 אושרתם! ברוכים הבאים</span>
+    <div class="card" style="border-inline-start:8px solid var(--t-blue);text-align:start;display:flex;gap:12px;align-items:center">
+      <span style="width:56px;height:56px;border-radius:16px;background:color-mix(in srgb,var(--t-blue) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:32px;flex:none">🐬</span>
+      <div><b style="font-size:22px">הדולפינים</b><div class="small">מקום 2 בטבלה 🏅</div></div>
+    </div>
+    <button class="btn btn-primary" style="min-height:76px;font-size:23px">▶️ מהלך המשחק</button>
+    <button class="btn btn-navy" style="min-height:76px;font-size:23px">💬 צ'אט קבוצתי</button>
+  </sc-if>
+  <button class="btn btn-quiet" onClick="{{ goFlow0 }}" style="margin-top:auto">↻ מהתחלה</button>
+</div>
+</x-import>
+</div>
+</div>
+
+<div class="dv-group">🧭 מסך המשימה — שלוש וריאציות</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1f" data-screen-label="משימה — נייר חם">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>וריאציה א׳ — כרטיסי נייר חם</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);padding:70px 20px 40px;display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="width:44px;height:44px;border-radius:14px;background:color-mix(in srgb,var(--t-blue) 15%,#fff);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none">🐬</span>
+    <b style="font-size:20px">הדולפינים</b>
+    <span class="chip" style="margin-inline-start:auto">🏅 מקום 2</span>
+  </div>
+  <div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <span class="chip" style="align-self:flex-start">🔒 בדרך לתחנה 3</span>
+    <h2>הרמז</h2>
+    <div style="font-size:19px;line-height:1.55">״המקום שבו סבא קנה פיתות חמות בכל שישי, והריח היה מגיע עד הכביש…״</div>
+    <sc-if value="{{ showDist }}" hint-placeholder-val="{{ true }}">
+    <div style="background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;text-align:center;font-size:22px;font-weight:800;animation:distpulse 2s ease-in-out infinite">📍 עוד 340 מ׳ 🔥</div>
+    </sc-if>
+  </div>
+  <div class="ph" style="height:130px">מפה חיה — המיקום שלכם בדרך לרדיוס התחנה</div>
+  <div class="note" style="text-align:center">המשימה תיחשף רק כשתגיעו פיזית לנקודה 🤫</div>
+  <button class="btn btn-navy" style="margin-top:auto">💬 צ'אט קבוצתי</button>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1g" data-screen-label="משימה — לילה קוסמי">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>וריאציה ב׳ — לילה קוסמי, מרחק בענק</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div class="cosmic" style="min-height:100%;padding:76px 22px 40px;display:flex;flex-direction:column;gap:16px;text-align:center">
+  <span class="chip chip-ghost" style="align-self:center">🐬 הדולפינים · תחנה 3</span>
+  <div style="margin-top:8px;font-size:15px;color:#c9d3ea">מרחק ליעד</div>
+  <sc-if value="{{ showDist }}" hint-placeholder-val="{{ true }}">
+  <div class="display goldtext" style="font-size:84px;line-height:.95;margin-top:-8px">340<span style="font-size:34px"> מ׳</span></div>
+  </sc-if>
+  <div style="display:flex;gap:6px;justify-content:center;font-size:20px">🔥</div>
+  <div style="background:rgba(255,255,255,.07);border:1px solid rgba(251,217,104,.35);border-radius:var(--radius);padding:20px;text-align:start">
+    <div style="font-family:var(--font-display);font-size:15px;color:var(--gold-lite);margin-bottom:8px">🔒 הרמז</div>
+    <div style="font-size:19px;line-height:1.6;color:#fff">״המקום שבו סבא קנה פיתות חמות בכל שישי, והריח היה מגיע עד הכביש…״</div>
+  </div>
+  <div style="font-size:13.5px;color:#c9d3ea;opacity:.85">המשימה תיפתח אוטומטית כשתיכנסו לרדיוס התחנה</div>
+  <div style="margin-top:auto;display:flex;gap:10px">
+    <button class="btn btn-accent" style="flex:1">🗺️ ניווט</button>
+    <button class="btn" style="flex:1;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)">💬 צ'אט</button>
+  </div>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1h" data-screen-label="משימה — דגל המירוץ">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>וריאציה ג׳ — דגל המירוץ, משימה פתוחה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="min-height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div class="flag" style="padding:74px 20px 22px;border-radius:0 0 26px 26px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;inset-inline:-10px;top:118px;height:24px;background:#1A1206"></div>
+    <img src="assets/emblem-heads-tight.png" alt="סבא וסבתא — סמל האימפריה" style="width:96px;height:96px;display:block;margin:0 auto;position:relative;z-index:2;border:4px solid #1A1206;border-radius:50%;background:var(--yellow)">
+    <div style="font-family:var(--font-display);font-size:26px;color:#1A1206;margin-top:10px">תחנה 3 · המאפייה של שישי</div>
+    <span style="background:#1A1206;color:var(--yellow);font-weight:800;border-radius:999px;padding:5px 16px;font-size:14px;display:inline-block;margin-top:6px">🎉 הגעתם! המשימה נפתחה</span>
+  </div>
+  <div style="padding:16px 20px 40px;display:flex;flex-direction:column;gap:13px;flex:1">
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <h2>סיפור המקום</h2>
+      <div style="font-size:16px;color:var(--muted);line-height:1.6">לכאן סבא היה מגיע בכל שישי בשש בבוקר, וחוזר עם שקית פיתות חמות וסיפור חדש.</div>
+      <h2 style="margin-top:6px">המשימה 📸</h2>
+      <div style="font-size:18px;line-height:1.55">מצאו את הלחמנייה הכי גדולה במאפייה וצלמו את כל הקבוצה נוגסת בה יחד!</div>
+    </div>
+    <div class="note" style="display:flex;align-items:center;gap:8px">✔️ אופן ההשלמה: העלאת תמונה + אישור המנהל</div>
+    <button class="btn btn-primary" style="margin-top:auto">📸 צלמו והעלו תמונה</button>
+  </div>
+</div>
+</x-import>
+</div>
+</div>
+
+<div class="dv-group">✉️ רגעים חיים — פתיחת רמז וצ'אט</div>
+<div class="dv-opts" style="margin-bottom:0">
+<div class="dv-opt" id="1i" data-screen-label="פתיחת רמז">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>▶ פתיחת רמז — הקישו על המעטפה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+<div class="cosmic" style="min-height:100%;padding:76px 22px 40px;display:flex;flex-direction:column;text-align:center">
+  <div class="display goldtext" style="font-size:26px">תחנה חדשה נפתחה!</div>
+  <div style="position:relative;flex:1;perspective:1100px;margin-top:10px">
+    <div style="{{ clueStyle }}">
+      <div style="background:#1A1206;color:var(--yellow);font-family:var(--font-display);font-size:18px;border-radius:8px;padding:6px 10px;margin-bottom:12px">🏁 תחנה 3 · רמז</div>
+      <div style="font-size:19px;font-weight:700;line-height:1.5;color:var(--ink)">סעו אל המקום שבו סבא נהג לקנות פיתות חמות בכל יום שישי.</div>
+      <button class="btn btn-primary" style="margin-top:14px">יצאנו לדרך! 🏃</button>
+    </div>
+    <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;margin:auto;width:10px;height:10px;pointer-events:none">
+      <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:-90px;--dy:-70px;background:var(--yellow);animation:pop .8s .4s ease-out both"></i>
+      <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:80px;--dy:-90px;background:var(--brand);animation:pop .8s .4s ease-out both"></i>
+      <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:-110px;--dy:20px;background:var(--gold);animation:pop .8s .4s ease-out both"></i>
+      <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:100px;--dy:30px;background:#fff;animation:pop .8s .4s ease-out both"></i>
+      <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:-40px;--dy:-110px;background:var(--brand);animation:pop .8s .4s ease-out both"></i>
+      <i style="position:absolute;width:10px;height:10px;border-radius:2px;--dx:40px;--dy:90px;background:var(--yellow);animation:pop .8s .4s ease-out both"></i>
+    </div>
+    </sc-if>
+    <div onClick="{{ onOpen }}" style="{{ envStyle }}">
+      <img src="assets/yellow_flag.jpg?v=2" alt="מכתב הרמז — דגל המירוץ" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:12px">
+      <div style="position:absolute;inset-inline:0;top:-40px;text-align:center;font-weight:800;font-size:15px;animation:pulse 1.4s ease-in-out infinite"><span style="background:var(--yellow);border:2px solid #1A1206;border-radius:999px;padding:4px 14px;box-shadow:var(--shadow);color:#1A1206">👆 לחצו לפתיחה</span></div>
+    </div>
+  </div>
+  <button class="btn btn-quiet" onClick="{{ onReplay }}" style="color:#c9d3ea">↻ הפעלה מחדש</button>
+</div>
+</x-import>
+</div>
+
+<div class="dv-opt" id="1j" data-screen-label="צ'אט קבוצתי">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>▶ צ'אט קבוצתי — נסו לשלוח הודעה</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:var(--bg);display:flex;flex-direction:column">
+  <div style="padding:66px 20px 12px;background:color-mix(in srgb,var(--t-blue) 12%,#fff);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px">
+    <span style="width:44px;height:44px;border-radius:14px;background:color-mix(in srgb,var(--t-blue) 18%,#fff);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none">🐬</span>
+    <div style="text-align:start"><b style="font-size:19px">הדולפינים</b><div class="small" style="font-size:13px">8 חברים + המנהל התורן</div></div>
+    <span class="chip chip-ok" style="margin-inline-start:auto;font-size:12.5px">● מחוברים</span>
+  </div>
+  <div style="flex:1;overflow:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:10px">
+    <div style="max-width:85%;border-radius:var(--radius);border-top-right-radius:4px;padding:10px 14px;font-size:16px;background:#fff;border:1px solid var(--line);align-self:flex-start">
+      <div style="font-size:13px;font-weight:800;color:var(--t-blue);margin-bottom:2px;display:flex;align-items:center;gap:5px"><i style="width:9px;height:9px;border-radius:50%;background:var(--t-blue);flex:none"></i>דוד</div>
+      אנחנו ליד המאפייה, איפה אתם?</div>
+    <div style="max-width:85%;border-radius:var(--radius);border-top-right-radius:4px;padding:10px 14px;font-size:16px;background:#fff;border:1px solid var(--line);align-self:flex-start">
+      <div style="font-size:13px;font-weight:800;color:var(--t-blue);margin-bottom:2px;display:flex;align-items:center;gap:5px"><i style="width:9px;height:9px;border-radius:50%;background:var(--t-blue);flex:none"></i>נועה</div>
+      <div style="background:rgba(0,0,0,.06);border-radius:10px;padding:24px 10px;text-align:center;margin-bottom:6px;font-size:14px">📷 תמונה</div>
+      תראו את תמר! 😂</div>
+    <div style="max-width:85%;border-radius:var(--radius);border-top-left-radius:4px;padding:10px 14px;font-size:16px;background:var(--brand);color:#fff;align-self:flex-end">מגיעים עוד 2 דקות 🏃</div>
+    <div style="max-width:85%;border-radius:var(--radius);border-top-right-radius:4px;padding:10px 14px;font-size:16px;background:#FFF3D6;border:1px solid var(--accent);align-self:flex-start">
+      <div style="font-size:13px;font-weight:800;color:#9A7B00;margin-bottom:2px">📣 המנהל התורן</div>
+      תזכורת: חוזרים לבית סבא עד 17:00!</div>
+    <sc-for list="{{ extraMsgs }}" as="m" hint-placeholder-count="0">
+      <div style="max-width:85%;border-radius:var(--radius);border-top-left-radius:4px;padding:10px 14px;font-size:16px;background:var(--brand);color:#fff;align-self:flex-end">{{ m.text }}</div>
+    </sc-for>
+  </div>
+  <div style="padding:10px 14px 40px;display:flex;align-items:center;gap:8px">
+    <span style="font-size:22px">📎</span><span style="font-size:22px">📷</span><span style="font-size:22px">🎤</span>
+    <input value="{{ draft }}" onChange="{{ onDraft }}" onKeyDown="{{ onDraftKey }}" placeholder="הודעה…" style="flex:1;height:46px;border:1px solid var(--line);border-radius:999px;padding:0 16px;font-family:var(--font);font-size:16px;background:#fff;outline:none">
+    <button onClick="{{ onSend }}" style="border:none;background:var(--brand);color:#fff;font-family:var(--font);font-weight:800;font-size:16px;border-radius:999px;height:46px;padding:0 18px;cursor:pointer">שלח</button>
+  </div>
+</div>
+</x-import>
+</div>
+</div>
+
+<p class="dv-next">להמשך: ״עוד וריאציות למסך המשימה בכיוון <a class="dv-oid" href="#1g">1g</a>״ · ״תבנו את הלידרבורד והיכל התהילה״ · ״סבב מסכי הניהול״</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showDistance&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;מהלך המשחק&quot;},&quot;walkerSurprise&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;דף הבית&quot;},&quot;raceStatus&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;live&quot;,&quot;options&quot;:[&quot;draft&quot;,&quot;open&quot;,&quot;live&quot;,&quot;finished&quot;],&quot;tsType&quot;:&quot;'draft'|'open'|'live'|'finished'&quot;,&quot;section&quot;:&quot;ניהול — לוח בקרה&quot;}}">
+class Component extends DCLogic {
+  JOIN_REQS = [
+    { id: 1, name: 'רוני לוי', initial: 'ר', group: 'הדולפינים', animal: '🐬', color: '#2E86DE' },
+    { id: 2, name: 'אבי כהן', initial: 'א', group: 'הדולפינים', animal: '🐬', color: '#2E86DE' },
+    { id: 3, name: 'מאיה בר', initial: 'מ', group: 'האריות', animal: '🦁', color: '#F39C12' },
+    { id: 4, name: 'גיל דרור', initial: 'ג', group: 'הצפרדעים', animal: '🐸', color: '#27AE60' },
+  ];
+  TASK_QUEUE = [
+    { id: 1, group: 'הצפרדעים', animal: '🐸', color: '#27AE60', station: 'תחנה 3 · המאפייה של שישי', task: '📸 הקבוצה נוגסת בלחמנייה' },
+    { id: 2, group: 'האריות', animal: '🦁', color: '#F39C12', station: 'תחנה 2 · הכיכר בנתיבות', task: '📸 צילום ליד הפסל' },
+    { id: 3, group: 'הדולפינים', animal: '🐬', color: '#2E86DE', station: 'תחנה 4 · גבעת התחמושת', task: '🎥 סרטון ריקוד קבוצתי' },
+  ];
+  state = { cd: { d: '—', h: '—', m: '—', s: '—' }, flowStep: 0, open: false, draft: '', extraMsgs: [], navModal: false, joinReqs: this.JOIN_REQS, taskQueue: this.TASK_QUEUE };
+  componentDidMount() {
+    this.tick();
+    this.timer = setInterval(() => this.tick(), 1000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
+  tick() {
+    const target = new Date('2027-05-12T09:00:00');
+    let ms = Math.max(0, target - Date.now());
+    const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+    const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+    const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+    const s = Math.floor(ms / 1e3);
+    const p = n => String(n).padStart(2, '0');
+    this.setState({ cd: { d: String(d), h: p(h), m: p(m), s: p(s) } });
+  }
+  renderVals() {
+    const { cd, flowStep, open, draft, extraMsgs } = this.state;
+    const envBase = { position: 'absolute', inset: 0, margin: 'auto', width: 312, height: 208, cursor: 'pointer', borderRadius: 12, boxShadow: 'var(--shadow-lg)', transformOrigin: '50% 100%' };
+    const clueBase = { position: 'absolute', inset: 0, margin: 'auto', width: 296, height: 'fit-content', background: 'var(--surface)', border: '3px solid #1A1206', borderRadius: 'var(--radius)', padding: 18, boxShadow: 'var(--shadow-lg)' };
+    const envStyle = open
+      ? { ...envBase, animation: 'none', transform: 'rotateX(102deg) translateY(-26px)', opacity: 0, pointerEvents: 'none', transition: 'transform .7s cubic-bezier(.5,0,.75,0), opacity .3s .45s' }
+      : { ...envBase, animation: 'arrive .6s cubic-bezier(.34,1.56,.64,1) both', transition: 'transform .55s cubic-bezier(.34,1.56,.64,1), opacity .4s' };
+    const clueStyle = open
+      ? { ...clueBase, opacity: 1, transform: 'none', transition: 'transform .6s .35s cubic-bezier(.34,1.56,.64,1), opacity .4s .35s' }
+      : { ...clueBase, opacity: 0, transform: 'translateY(46px) scale(.82)' };
+    const send = () => {
+      const t = this.state.draft.trim();
+      if (!t) return;
+      this.setState(s => ({ extraMsgs: [...s.extraMsgs, { text: t }], draft: '' }));
+    };
+    return {
+      cdD: cd.d, cdH: cd.h, cdM: cd.m, cdS: cd.s,
+      flow0: flowStep === 0, flow1: flowStep === 1, flow2: flowStep === 2, flow3: flowStep === 3,
+      goFlow0: () => this.setState({ flowStep: 0 }),
+      goFlow1: () => this.setState({ flowStep: 1 }),
+      goFlow2: () => this.setState({ flowStep: 2 }),
+      goFlow3: () => this.setState({ flowStep: 3 }),
+      open, envStyle, clueStyle,
+      onOpen: () => this.setState({ open: true }),
+      onReplay: () => this.setState({ open: false }),
+      draft, extraMsgs,
+      onDraft: e => this.setState({ draft: e.target.value }),
+      onDraftKey: e => { if (e.key === 'Enter') send(); },
+      onSend: send,
+      navModal: this.state.navModal,
+      onNavTap: () => this.setState({ navModal: true }),
+      onNavClose: () => this.setState({ navModal: false }),
+      showDist: this.props.showDistance ?? true,
+      walker: this.props.walkerSurprise ?? true,
+      ...this.adminVals(),
+    };
+  }
+  adminVals() {
+    const order = ['draft', 'open', 'live', 'finished'];
+    const labels = { draft: 'הכנה', open: 'הרשמה', live: 'מירוץ', finished: 'סיום' };
+    const cur = Math.max(0, order.indexOf(this.props.raceStatus ?? 'live'));
+    const pipeline = order.map((k, i) => ({
+      label: labels[k],
+      bg: i === cur ? 'var(--brand)' : i < cur ? 'rgba(251,217,104,.22)' : 'rgba(255,255,255,.08)',
+      col: i === cur ? '#fff' : i < cur ? 'var(--gold-lite)' : '#7f8db0',
+      mark: i < cur ? '✓' : i === cur ? '●' : '',
+    }));
+    const joinReqs = this.state.joinReqs.map(r => ({
+      ...r,
+      approve: () => this.setState(s => ({ joinReqs: s.joinReqs.filter(x => x.id !== r.id) })),
+      reject: () => this.setState(s => ({ joinReqs: s.joinReqs.filter(x => x.id !== r.id) })),
+    }));
+    const taskQueue = this.state.taskQueue.map(t => ({
+      ...t,
+      approve: () => this.setState(s => ({ taskQueue: s.taskQueue.filter(x => x.id !== t.id) })),
+      reject: () => this.setState(s => ({ taskQueue: s.taskQueue.filter(x => x.id !== t.id) })),
+    }));
+    return {
+      pipeline,
+      joinReqs,
+      reqHandled: this.JOIN_REQS.length - this.state.joinReqs.length,
+      reqAllDone: this.state.joinReqs.length === 0,
+      resetReqs: () => this.setState({ joinReqs: this.JOIN_REQS }),
+      taskQueue,
+      taskCount: this.state.taskQueue.length,
+      taskAllDone: this.state.taskQueue.length === 0,
+      resetTasks: () => this.setState({ taskQueue: this.TASK_QUEUE }),
+    };
+  }
+}
+</script>
+</body>
+</html>
