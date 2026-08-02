@@ -1,39 +1,123 @@
 @import "tailwindcss";
 
+/* ──────────────────────────────────────────────────────────────
+   Tokens — מקור האמת: claude-design/design-system/styles.css
+   אין להמציא כאן צבעים/רדיוסים/צללים. משנים שם ← מסנכרנים לכאן.
+   ────────────────────────────────────────────────────────────── */
 :root {
-  /* לילה בנגב — כחול עמוק, וזהב של "מיליון" */
-  --background: #faf7f0;
-  --foreground: #1c2333;
+  /* משטחים ודיו */
+  --bg: #fcf8ef;          /* נייר חמים */
+  --bg-2: #f5ecd8;        /* נייר עמוק / בארות */
   --surface: #ffffff;
-  --surface-muted: #f1ece1;
-  --primary: #1e2a4a;
-  --primary-foreground: #faf7f0;
-  --accent: #d99a26;
-  --accent-strong: #b47b12;
-  --accent-foreground: #241a05;
-  --success: #2e7d4f;
-  --danger: #c0392b;
-  --border: #ded6c4;
+  --ink: #1a1206;         /* שחור-חמים (שחור הדגל) */
+  --muted: #7a6a55;
+  --line: #ece2ce;
+
+  /* מותג */
+  --brand: #e4002b;       /* אדום המירוץ — פעולה ראשית */
+  --brand-deep: #b60022;
+  --brand-soft: #fbe0e4;
+  --yellow: #ffd400;      /* הדגל — אנרגיה, הדגשות */
+  --yellow-deep: #f5b300;
+  --yellow-soft: #fff3c4;
+  --gold: #f2b705;        /* גביעים, ספירה לאחור */
+  --gold-lite: #fbd968;
+  --navy: #0b1b3f;        /* רקע קוסמי */
+  --navy-2: #16305f;
+  --sky: #2e86de;         /* קישורים, מפה */
+  --ok: #1fa363;
+  --danger: #d64545;
+
+  /* צבעי קבוצות */
+  --t-red: #e23d3d;
+  --t-blue: #2e86de;
+  --t-green: #27ae60;
+  --t-orange: #f39c12;
+  --t-purple: #8e5ac8;
+  --t-yellow: #f1c40f;
+  --t-pink: #e84a8a;
+  --t-teal: #129c9c;
+  --t-brown: #9c6b3c;
+  --t-sky: #5dbbeb;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
   --color-surface: var(--surface);
-  --color-surface-muted: var(--surface-muted);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-strong);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-success: var(--success);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-yellow: var(--yellow);
+  --color-yellow-deep: var(--yellow-deep);
+  --color-yellow-soft: var(--yellow-soft);
+  --color-gold: var(--gold);
+  --color-gold-lite: var(--gold-lite);
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-sky: var(--sky);
+  --color-ok: var(--ok);
   --color-danger: var(--danger);
-  --color-border: var(--border);
-  --font-sans: var(--font-heebo), system-ui, sans-serif;
+
+  --color-team-red: var(--t-red);
+  --color-team-blue: var(--t-blue);
+  --color-team-green: var(--t-green);
+  --color-team-orange: var(--t-orange);
+  --color-team-purple: var(--t-purple);
+  --color-team-yellow: var(--t-yellow);
+  --color-team-pink: var(--t-pink);
+  --color-team-teal: var(--t-teal);
+  --color-team-brown: var(--t-brown);
+  --color-team-sky: var(--t-sky);
+
+  /* גיאומטריה — rounded-card / rounded-card-sm / rounded-card-lg */
+  --radius-card: 18px;
+  --radius-card-sm: 12px;
+  --radius-card-lg: 26px;
+
+  --shadow-card: 0 8px 28px rgba(26, 18, 6, 0.12);
+  --shadow-card-lg: 0 16px 44px rgba(26, 18, 6, 0.16);
+  --shadow-navy: 0 14px 44px rgba(11, 27, 63, 0.38);
+
+  --font-sans: var(--font-rubik), "Noto Sans Hebrew", system-ui, sans-serif;
+  --font-display: var(--font-secular), var(--font-rubik), sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-heebo), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-rubik), "Noto Sans Hebrew", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Brand utilities — פורט מ-design-system/styles.css
+   ────────────────────────────────────────────────────────────── */
+
+/* רקע קוסמי (הרקע של הלוגו) */
+.cosmic {
+  background:
+    radial-gradient(1.5px 1.5px at 18% 24%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(1.5px 1.5px at 72% 16%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 42% 68%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 86% 62%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(2px 2px at 30% 88%, rgba(255, 255, 255, 0.45), transparent),
+    radial-gradient(140% 120% at 50% -10%, #234a94 0%, var(--navy-2) 34%, var(--navy) 72%);
+  color: #fff;
+}
+
+/* כיתוב זהב מבריק ("המירוץ") */
+.goldtext {
+  background: linear-gradient(180deg, #fff1b0 0%, #f6cb4b 45%, #e19100 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
 }
