@@ -1,0 +1,67 @@
+<!-- @dsCard group="גיבורים" name="ספינר סבא וסבתא" subtitle="טעינה והפתעות מהלכות" viewport="380x820" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ספינר סבא וסבתא</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+/* 8-frame sprite: assets/walk-strip.png · frame 302x420 */
+.walker{--h:120px;height:var(--h);width:calc(var(--h)*302/420);
+  background:url(../assets/walk-strip.png) 0 0 no-repeat;
+  background-size:calc(var(--h)*2416/420) var(--h);
+  animation:walkcycle .9s steps(8) infinite}
+@keyframes walkcycle{to{background-position:calc(var(--h)*-2416/420) 0}}
+.loadbox{text-align:center;padding:26px 20px}
+.loadbox .walker{margin:0 auto}
+.dots span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);
+  margin:0 3px;animation:blink 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+/* realistic photo version — gentle stroll bob */
+.realwalk{height:150px;margin:0 auto;display:block;
+  animation:bob .9s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-6px) rotate(1.2deg)}}
+/* surprise: couple crosses the bottom of a screen */
+.crosswalk{position:relative;height:96px;overflow:hidden;border-radius:var(--radius);
+  background:var(--yellow);}
+.crosswalk .road{position:absolute;inset-inline:0;bottom:0;height:14px;background:#1A1206}
+.crosswalk .walker{--h:82px;position:absolute;bottom:10px;animation:walkcycle .9s steps(8) infinite,cross 9s linear infinite}
+@keyframes cross{from{inset-inline-start:-80px}to{inset-inline-start:110%}}
+</style>
+</head>
+<body>
+<div class="stack" style="max-width:342px">
+  <h1>🚶 ספינר סבא וסבתא</h1>
+
+  <div class="cosmic card loadbox" style="border:none;box-shadow:var(--shadow-navy)">
+    <div class="walker"></div>
+    <div class="display goldtext" style="font-size:22px;margin-top:10px">סבא וסבתא בדרך אליכם…</div>
+    <div class="dots" style="margin-top:8px"><span></span><span></span><span></span></div>
+  </div>
+
+  <div class="card loadbox">
+    <div class="walker" style="--h:88px"></div>
+    <div style="font-weight:800;margin-top:8px">טוענים את הרמז הבא…</div>
+    <div class="small">גרסה בהירה — בתוך מסכים רגילים</div>
+  </div>
+
+  <div class="card loadbox">
+    <img class="realwalk" src="../uploads/walking_real.png" alt="סבא וסבתא צועדים יחד">
+    <div style="font-weight:800;margin-top:8px">רגע, הם בדרך…</div>
+    <div class="small">הגרסה הריאליסטית — התמונה האמיתית עם צעידה עדינה · לרגעי זיכרון מיוחדים</div>
+  </div>
+
+  <div>
+    <h2 style="margin-bottom:8px">הפתעה מהלכת</h2>
+    <div class="crosswalk"><div class="road"></div><div class="walker"></div></div>
+    <div class="small" style="margin-top:8px">פעם בכמה דקות סבא וסבתא חוצים את תחתית המסך — במסכי המתנה, בין משימות ובלוח התוצאות.</div>
+  </div>
+
+  <div class="note"><b>שימוש:</b> הספינר מחליף כל מסך טעינה · גובה מומלץ 88–120px ·
+  מהירות ‎0.9s לסיבוב (8 פריימים) · הקריקטורה ליוםיום, הגרסה הריאליסטית לרגעים מרגשים ·
+  ההפתעה המהלכת — לא יותר מפעם ב-3 דקות, שתישאר הפתעה.</div>
+</div>
+</body>
+</html>

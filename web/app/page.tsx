@@ -19,14 +19,14 @@ export default async function Home() {
     <main className="flex flex-1 flex-col items-center justify-center gap-10 px-6 py-12 text-center">
       <header className="flex flex-col items-center gap-3">
         <span className="text-6xl">🏁</span>
-        <h1 className="text-4xl font-bold text-primary sm:text-5xl">
+        <h1 className="font-display text-4xl text-brand sm:text-5xl">
           המירוץ למיליון
         </h1>
-        <p className="text-lg text-foreground/70">אימפריית כהן · מסורת של 20+ שנה</p>
+        <p className="text-lg text-muted">אימפריית כהן · מסורת של 20+ שנה</p>
       </header>
 
       <section className="flex flex-col items-center gap-4">
-        <h2 className="text-sm font-semibold tracking-wide text-foreground/60">
+        <h2 className="text-sm font-bold tracking-wide text-muted">
           המירוץ הבא בעוד
         </h2>
         <Countdown target={NEXT_RACE_AT} />
@@ -48,11 +48,11 @@ export default async function Home() {
               התחברות עם Google — בקרוב
             </Button>
           )}
-          <Button variant="outline" disabled>
+          <Button variant="secondary" disabled>
             יש לי קוד משחק
           </Button>
         </div>
-        <p className="mt-4 text-sm text-foreground/60">
+        <p className="mt-4 text-sm text-muted">
           האפליקציה בבנייה — שלב 0 מתוך{" "}
           <span className="font-semibold">תוכנית הפיתוח</span> 🚧
         </p>

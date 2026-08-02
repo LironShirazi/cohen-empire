@@ -1,9 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo } from "next/font/google";
+import { Rubik, Secular_One } from "next/font/google";
 import "./globals.css";
 
-const heebo = Heebo({
-  variable: "--font-heebo",
+// הפונטים של מערכת העיצוב: Rubik לגוף, Secular One לכותרות
+const rubik = Rubik({
+  variable: "--font-rubik",
+  subsets: ["hebrew", "latin"],
+});
+
+const secularOne = Secular_One({
+  variable: "--font-secular",
+  weight: "400",
   subsets: ["hebrew", "latin"],
 });
 
@@ -14,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1e2a4a",
+  themeColor: "#0b1b3f", // --navy
 };
 
 export default function RootLayout({
@@ -23,7 +30,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="he" dir="rtl" className={`${heebo.variable} h-full antialiased`}>
+    <html
+      lang="he"
+      dir="rtl"
+      className={`${rubik.variable} ${secularOne.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

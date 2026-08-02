@@ -1,0 +1,42 @@
+<!-- @dsCard group="רכיבים" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>התחברות וקודים</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+.divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.codes{display:flex;gap:8px;justify-content:center}
+.codes b{width:46px;height:56px;display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid var(--line);border-radius:var(--radius-sm);font-size:24px}
+.codes-team b{border-color:var(--brand);color:var(--brand)}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>🔑 התחברות והרשמה</h1>
+  <div class="card stack">
+    <button class="btn btn-secondary">🔵 התחברות עם Google</button>
+    <div class="divider"><span>או הרשמה קלילה</span></div>
+    <label class="field"><span>טלפון נייד</span><input type="tel" placeholder="050-1234567"></label>
+    <label class="field"><span>שם מלא</span><input placeholder="שרה כהן"></label>
+    <label class="field"><span>סיסמה</span><input type="password" placeholder="••••••••"></label>
+    <button class="btn btn-primary">הרשמה</button>
+    <div class="small" style="text-align:center">שלושה שדות וזהו — בלי אימייל, בלי SMS</div>
+  </div>
+  <div class="card stack">
+    <h2>קוד משחק</h2>
+    <div class="codes">
+      <b>4</b><b>2</b><b>8</b><b>3</b><b>1</b><b>9</b>
+    </div>
+    <div class="small" style="text-align:center">ספרות בלבד — מקלדת מספרים בלבד בנייד, קל להכתיב בטלפון</div>
+    <h2>קוד קבוצה</h2>
+    <div class="codes codes-team"><b>7</b></div>
+  </div>
+</div>
+</body>
+</html>

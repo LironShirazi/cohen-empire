@@ -1,0 +1,43 @@
+<!-- @dsCard group="מירוץ חי" -->
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>צ'אט קבוצתי</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+
+.msg{max-width:85%;border-radius:var(--radius);padding:10px 14px;font-size:16px;background:#fff;
+  border:1px solid var(--line);align-self:flex-start;border-top-right-radius:4px}
+.msg.me{background:var(--brand);color:#fff;border:none;align-self:flex-end;
+  border-top-right-radius:var(--radius);border-top-left-radius:4px}
+.msg.admin{background:#FFF3D6;border-color:var(--accent)}
+.who{font-size:13px;font-weight:800;color:var(--team,var(--brand));margin-bottom:2px;
+  display:flex;align-items:center;gap:5px}
+.who i{width:9px;height:9px;border-radius:50%;background:var(--team,var(--brand));flex:none}
+.msg.admin .who{color:#9A7B00}
+.att{background:rgba(0,0,0,.06);border-radius:10px;padding:22px 10px;text-align:center;
+  margin-bottom:6px;font-size:14px}
+.card.stack{display:flex;flex-direction:column}
+.composer{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;margin-top:6px}
+.composer i{flex:1;color:var(--muted);font-style:normal}
+.composer b{color:var(--brand)}
+</style>
+</head>
+<body>
+
+<div class="stack" style="max-width:342px">
+  <h1>💬 צ'אט קבוצתי</h1>
+  <div class="card stack" style="background:var(--bg)">
+    <div class="msg them" style="--team:var(--t-blue)"><div class="who"><i></i>דוד · הדולפינים</div>אנחנו ליד המאפייה, איפה אתם?</div>
+    <div class="msg them" style="--team:var(--t-blue)"><div class="who"><i></i>נועה · הדולפינים</div><div class="att">📷 תמונה</div>תראו את תמר!</div>
+    <div class="msg me">מגיעים עוד 2 דקות 🏃</div>
+    <div class="msg admin"><div class="who">📣 המנהל התורן</div>תזכורת: חוזרים לבית סבא עד 17:00!</div>
+    <div class="composer"><span>📎</span><span>📷</span><i>הודעה…</i><b>שלח</b></div>
+  </div>
+  <div class="small">שם השולח והנקודה נצבעים בצבע הקבוצה — המנהלים מזהים מי מדבר במבט אחד</div>
+</div>
+</body>
+</html>
