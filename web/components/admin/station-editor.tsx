@@ -7,6 +7,7 @@ import {
   type AdminFormState,
 } from "@/app/admin/actions";
 import { StationMap, type MapPoint } from "@/components/admin/station-map";
+import { TaskMediaField } from "@/components/admin/task-media-field";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, SelectField, TextareaField } from "@/components/ui/field";
@@ -73,10 +74,15 @@ export function StationEditor({
 
         <TextareaField
           label="המשימה"
-          name="task_content"
-          defaultValue={station?.task_content ?? ""}
+          name="task_text"
+          defaultValue={station?.task_content?.text ?? ""}
           placeholder="מצאו את הלחמנייה הכי גדולה וצלמו את כל הקבוצה נוגסת בה"
           hint="נפתח רק כשהשרת מאמת שהגעתם לרדיוס"
+        />
+
+        <TaskMediaField
+          raceId={raceId}
+          defaultUrl={station?.task_content?.media}
         />
 
         <TextareaField

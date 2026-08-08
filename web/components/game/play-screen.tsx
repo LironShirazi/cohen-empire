@@ -9,6 +9,7 @@ import { StationReveal } from "@/components/game/station-reveal";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { WalkingSpinner } from "@/components/ui/walking-spinner";
+import { isVideoUrl } from "@/lib/media";
 import type { CompletionType, GameState } from "@/lib/supabase/types";
 
 const completionNote: Record<CompletionType, string> = {
@@ -157,8 +158,39 @@ export function PlayScreen({ state }: { state: GameState }) {
             </>
           ) : null}
 
-          <h2 className="mt-1.5 font-display text-xl">המשימה 📸</h2>
-          <p className="text-lg leading-relaxed">{station.task_content}</p>
+          {/* טקסט ומדיה שניהם רשות, אבל תחנה בלי שום משימה לא צריכה
+              כותרת "המשימה" מרחפת מעל כלום */}
+          {station.task_content?.text || station.task_content?.media ? (
+            <h2 className="mt-1.5 font-display text-xl">המשימה 📸</h2>
+          ) : null}
+
+          {station.task_content?.text ? (
+            <p className="text-lg leading-relaxed">{station.task_content.text}</p>
+          ) : null}
+
+          {/* התמונה/הסרטון של המשימה — מגיעים מהשרת רק אחרי אימות הגעה,
+              יחד עם שאר task_content */}
+          {station.task_content?.media ? (
+            <div className="mt-1 overflow-hidden rounded-card-sm border-2 border-line bg-bg-2">
+              {isVideoUrl(station.task_content.media) ? (
+                <video
+                  src={station.task_content.media}
+                  controls
+                  playsInline
+                  className="w-full"
+                />
+              ) : (
+                // next/image לא מכיר את דומיין ה-Storage, ואת המדיה
+                // מעלה המנהל — עדיף img רגיל על פני הגדרת דומיין חיצוני
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={station.task_content.media}
+                  alt="מדיה שצורפה למשימה"
+                  className="w-full"
+                />
+              )}
+            </div>
+          ) : null}
         </Card>
 
         <p className="rounded-card-sm border border-line bg-bg-2 px-3.5 py-3 text-sm text-muted">

@@ -129,7 +129,8 @@ export async function saveStationAction(
   const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const clue = String(formData.get("clue") ?? "").trim();
-  const taskContent = String(formData.get("task_content") ?? "").trim();
+  const taskText = String(formData.get("task_text") ?? "").trim();
+  const taskMedia = String(formData.get("task_media") ?? "").trim();
   const backstory = String(formData.get("backstory") ?? "").trim();
   const lat = Number(formData.get("lat"));
   const lng = Number(formData.get("lng"));
@@ -154,7 +155,11 @@ export async function saveStationAction(
     name,
     backstory: backstory || null,
     clue: clue || null,
-    task_content: taskContent || null,
+    // jsonb {text, media} לפי docs/03 — null רק אם אין לא טקסט ולא מדיה
+    task_content:
+      taskText || taskMedia
+        ? { text: taskText, media: taskMedia || null }
+        : null,
     lat,
     lng,
     radius_m: Math.round(radius),

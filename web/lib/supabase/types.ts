@@ -63,13 +63,23 @@ export type JoinRequest = {
   created_at: string;
 };
 
+/**
+ * המשימה עצמה (docs/03 — "טקסט + מדיה"). נשמרת כ-jsonb יחיד ולא כשתי
+ * עמודות, כדי שהחשיפה המושהית ב-get_team_state תישאר שדה אחד.
+ * `media` הוא URL ציבורי מ-bucket `station-media`.
+ */
+export type TaskContent = {
+  text: string;
+  media: string | null;
+};
+
 export type Station = {
   id: string;
   race_id: string;
   name: string;
   backstory: string | null;
   clue: string | null;
-  task_content: string | null;
+  task_content: TaskContent | null;
   lat: number;
   lng: number;
   radius_m: number;
@@ -129,7 +139,7 @@ export type GameState = {
     completion_type: CompletionType;
     name: string | null;
     backstory: string | null;
-    task_content: string | null;
+    task_content: TaskContent | null;
   } | null;
   proof_url?: string | null;
 };
