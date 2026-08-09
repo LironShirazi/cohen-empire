@@ -71,7 +71,10 @@ export function Countdown({ target }: { target: string }) {
         };
 
   return (
-    <div className="flex flex-row-reverse justify-center gap-3 sm:gap-4" dir="ltr">
+    // ימים משמאל ושניות מימין — הספירה נקראת כמו שעון דיגיטלי,
+    // ולכן LTR. (ב-design-system/components/countdown.html הסדר הפוך,
+    // כי שם הוא יורש RTL מה-html; זו החלטה מודעת לסטות ממנו.)
+    <div className="flex justify-center gap-3 sm:gap-4" dir="ltr">
       {(Object.keys(labels) as Unit[]).map((unit) => (
         <div
           key={unit}

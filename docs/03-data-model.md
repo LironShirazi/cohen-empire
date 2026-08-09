@@ -91,7 +91,7 @@ erDiagram
 | name | text | |
 | backstory | text | הסיפור/המשמעות של המקום למשפחה |
 | clue | text/jsonb | הרמז שמוביל לתחנה (מוצג לפני הגעה) |
-| task_content | jsonb | המשימה עצמה (טקסט + מדיה), נפתחת רק בהגעה |
+| task_content | jsonb | המשימה עצמה, נפתחת רק בהגעה: `{"text": "…", "media": "URL או null"}` |
 | lat, lng | float | מיקום התחנה |
 | radius_m | int | רדיוס נעילה, ברירת מחדל 75 |
 | completion_type | enum | `admin_approve` / `secret_code` / `photo_upload` / `auto` |

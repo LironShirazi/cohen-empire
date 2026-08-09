@@ -112,6 +112,147 @@ body {
   color: #fff;
 }
 
+/* דגל העצמאות הצהוב — כותרת מסך המשימה (סקיצה 1h) */
+.flag {
+  position: relative;
+  background: var(--yellow);
+  color: var(--ink);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+/* ספינר סבא וסבתא — ספרייט 8 פריימים */
+@keyframes walkcycle {
+  to {
+    background-position: calc(var(--walk-h, 96px) * -2416 / 420) 0;
+  }
+}
+
+@keyframes blink {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   מעטפת הדגל — פתיחת רמז.
+   פורט מ-design-system/components/clue-reveal.html: הדגל מתרומם
+   כמו דש מעטפה, קונפטי, והרמז עולה מתחתיו.
+   ────────────────────────────────────────────────────────────── */
+.reveal-scene {
+  perspective: 1100px;
+}
+
+.reveal-env {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(312px, 100%);
+  height: 208px;
+  cursor: pointer;
+  border-radius: 12px;
+  box-shadow: var(--shadow-card-lg);
+  transform-origin: 50% 100%;
+  animation: reveal-arrive 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition:
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.4s;
+}
+
+.reveal-scene:not(.is-open) .reveal-env:hover {
+  transform: rotate(-2deg) scale(1.03);
+}
+
+.reveal-scene.is-open .reveal-env {
+  transform: rotateX(102deg) translateY(-26px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.7s cubic-bezier(0.5, 0, 0.75, 0),
+    opacity 0.3s 0.45s;
+}
+
+@keyframes reveal-arrive {
+  from {
+    transform: translateY(-60px) rotate(-6deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+.reveal-tap {
+  animation: reveal-pulse 1.4s ease-in-out infinite;
+}
+
+/* מד המרחק פועם — מהסקיצות (distpulse) */
+.distpulse {
+  animation: distpulse 2s ease-in-out infinite;
+}
+
+@keyframes distpulse {
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes reveal-pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.reveal-clue {
+  opacity: 0;
+  transform: translateY(46px) scale(0.82);
+}
+
+.reveal-scene.is-open .reveal-clue {
+  opacity: 1;
+  transform: none;
+  transition:
+    transform 0.6s 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.4s 0.35s;
+}
+
+.reveal-burst i {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  opacity: 0;
+}
+
+.reveal-scene.is-open .reveal-burst i {
+  animation: reveal-pop 0.8s 0.4s ease-out both;
+}
+
+@keyframes reveal-pop {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(200deg);
+  }
+}
+
+/* מכבדים העדפת מערכת — בלי אנימציות למי שביקש פחות תנועה */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-env,
+  .reveal-tap,
+  .reveal-clue,
+  .reveal-burst i,
+  .distpulse {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* כיתוב זהב מבריק ("המירוץ") */
 .goldtext {
   background: linear-gradient(180deg, #fff1b0 0%, #f6cb4b 45%, #e19100 100%);
