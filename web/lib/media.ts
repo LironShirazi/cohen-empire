@@ -10,3 +10,21 @@ export function isVideoUrl(url: string): boolean {
   const extension = path.split(".").pop()?.toLowerCase() ?? "";
   return videoExtensions.includes(extension);
 }
+
+export type AttachmentKind = "image" | "video" | "audio" | "file";
+
+/**
+ * איך להציג קובץ שצורף לצ'אט. הצ'אט שומר את ה-MIME המדווח
+ * (`attachment_type`), אז הוא הקובע; הסיומת היא רק גיבוי להודעות
+ * שנשמרו בלי סוג.
+ */
+export function attachmentKind(
+  type: string | null,
+  url: string
+): AttachmentKind {
+  if (type?.startsWith("image/")) return "image";
+  if (type?.startsWith("video/")) return "video";
+  if (type?.startsWith("audio/")) return "audio";
+  if (!type && isVideoUrl(url)) return "video";
+  return "file";
+}
