@@ -52,6 +52,9 @@ export default async function AdminTeamChatPage(
       </header>
 
       <ChatRoom
+        // מעבר בין הצ'אטים של שתי קבוצות הוא אותו מסך עם param אחר —
+        // ה-key מבטיח שהמצב הפנימי (ההודעות שנטענו) לא ידלוף ביניהן
+        key={team.id}
         teamId={team.id}
         teamColor={team.color}
         currentUserId={user.id}

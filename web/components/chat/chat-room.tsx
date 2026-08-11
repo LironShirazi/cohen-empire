@@ -15,6 +15,30 @@ type PendingFile = { url: string; type: string; name: string };
 const messageSelect = "*, sender:profiles(id, full_name, avatar_url)";
 
 /**
+ * Realtime מוסר את השורה כפי שהיא ב-WAL, ולכן `created_at` עלול להגיע
+ * בפורמט הטקסט של Postgres (`2026-08-11 20:00:00.12+00`) ולא כ-ISO
+ * כמו מ-PostgREST. בלי יישור לפורמט אחד המיון לפי הזמן מתבלבל בין שני
+ * המקורות, ו-`new Date()` מחזיר Invalid Date בחלק מהדפדפנים.
+ */
+function toIsoTimestamp(value: string): string {
+  const match =
+    /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2}:\d{2}(?:\.\d+)?)(Z|[+-]\d{2}(?::?\d{2})?)?$/.exec(
+      value
+    );
+  if (!match) return value;
+  const [, date, time, zone = "+00"] = match;
+  const offset =
+    zone === "Z"
+      ? "+00:00"
+      : zone.length === 3
+        ? `${zone}:00`
+        : zone.length === 5
+          ? `${zone.slice(0, 3)}:${zone.slice(3)}`
+          : zone;
+  return `${date}T${time}${offset}`;
+}
+
+/**
  * הצ'אט הקבוצתי (docs/01 §5, docs/02 §3.7) — מקביל ל-
  * design-system/components/chat.html.
  *
@@ -45,6 +69,9 @@ export function ChatRoom({
   const [error, setError] = useState<string | null>(null);
 
   const scroller = useRef<HTMLDivElement>(null);
+  // האם הרשימה גלולה לתחתית — נקבע מתוך הגלילה עצמה, לפני שההודעה
+  // החדשה מוסיפה גובה
+  const atBottom = useRef(true);
   const fileInput = useRef<HTMLInputElement>(null);
   const cameraInput = useRef<HTMLInputElement>(null);
   // מה שכבר על המסך — כדי שהודעה שנשלחה מכאן לא תופיע פעמיים כשה-
@@ -70,7 +97,7 @@ export function ChatRoom({
     }
     setMessages((current) =>
       [...current, ...fresh].sort((a, b) =>
-        a.created_at.localeCompare(b.created_at)
+        a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0
       )
     );
   }, []);
@@ -104,7 +131,9 @@ export function ChatRoom({
               .maybeSingle();
             sender = (data as SenderProfile | null) ?? null;
           }
-          append([{ ...row, sender }]);
+          append([
+            { ...row, created_at: toIsoTimestamp(row.created_at), sender },
+          ]);
         }
       )
       .subscribe();
@@ -114,15 +143,16 @@ export function ChatRoom({
     // מתאמת באמצע מירוץ
     const poll = setInterval(async () => {
       const since = messagesRef.current.at(-1)?.created_at;
-      let query = supabase
+      // בלי נקודת התחלה (מסך שנפתח ריק) מבקשים את ה-50 האחרונות ולא את
+      // ה-50 הראשונות — אחרת קבוצה ותיקה תמשוך את ההיסטוריה מלמטה למעלה
+      const query = supabase
         .from("messages")
         .select(messageSelect)
         .eq("team_id", teamId)
-        .order("created_at")
+        .order("created_at", { ascending: !!since })
         .limit(50);
-      if (since) query = query.gt("created_at", since);
 
-      const { data } = await query;
+      const { data } = await (since ? query.gt("created_at", since) : query);
       if (data) append(data as unknown as ChatMessage[]);
     }, POLL_MS);
 
@@ -136,9 +166,11 @@ export function ChatRoom({
     messagesRef.current = messages;
   }, [messages]);
 
+  // גוללים להודעה החדשה רק אם המשתמש כבר בתחתית הרשימה — אחרת כל הודעה
+  // שנכנסת באמצע קריאה של ההיסטוריה הייתה קופצת לו מתחת לאצבע
   useEffect(() => {
     const node = scroller.current;
-    if (node) node.scrollTop = node.scrollHeight;
+    if (node && atBottom.current) node.scrollTop = node.scrollHeight;
   }, [messages]);
 
   async function upload(file: File) {
@@ -202,6 +234,8 @@ export function ChatRoom({
         .single();
       if (insertError) throw insertError;
 
+      // מי ששלח רוצה תמיד לראות את ההודעה שלו, גם אם קרא היסטוריה
+      atBottom.current = true;
       append([data as unknown as ChatMessage]);
       setDraft("");
       setPending(null);
@@ -220,6 +254,11 @@ export function ChatRoom({
     <div className="flex min-h-0 flex-1 flex-col gap-2">
       <div
         ref={scroller}
+        onScroll={(event) => {
+          const node = event.currentTarget;
+          atBottom.current =
+            node.scrollHeight - node.scrollTop - node.clientHeight < 120;
+        }}
         className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded-card border border-line bg-bg-2 p-3"
       >
         {messages.length === 0 ? (
@@ -409,7 +448,8 @@ function Attachment({ url, type }: { url: string; type: string | null }) {
         <img
           src={url}
           alt="תמונה שצורפה להודעה"
-          className="mb-1.5 max-h-64 w-full rounded-card-sm object-cover"
+          loading="lazy"
+          className="mb-1.5 max-h-64 w-full rounded-card-sm object-contain"
         />
       </a>
     );
@@ -420,6 +460,8 @@ function Attachment({ url, type }: { url: string; type: string | null }) {
       <video
         src={url}
         controls
+        playsInline
+        preload="metadata"
         className="mb-1.5 max-h-64 w-full rounded-card-sm"
       />
     );

@@ -110,9 +110,13 @@ begin
   if exists (select 1 from information_schema.tables
              where table_schema = 'storage' and table_name = 'objects') then
 
-    insert into storage.buckets (id, name, public)
-    values ('chat-files', 'chat-files', true)
-    on conflict (id) do nothing;
+    -- תקרת הגודל נאכפת ב-Storage עצמו ולא רק בקליינט: בלעדיה אפשר
+    -- לעקוף את הבדיקה שבמחבר בקריאת API ישירה ולמלא את ה-bucket
+    insert into storage.buckets (id, name, public, file_size_limit)
+    values ('chat-files', 'chat-files', true, 52428800)
+    on conflict (id) do update
+      set public = excluded.public,
+          file_size_limit = excluded.file_size_limit;
 
     drop policy if exists chat_files_read on storage.objects;
     create policy chat_files_read on storage.objects for select
