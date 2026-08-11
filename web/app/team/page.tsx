@@ -33,10 +33,11 @@ export default async function TeamPage() {
         </Button>
       </Link>
 
-      {/* צ'אט קבוצתי — שלב 2 בתוכנית הפיתוח (docs/05-roadmap.md) */}
-      <Button size="lg" variant="secondary" className="w-full" disabled>
-        💬 צ׳אט קבוצתי — בקרוב
-      </Button>
+      <Link href="/team/chat">
+        <Button size="lg" variant="secondary" className="w-full">
+          💬 צ׳אט קבוצתי
+        </Button>
+      </Link>
 
       <div className="grid grid-cols-2 gap-3">
         <Link href="/leaderboard">

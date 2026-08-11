@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type {
+  ChatMessage,
   JoinRequest,
   LeaderboardRow,
   Profile,
@@ -406,6 +407,40 @@ export async function getTeamPositions(raceId: string): Promise<TeamPosition[]> 
       arrived,
     };
   });
+}
+
+/**
+ * הודעות הצ'אט של הקבוצה. ה-RLS (0005) הוא זה שמחליט מי רואה — אם
+ * מישהו זר יקרא, הוא פשוט יקבל רשימה ריקה.
+ * הטעינה מוגבלת ל-LATEST_MESSAGES האחרונות ומוחזרת בסדר כרונולוגי,
+ * כי המסך נפתח בתחתית.
+ */
+const LATEST_MESSAGES = 200;
+
+export async function getTeamMessages(teamId: string): Promise<ChatMessage[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("messages")
+    .select(
+      "*, sender:profiles(id, full_name, avatar_url)"
+    )
+    .eq("team_id", teamId)
+    .order("created_at", { ascending: false })
+    .limit(LATEST_MESSAGES);
+
+  return ((data ?? []) as unknown as ChatMessage[]).reverse();
+}
+
+/** מזהי המנהלים התורנים של המירוץ — הצ'אט מסמן את ההודעות שלהם 📣 */
+export async function getRaceAdminIds(raceId: string): Promise<string[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("race_admins")
+    .select("user_id")
+    .eq("race_id", raceId);
+  return ((data ?? []) as { user_id: string }[]).map((row) => row.user_id);
 }
 
 export const raceStatusLabel: Record<RaceStatus, string> = {

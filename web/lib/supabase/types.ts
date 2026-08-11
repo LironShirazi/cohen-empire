@@ -104,6 +104,29 @@ export type TeamProgress = {
   proof_url: string | null;
 };
 
+/**
+ * הודעה בצ'אט הקבוצתי (docs/03 — `messages`).
+ * `attachment_type` הוא ה-MIME של הקובץ כפי שהדפדפן דיווח עליו, כדי
+ * שהתצוגה תדע אם זו תמונה/וידאו/קול בלי לנחש מהסיומת.
+ * `mentioned_user_ids` נשמר כאן כבר עכשיו — הטריגר ב-DB הופך אותו
+ * להתראות; בורר ה-@ עצמו מגיע בהמשך שלב 2.
+ */
+export type Message = {
+  id: string;
+  team_id: string;
+  sender_id: string;
+  body: string | null;
+  attachment_url: string | null;
+  attachment_type: string | null;
+  mentioned_user_ids: string[];
+  created_at: string;
+};
+
+/** הודעה עם שולח — מה שמסך הצ'אט מקבל */
+export type ChatMessage = Message & {
+  sender: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
+};
+
 /** מה שמחזירה get_leaderboard — דירוג בלבד, בלי ספירת משימות (docs/02 §3.3) */
 export type LeaderboardRow = {
   rank: number;

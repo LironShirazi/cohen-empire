@@ -85,6 +85,12 @@ export default async function RaceDashboardPage(
         </Button>
       </Link>
 
+      <Link href={`/admin/${raceId}/chat`}>
+        <Button variant="secondary" size="lg" className="w-full">
+          💬 צ׳אט עם הקבוצות
+        </Button>
+      </Link>
+
       <JoinRequests requests={requests} />
 
       <RaceAdmins raceId={raceId} admins={admins} candidates={profiles} />
