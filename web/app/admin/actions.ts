@@ -119,6 +119,57 @@ export async function deleteTeamAction(teamId: string) {
   return {};
 }
 
+/**
+ * משתתף ידני — ילד קטן או מי שבלי טלפון (docs/01 §3.4).
+ * `user_id` נשאר null, וזה מה שמבדיל אותו מחבר רשום: הוא נספר בהרכב
+ * הקבוצה, אבל אין לו מסך, אין לו צ'אט ואי אפשר לאזכר אותו.
+ */
+export async function addManualMemberAction(
+  teamId: string,
+  _prev: AdminFormState,
+  formData: FormData
+): Promise<AdminFormState> {
+  const displayName = String(formData.get("display_name") ?? "").trim();
+  const birthYearRaw = String(formData.get("birth_year") ?? "").trim();
+
+  if (!displayName) return { error: "צריך שם למשתתף" };
+
+  const birthYear = birthYearRaw ? Number(birthYearRaw) : null;
+  if (
+    birthYear !== null &&
+    (!Number.isInteger(birthYear) ||
+      birthYear < 1900 ||
+      birthYear > new Date().getFullYear())
+  ) {
+    return { error: "שנת לידה לא תקינה" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("team_members").insert({
+    team_id: teamId,
+    user_id: null,
+    display_name: displayName,
+    birth_year: birthYear,
+  });
+
+  if (error) return { error: error.message };
+  refresh();
+  return {};
+}
+
+export async function removeManualMemberAction(memberId: string) {
+  const supabase = await createClient();
+  // ה-RLS (0009) מרשה מחיקה רק לשורות ידניות — חבר רשום פשוט לא יימחק
+  const { error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("id", memberId)
+    .is("user_id", null);
+  if (error) return { error: error.message };
+  refresh();
+  return {};
+}
+
 // ── תחנות ────────────────────────────────────────────────────
 
 export async function saveStationAction(
@@ -238,6 +289,27 @@ export async function adminDecideStationAction(
   if (error) return { error: error.message };
   refresh();
   return {};
+}
+
+/**
+ * הודעת רוחב (docs/04 §4). `teamId = null` = כל הקבוצות במירוץ.
+ * ההודעה נכנסת לצ'אט של כל קבוצת יעד ומייצרת התראה לחברים —
+ * הכל בתוך ה-RPC, כי הוא היחיד שרשאי לכתוב `notifications`.
+ */
+export async function broadcastAction(
+  raceId: string,
+  body: string,
+  teamId: string | null
+): Promise<{ error?: string; teams?: number }> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_broadcast", {
+    p_race_id: raceId,
+    p_body: body,
+    p_team_id: teamId,
+  });
+  if (error) return { error: error.message };
+  refresh();
+  return { teams: data as number };
 }
 
 export async function finishRaceAction(

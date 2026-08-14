@@ -241,13 +241,45 @@ body {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────
+   התראות — docs/04 §3
+   הבאנר נכנס מלמעלה, וההודעה שאליה קפצנו מהבהבת כדי שהעין תמצא
+   אותה בתוך רשימת הודעות ארוכה.
+   ────────────────────────────────────────────────────────────── */
+.notification-toast {
+  animation: notification-drop 0.22s ease-out;
+}
+
+@keyframes notification-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+.mention-flash {
+  animation: mention-flash 1.6s ease-out 2;
+}
+
+@keyframes mention-flash {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 212, 0, 0);
+  }
+  25% {
+    box-shadow: 0 0 0 4px rgba(255, 212, 0, 0.9);
+  }
+}
+
 /* מכבדים העדפת מערכת — בלי אנימציות למי שביקש פחות תנועה */
 @media (prefers-reduced-motion: reduce) {
   .reveal-env,
   .reveal-tap,
   .reveal-clue,
   .reveal-burst i,
-  .distpulse {
+  .distpulse,
+  .notification-toast,
+  .mention-flash {
     animation: none !important;
     transition: none !important;
   }

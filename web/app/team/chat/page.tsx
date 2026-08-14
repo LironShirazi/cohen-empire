@@ -2,9 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChatRoom } from "@/components/chat/chat-room";
 import {
+  getMentionables,
   getMyMembership,
   getRaceAdminIds,
   getTeamMessages,
+  getUnreadNotifications,
   getUser,
 } from "@/lib/data";
 
@@ -16,9 +18,11 @@ export default async function TeamChatPage() {
   if (!membership) redirect("/join");
 
   const { team, race } = membership;
-  const [messages, adminIds] = await Promise.all([
+  const [messages, adminIds, mentionables, unread] = await Promise.all([
     getTeamMessages(team.id),
     getRaceAdminIds(race.id),
+    getMentionables(team.id, race.id),
+    getUnreadNotifications(team.id),
   ]);
 
   return (
@@ -47,6 +51,8 @@ export default async function TeamChatPage() {
         teamColor={team.color}
         currentUserId={user.id}
         adminIds={adminIds}
+        mentionables={mentionables}
+        unreadMessageIds={unread.map((row) => row.message_id)}
         initialMessages={messages}
         canPost={race.status !== "archived"}
         lockedReason="המירוץ בארכיון — אפשר לקרוא את ההיסטוריה, אבל לא לכתוב."

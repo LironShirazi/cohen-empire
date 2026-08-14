@@ -2,7 +2,14 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
-import { getRace, getRaceTeams, getUser, isRaceAdmin } from "@/lib/data";
+import { UnreadBadge } from "@/components/notifications/unread-badge";
+import {
+  getRace,
+  getRaceTeams,
+  getUnreadNotifications,
+  getUser,
+  isRaceAdmin,
+} from "@/lib/data";
 
 export default async function AdminChatIndexPage(
   props: PageProps<"/admin/[raceId]/chat">
@@ -17,6 +24,11 @@ export default async function AdminChatIndexPage(
   if (!race) notFound();
 
   const teams = await getRaceTeams(raceId);
+
+  // המנהל התורן מקבל אזכורים מכל צ'אטי המירוץ (docs/01 §5.1), אז
+  // הבאדג' כאן הוא פר-קבוצה ולא אחד כללי
+  const unread = await getUnreadNotifications();
+  const unreadByTeam = Map.groupBy(unread, (row) => row.team_id);
 
   return (
     <PageShell className="flex flex-col gap-4">
@@ -60,7 +72,14 @@ export default async function AdminChatIndexPage(
                 {team.members.length} משתתפים
               </p>
             </div>
-            <span className="ms-auto text-xl">💬</span>
+            {unreadByTeam.has(team.id) ? (
+              <UnreadBadge
+                unread={unreadByTeam.get(team.id) ?? []}
+                className="ms-auto"
+              />
+            ) : (
+              <span className="ms-auto text-xl">💬</span>
+            )}
           </div>
         </Link>
       ))}

@@ -29,6 +29,27 @@ export async function arriveAction(
   return result;
 }
 
+/**
+ * דיווח מיקום למפת המנהל (docs/04 §4). בלי `refresh()` — זה קורה כל
+ * חצי דקה ברקע, ורענון המסך של הקבוצה על כל דגימה היה מהבהב לחינם.
+ * המסך שכן צריך את זה, "מהלך המירוץ" של המנהל, מרענן את עצמו.
+ */
+export async function reportLocationAction(
+  teamId: string,
+  lat: number,
+  lng: number,
+  accuracy: number | null
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("report_team_location", {
+    p_team_id: teamId,
+    p_lat: lat,
+    p_lng: lng,
+    p_accuracy_m: accuracy,
+  });
+  return error ? { error: error.message } : {};
+}
+
 export async function completeAction(
   teamId: string,
   secretCode: string | null,

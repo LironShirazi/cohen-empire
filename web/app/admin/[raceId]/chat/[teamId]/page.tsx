@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChatRoom } from "@/components/chat/chat-room";
 import {
+  getMentionables,
   getRace,
   getRaceAdminIds,
   getRaceTeams,
   getTeamMessages,
+  getUnreadNotifications,
   getUser,
   isRaceAdmin,
 } from "@/lib/data";
@@ -27,9 +29,11 @@ export default async function AdminTeamChatPage(
   const team = (await getRaceTeams(raceId)).find((row) => row.id === teamId);
   if (!team) notFound();
 
-  const [messages, adminIds] = await Promise.all([
+  const [messages, adminIds, mentionables, unread] = await Promise.all([
     getTeamMessages(team.id),
     getRaceAdminIds(raceId),
+    getMentionables(team.id, raceId),
+    getUnreadNotifications(team.id),
   ]);
 
   return (
@@ -59,6 +63,8 @@ export default async function AdminTeamChatPage(
         teamColor={team.color}
         currentUserId={user.id}
         adminIds={adminIds}
+        mentionables={mentionables}
+        unreadMessageIds={unread.map((row) => row.message_id)}
         initialMessages={messages}
         canPost={race.status !== "archived"}
         lockedReason="המירוץ בארכיון — נעול לכתיבה, פתוח לקריאה."
