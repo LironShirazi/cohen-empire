@@ -93,6 +93,10 @@ export async function saveTeamAction(
 
   if (!name) return { error: "צריך שם לקבוצה" };
   if (!/^\d{1,2}$/.test(joinCode)) return { error: "קוד קבוצה הוא ספרה או שתיים" };
+  // הבורר ב-TeamEditor שולח hidden input, ולכן זו לא הגבלה על המשתמש
+  // אלא על מה שנשמר: הצבע מגיע משדה טקסט חופשי שכל מנהל תורן יכול
+  // לכתוב אליו ישירות, והוא נצרך אחר כך במפה החיה
+  if (!/^#[0-9a-fA-F]{6}$/.test(color)) return { error: "צבע הקבוצה לא תקין" };
 
   const supabase = await createClient();
   const values = { race_id: raceId, name, color, animal: animal || null, join_code: joinCode };

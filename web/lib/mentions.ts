@@ -101,8 +101,14 @@ export function applyMention(
  * שלא רואים בהודעה.
  */
 export function mentionedIdsIn(text: string, people: Mentionable[]): string[] {
+  const pattern = mentionPattern(people.map((person) => person.full_name));
+  if (!pattern) return [];
+
+  const found = new Set(
+    Array.from(text.matchAll(pattern), (match) => match[0].slice(1))
+  );
   return people
-    .filter((person) => text.includes(`@${person.full_name}`))
+    .filter((person) => found.has(person.full_name))
     .map((person) => person.id);
 }
 
@@ -114,18 +120,12 @@ export function splitMentions(
   mentionedIds: string[],
   people: Mentionable[]
 ): MentionPart[] {
-  const names = people
-    .filter((person) => mentionedIds.includes(person.id))
-    .map((person) => person.full_name)
-    // הארוך קודם, אחרת "@דנה" תיבלע בתוך "@דנה כהן"
-    .sort((a, b) => b.length - a.length);
-
-  if (names.length === 0) return [{ text: body, mentioned: false }];
-
-  const pattern = new RegExp(
-    `@(?:${names.map(escapeRegExp).join("|")})`,
-    "g"
+  const pattern = mentionPattern(
+    people
+      .filter((person) => mentionedIds.includes(person.id))
+      .map((person) => person.full_name)
   );
+  if (!pattern) return [{ text: body, mentioned: false }];
 
   const parts: MentionPart[] = [];
   let index = 0;
@@ -140,6 +140,20 @@ export function splitMentions(
     parts.push({ text: body.slice(index), mentioned: false });
   }
   return parts;
+}
+
+/**
+ * הרגקס שמוצא טוקני אזכור בטקסט — אותו זיהוי בדיוק גם לגזירת המזהים
+ * לפני שליחה וגם להדגשה בתצוגה, כדי ששניהם לא יסתרו זה את זה.
+ *
+ * הארוך קודם, אחרת "@דנה" תיבלע בתוך "@דנה כהן": חיפוש substring תמים
+ * היה מוצא את השם הקצר בתוך הטוקן של הארוך, ואז דנה מקבלת התראה על
+ * הודעה שבכלל לא קוראת לה בשם.
+ */
+function mentionPattern(names: string[]): RegExp | null {
+  if (names.length === 0) return null;
+  const sorted = [...names].sort((a, b) => b.length - a.length);
+  return new RegExp(`@(?:${sorted.map(escapeRegExp).join("|")})`, "g");
 }
 
 function escapeRegExp(value: string): string {

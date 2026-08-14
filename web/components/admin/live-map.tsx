@@ -124,7 +124,7 @@ export function LiveMap({
           className: "",
           iconSize: [34, 34],
           iconAnchor: [17, 17],
-          html: `<span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:${row.team.color};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);font-size:17px;opacity:${age > STALE_MS ? 0.45 : 1}">${emoji}</span>`,
+          html: teamMarker(row.team.color, emoji, age > STALE_MS),
         }),
       })
         .addTo(layer)
@@ -164,6 +164,24 @@ export function LiveMap({
       ) : null}
     </div>
   );
+}
+
+/**
+ * העיגול הצבעוני של הקבוצה. נבנה כאלמנט DOM ולא כמחרוזת HTML בכוונה:
+ * `L.divIcon({html})` שמקבל מחרוזת נכנס ל-`innerHTML` של Leaflet, ואז
+ * שם החיה או הצבע — שדות טקסט חופשי שכל מנהל תורן יכול לכתוב אליהם
+ * ישירות מול RLS — היו רצים כ-HTML אצל כל מנהל אחר שפותח את המפה.
+ * כאן `style.background` מסנן ערך לא תקין מעצמו ו-`textContent` לא
+ * מפרש markup, אז אין מה לברוח ממנו.
+ */
+function teamMarker(color: string, emoji: string, stale: boolean): HTMLElement {
+  const span = document.createElement("span");
+  span.style.cssText =
+    "display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);font-size:17px";
+  span.style.background = color;
+  span.style.opacity = stale ? "0.45" : "1";
+  span.textContent = emoji;
+  return span;
 }
 
 function describeAge(ms: number): string {
