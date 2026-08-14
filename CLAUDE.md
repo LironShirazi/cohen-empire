@@ -85,6 +85,13 @@ Vanilla JS, ללא build, נפתח ישירות בדפדפן (`index.html` בש�
 כשמסבים אותו ל-Supabase — לשמור על אותו API ב-`js/store.js` (`get/all/childrenOf/...`)
 כדי לא לגעת ב-`layout.js`/`render.js`/`ui.js`.
 
+⚠️ **`web/public/family-tree/` הוא עותק, לא מקור.** Vercel בונה את `web/`
+בלבד, ולכן הקישור מדף הבית ל-`/family-tree/index.html` החזיר 404 בפרודקשן.
+עד שהמודול יעבור לתוך האפליקציה כ-route בשלב 3 — **עורכים רק את
+`family-tree/` בשורש, ואז מריצים `npm run sync:family-tree` מתוך `web/`.**
+העותק שונה מהמקור בשורה אחת בלבד (כפתור הבית: `../index.html` ← `/`),
+והסקריפט מחיל אותה בעצמו.
+
 ## 5. האפליקציה בפועל (`web/`)
 
 Next.js 16 + App Router. **חשוב:** `web/AGENTS.md` מזהיר שגרסת ה-Next הזו
