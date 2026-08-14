@@ -1,4 +1,6 @@
 import { notFound, redirect } from "next/navigation";
+import { BroadcastForm } from "@/components/admin/broadcast-form";
+import { LiveMap } from "@/components/admin/live-map";
 import { LivePanel } from "@/components/admin/live-panel";
 import { LeaderboardList } from "@/components/leaderboard-list";
 import { Card } from "@/components/ui/card";
@@ -7,6 +9,9 @@ import {
   getApprovalQueue,
   getLeaderboard,
   getRace,
+  getRaceStations,
+  getRaceTeams,
+  getTeamLocations,
   getTeamPositions,
   getUser,
   isRaceAdmin,
@@ -24,11 +29,15 @@ export default async function AdminLivePage(
   const race = await getRace(raceId);
   if (!race) notFound();
 
-  const [approvals, positions, leaderboard] = await Promise.all([
-    getApprovalQueue(raceId),
-    getTeamPositions(raceId),
-    getLeaderboard(raceId),
-  ]);
+  const [approvals, positions, leaderboard, teams, locations, stations] =
+    await Promise.all([
+      getApprovalQueue(raceId),
+      getTeamPositions(raceId),
+      getLeaderboard(raceId),
+      getRaceTeams(raceId),
+      getTeamLocations(raceId),
+      getRaceStations(raceId),
+    ]);
 
   return (
     <PageShell className="flex flex-col gap-4">
@@ -44,6 +53,15 @@ export default async function AdminLivePage(
           המשתתפים לא יוכלו לפתוח משימות עד שתלחצו על &quot;יוצאים לדרך&quot;.
         </Card>
       ) : null}
+
+      <h2 className="font-display text-xl">איפה כולם עכשיו</h2>
+      <LiveMap teams={locations} stations={stations} />
+
+      <BroadcastForm
+        raceId={raceId}
+        teams={teams}
+        locked={race.status === "archived"}
+      />
 
       <LivePanel approvals={approvals} positions={positions} />
 

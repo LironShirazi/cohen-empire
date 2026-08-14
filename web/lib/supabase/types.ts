@@ -108,8 +108,8 @@ export type TeamProgress = {
  * הודעה בצ'אט הקבוצתי (docs/03 — `messages`).
  * `attachment_type` הוא ה-MIME של הקובץ כפי שהדפדפן דיווח עליו, כדי
  * שהתצוגה תדע אם זו תמונה/וידאו/קול בלי לנחש מהסיומת.
- * `mentioned_user_ids` נשמר כאן כבר עכשיו — הטריגר ב-DB הופך אותו
- * להתראות; בורר ה-@ עצמו מגיע בהמשך שלב 2.
+ * `mentioned_user_ids` נכתב ע"י בורר ה-@ במחבר (ולא מניתוח טקסט בשרת,
+ * docs/02 §3.8), והטריגר `handle_message_mentions` הופך אותו להתראות.
  */
 export type Message = {
   id: string;
@@ -125,6 +125,38 @@ export type Message = {
 /** הודעה עם שולח — מה שמסך הצ'אט מקבל */
 export type ChatMessage = Message & {
   sender: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
+};
+
+/**
+ * המיקום האחרון שדווח מהקבוצה (docs/04 §4) — שורה אחת לקבוצה.
+ * לתצוגה במפת המנהל בלבד: החלטת "הגעתם" נשענת על `arrive_at_station`
+ * ולא על השדות האלה (docs/02 §3.1).
+ */
+export type TeamLocation = {
+  team_id: string;
+  lat: number;
+  lng: number;
+  accuracy_m: number | null;
+  reported_by: string | null;
+  updated_at: string;
+};
+
+export type NotificationType = "mention" | "task_approved" | "admin_broadcast";
+
+/**
+ * התראה In-App (docs/03 — `notifications`). נוצרת **רק** בשרת: הטריגר
+ * `handle_message_mentions` הוא המקור היחיד, ואין מדיניות INSERT
+ * מהקליינט. הקליינט רשאי רק לקרוא את שלו ולסמן `read_at`.
+ */
+export type Notification = {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  race_id: string | null;
+  team_id: string | null;
+  message_id: string | null;
+  read_at: string | null;
+  created_at: string;
 };
 
 /** מה שמחזירה get_leaderboard — דירוג בלבד, בלי ספירת משימות (docs/02 §3.3) */

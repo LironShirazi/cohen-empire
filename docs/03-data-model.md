@@ -17,6 +17,7 @@ erDiagram
     stations ||--o{ team_progress : ""
     teams ||--o{ join_requests : ""
     profiles ||--o{ join_requests : ""
+    teams ||--o| team_locations : "מיקום אחרון"
     teams ||--o{ messages : "צ'אט"
     messages ||--o{ notifications : "אזכור ⇐ התראה"
     profiles ||--o{ notifications : ""
@@ -32,7 +33,7 @@ erDiagram
 |---|---|---|
 | id | uuid PK | = auth.users.id |
 | full_name, avatar_url | text | מ-Google, ניתן לעריכה |
-| birth_year | int | לחלוקה מאוזנת |
+| birth_year | int | רישום בלבד (החלוקה המאוזנת בוטלה — 02 §3.6) |
 | is_owner | bool | מנהל-על |
 
 ### `races` — מירוצים
@@ -69,8 +70,8 @@ erDiagram
 | team_id | uuid FK | |
 | user_id | uuid FK **nullable** | null = משתתף ידני |
 | display_name | text | שם להצגה (חובה לידניים) |
-| birth_year | int | לחלוקה מאוזנת |
-| ability | int 1–5 | הערכת יכולת לחלוקה מאוזנת |
+| birth_year | int | רישום בלבד (החלוקה המאוזנת בוטלה — 02 §3.6) |
+| ability | int 1–5 | נותר מהחלוקה המאוזנת שבוטלה; לא נאסף בשום מסך |
 
 ### `join_requests` — בקשות הצטרפות
 
@@ -112,6 +113,21 @@ erDiagram
 
 **המשימה הנוכחית** של קבוצה = התחנה בעלת ה-`position` הנמוך ביותר ללא `completed_at`.
 
+### `team_locations` — המיקום האחרון של הקבוצה
+
+שורה אחת לקבוצה (PK = `team_id`), נדרסת בכל דיווח. לתצוגה במפת המנהל
+בלבד — **לא** מקור להחלטת "הגעתם" (ראו [02](02-architecture.md) §3.9).
+
+| שדה | סוג | הערות |
+|---|---|---|
+| team_id | uuid PK FK | |
+| lat, lng | float | מה שהמכשיר דיווח |
+| accuracy_m | float | דיוק המדידה כפי שהדפדפן מסר |
+| reported_by | uuid FK | מי מהקבוצה דיווח אחרון |
+| updated_at | timestamptz | נקבע בשרת; המפה מדהה מיקום ישן מ-10 דק' |
+
+קריאה: מנהל תורן של המירוץ בלבד. כתיבה: רק דרך `report_team_location`.
+
 ### `messages` — צ'אט קבוצתי
 
 | שדה | סוג | הערות |
@@ -125,8 +141,10 @@ erDiagram
 ### `notifications` — התראות In-App
 
 נוצרות ע"י **טריגר DB** על INSERT ל-`messages` (שורה לכל מאוזכר),
-כדי שהיצירה תהיה בצד השרת ולא ניתנת לזיוף. מבנה גנרי — מוכן גם
-לסוגי התראות עתידיים (אישור משימה, הודעת מנהל רוחבית):
+כדי שהיצירה תהיה בצד השרת ולא ניתנת לזיוף. הטריגר מסנן את
+`mentioned_user_ids` למי שבאמת בצ'אט הזה (חבר קבוצה או מנהל תורן של
+המירוץ), אחרת אפשר היה לשלוח התראה לכל משתמש במערכת בקריאת API ישירה.
+מבנה גנרי — מוכן גם לסוגי התראות עתידיים (אישור משימה, הודעת מנהל רוחבית):
 
 | שדה | סוג | הערות |
 |---|---|---|

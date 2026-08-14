@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { LocationReporter } from "@/components/game/location-reporter";
 import { PlayScreen } from "@/components/game/play-screen";
 import { Card } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
@@ -18,18 +19,30 @@ export default async function PlayPage() {
     p_team_id: membership.team.id,
   });
 
+  const state = error ? null : (data as GameState);
+  // מדווחים מיקום כל עוד המירוץ באמת רץ מבחינת הקבוצה — לא אחרי
+  // שסיימו הכל ולא לפני שיש תחנות
+  const tracking =
+    state !== null && state.state !== "finished" && state.state !== "no_stations";
+
   return (
     <PageShell>
       <PageHeader title="🧭 מהלך המשחק" back="/team" backLabel="לקבוצה" />
 
-      {error ? (
+      {state === null ? (
         <Card className="text-center">
           <p className="font-bold text-brand">לא הצלחנו לטעון את מצב המשחק</p>
-          <p className="mt-1 text-sm text-muted">{error.message}</p>
+          <p className="mt-1 text-sm text-muted">{error?.message}</p>
         </Card>
       ) : (
-        <PlayScreen state={data as GameState} />
+        <PlayScreen state={state} />
       )}
+
+      {tracking ? (
+        <div className="mt-4">
+          <LocationReporter teamId={membership.team.id} />
+        </div>
+      ) : null}
     </PageShell>
   );
 }

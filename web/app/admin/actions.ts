@@ -93,6 +93,10 @@ export async function saveTeamAction(
 
   if (!name) return { error: "צריך שם לקבוצה" };
   if (!/^\d{1,2}$/.test(joinCode)) return { error: "קוד קבוצה הוא ספרה או שתיים" };
+  // הבורר ב-TeamEditor שולח hidden input, ולכן זו לא הגבלה על המשתמש
+  // אלא על מה שנשמר: הצבע מגיע משדה טקסט חופשי שכל מנהל תורן יכול
+  // לכתוב אליו ישירות, והוא נצרך אחר כך במפה החיה
+  if (!/^#[0-9a-fA-F]{6}$/.test(color)) return { error: "צבע הקבוצה לא תקין" };
 
   const supabase = await createClient();
   const values = { race_id: raceId, name, color, animal: animal || null, join_code: joinCode };
@@ -114,6 +118,57 @@ export async function saveTeamAction(
 export async function deleteTeamAction(teamId: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("teams").delete().eq("id", teamId);
+  if (error) return { error: error.message };
+  refresh();
+  return {};
+}
+
+/**
+ * משתתף ידני — ילד קטן או מי שבלי טלפון (docs/01 §3.4).
+ * `user_id` נשאר null, וזה מה שמבדיל אותו מחבר רשום: הוא נספר בהרכב
+ * הקבוצה, אבל אין לו מסך, אין לו צ'אט ואי אפשר לאזכר אותו.
+ */
+export async function addManualMemberAction(
+  teamId: string,
+  _prev: AdminFormState,
+  formData: FormData
+): Promise<AdminFormState> {
+  const displayName = String(formData.get("display_name") ?? "").trim();
+  const birthYearRaw = String(formData.get("birth_year") ?? "").trim();
+
+  if (!displayName) return { error: "צריך שם למשתתף" };
+
+  const birthYear = birthYearRaw ? Number(birthYearRaw) : null;
+  if (
+    birthYear !== null &&
+    (!Number.isInteger(birthYear) ||
+      birthYear < 1900 ||
+      birthYear > new Date().getFullYear())
+  ) {
+    return { error: "שנת לידה לא תקינה" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("team_members").insert({
+    team_id: teamId,
+    user_id: null,
+    display_name: displayName,
+    birth_year: birthYear,
+  });
+
+  if (error) return { error: error.message };
+  refresh();
+  return {};
+}
+
+export async function removeManualMemberAction(memberId: string) {
+  const supabase = await createClient();
+  // ה-RLS (0009) מרשה מחיקה רק לשורות ידניות — חבר רשום פשוט לא יימחק
+  const { error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("id", memberId)
+    .is("user_id", null);
   if (error) return { error: error.message };
   refresh();
   return {};
@@ -238,6 +293,27 @@ export async function adminDecideStationAction(
   if (error) return { error: error.message };
   refresh();
   return {};
+}
+
+/**
+ * הודעת רוחב (docs/04 §4). `teamId = null` = כל הקבוצות במירוץ.
+ * ההודעה נכנסת לצ'אט של כל קבוצת יעד ומייצרת התראה לחברים —
+ * הכל בתוך ה-RPC, כי הוא היחיד שרשאי לכתוב `notifications`.
+ */
+export async function broadcastAction(
+  raceId: string,
+  body: string,
+  teamId: string | null
+): Promise<{ error?: string; teams?: number }> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_broadcast", {
+    p_race_id: raceId,
+    p_body: body,
+    p_team_id: teamId,
+  });
+  if (error) return { error: error.message };
+  refresh();
+  return { teams: data as number };
 }
 
 export async function finishRaceAction(

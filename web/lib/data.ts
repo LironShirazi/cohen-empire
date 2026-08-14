@@ -1,14 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import type { Mentionable } from "@/lib/mentions";
 import type {
   ChatMessage,
   JoinRequest,
   LeaderboardRow,
+  NotificationType,
   Profile,
   Race,
   RaceStatus,
   Station,
   Team,
+  TeamLocation,
   TeamMember,
 } from "@/lib/supabase/types";
 
@@ -441,6 +444,134 @@ export async function getRaceAdminIds(raceId: string): Promise<string[]> {
     .select("user_id")
     .eq("race_id", raceId);
   return ((data ?? []) as { user_id: string }[]).map((row) => row.user_id);
+}
+
+/**
+ * מי אפשר לאזכר בצ'אט של הקבוצה (docs/01 §5.1, docs/04 §3): חברי
+ * הקבוצה **הרשומים** + המנהלים התורנים של המירוץ.
+ *
+ * משתתף ידני (`user_id is null`) לא מופיע — אין למי לשלוח התראה.
+ * זו בדיוק אותה רשימה שהטריגר ב-0006 מוכן ליצור עבורה התראה, כך
+ * שהבורר לא יכול להציע אזכור שיישלח לחלל.
+ */
+export async function getMentionables(
+  teamId: string,
+  raceId: string
+): Promise<Mentionable[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  const [members, admins] = await Promise.all([
+    supabase
+      .from("team_members")
+      .select("user_id, profile:profiles(id, full_name, avatar_url)")
+      .eq("team_id", teamId)
+      .not("user_id", "is", null),
+    supabase
+      .from("race_admins")
+      .select("user_id, profile:profiles(id, full_name, avatar_url)")
+      .eq("race_id", raceId),
+  ]);
+
+  type Row = {
+    profile: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
+  };
+
+  const byId = new Map<string, Mentionable>();
+
+  function add(rows: Row[] | null, isAdmin: boolean) {
+    for (const row of rows ?? []) {
+      // בלי שם אין מה להכניס להודעה — הטוקן הוא השם עצמו
+      if (!row.profile?.full_name) continue;
+      const existing = byId.get(row.profile.id);
+      if (existing) {
+        // מנהל שהוא גם חבר בקבוצה — הכתר מנצח
+        existing.is_admin ||= isAdmin;
+        continue;
+      }
+      byId.set(row.profile.id, {
+        id: row.profile.id,
+        full_name: row.profile.full_name,
+        avatar_url: row.profile.avatar_url,
+        is_admin: isAdmin,
+      });
+    }
+  }
+
+  add(members.data as unknown as Row[] | null, false);
+  add(admins.data as unknown as Row[] | null, true);
+
+  return [...byId.values()].sort((a, b) => {
+    if (a.is_admin !== b.is_admin) return a.is_admin ? 1 : -1;
+    return a.full_name.localeCompare(b.full_name, "he");
+  });
+}
+
+/**
+ * המיקום האחרון של כל קבוצה, לתצוגה במפה של המנהל (docs/04 §4).
+ * ה-RLS (0008) מחזיר שורות רק למנהל התורן של המירוץ — למשתתף
+ * תמיד תחזור רשימה ריקה, וזה מכוון.
+ */
+export type TeamOnMap = {
+  team: Pick<Team, "id" | "name" | "color" | "animal">;
+  location: TeamLocation;
+};
+
+export async function getTeamLocations(raceId: string): Promise<TeamOnMap[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  const teams = await getRaceTeams(raceId);
+  if (teams.length === 0) return [];
+
+  const { data } = await supabase
+    .from("team_locations")
+    .select("*")
+    .in(
+      "team_id",
+      teams.map((team) => team.id)
+    );
+
+  const byTeam = new Map(teams.map((team) => [team.id, team]));
+
+  return ((data ?? []) as TeamLocation[]).flatMap((location) => {
+    const team = byTeam.get(location.team_id);
+    return team ? [{ team, location }] : [];
+  });
+}
+
+/** התראה שטרם נקראה — מזינה את הבאדג' ואת הגלילה לפתיחת הצ'אט */
+export type UnreadNotification = {
+  id: string;
+  type: NotificationType;
+  team_id: string;
+  message_id: string;
+};
+
+/**
+ * ההתראות שלי שעדיין לא נקראו — אזכור (@) והודעת רוחב (📣). שתיהן
+ * מצביעות על הודעה בצ'אט, ולכן שתיהן נקראות באותה פתיחה.
+ *
+ * בלי `teamId` — כל המירוצים והקבוצות, מה שהמנהל התורן צריך (הוא
+ * מקבל אזכורים מכל צ'אטי המירוץ, docs/01 §5.1).
+ */
+export async function getUnreadNotifications(
+  teamId?: string
+): Promise<UnreadNotification[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("notifications")
+    .select("id, type, team_id, message_id")
+    .is("read_at", null)
+    .not("message_id", "is", null)
+    .order("created_at");
+
+  if (teamId) query = query.eq("team_id", teamId);
+
+  const { data } = await query;
+  return (data ?? []) as UnreadNotification[];
 }
 
 export const raceStatusLabel: Record<RaceStatus, string> = {

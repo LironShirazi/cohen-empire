@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Rubik, Secular_One } from "next/font/google";
+import { NotificationCenter } from "@/components/notifications/notification-center";
 import "./globals.css";
 
 // הפונטים של מערכת העיצוב: Rubik לגוף, Secular One לכותרות
@@ -35,7 +36,11 @@ export default function RootLayout({
       dir="rtl"
       className={`${rubik.variable} ${secularOne.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* באנר ההתראות חייב לחיות מעל כל מסך, גם "מהלך המשחק"
+            (docs/02 §3.8) — לכן הוא כאן ולא בתוך הצ'אט */}
+        <NotificationCenter>{children}</NotificationCenter>
+      </body>
     </html>
   );
 }

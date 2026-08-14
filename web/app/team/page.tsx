@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { PageShell } from "@/components/ui/page";
-import { getMyMembership, getUser, raceStatusLabel } from "@/lib/data";
+import { UnreadBadge } from "@/components/notifications/unread-badge";
+import {
+  getMyMembership,
+  getUnreadNotifications,
+  getUser,
+  raceStatusLabel,
+} from "@/lib/data";
 
 export default async function TeamPage() {
   const user = await getUser();
@@ -15,6 +21,7 @@ export default async function TeamPage() {
   if (!membership) redirect("/join");
 
   const { team, race } = membership;
+  const unread = await getUnreadNotifications(team.id);
 
   return (
     <PageShell className="flex flex-col gap-4">
@@ -33,10 +40,14 @@ export default async function TeamPage() {
         </Button>
       </Link>
 
-      <Link href="/team/chat">
+      <Link href="/team/chat" className="relative block">
         <Button size="lg" variant="secondary" className="w-full">
           💬 צ׳אט קבוצתי
         </Button>
+        <UnreadBadge
+          unread={unread}
+          className="absolute -top-1.5 -end-1.5 shadow-card"
+        />
       </Link>
 
       <div className="grid grid-cols-2 gap-3">
