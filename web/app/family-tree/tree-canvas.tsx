@@ -65,7 +65,9 @@ export function TreeCanvas({
 
   return (
     <div className="ft-root">
-      <header className="topbar">
+      {/* `cosmic` הוא הרקע הקוסמי של המותג מ-globals.css — לכן
+          `.topbar` ב-family-tree.css לא מגדיר `background` בכלל */}
+      <header className="topbar cosmic">
         <Link className="home-link" href="/" title="חזרה לדף הבית">
           🏠
         </Link>
