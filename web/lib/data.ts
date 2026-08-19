@@ -3,6 +3,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Mentionable } from "@/lib/mentions";
 import type {
   ChatMessage,
+  GalleryPhoto,
   JoinRequest,
   LeaderboardRow,
   NotificationType,
@@ -572,6 +573,82 @@ export async function getUnreadNotifications(
 
   const { data } = await query;
   return (data ?? []) as UnreadNotification[];
+}
+
+/** תמונה בגלריה + שם מי שהעלה, כפי שהמסך מציג אותה */
+export type GalleryPhotoRow = GalleryPhoto & {
+  uploader_name: string | null;
+};
+
+/** שנה בגלריה: הכותרת שמעליה, והתמונות שבתוכה */
+export type GalleryYear = {
+  year: number;
+  raceName: string | null;
+  photos: GalleryPhotoRow[];
+};
+
+/**
+ * כל הגלריה, מקובצת לשנים — החדשה למעלה (docs/04 §26).
+ *
+ * הכל בשאילתה אחת ובלי עימוד: זו גלריה משפחתית של פעם בשנה, ואפילו
+ * אחרי 20 שנה מדובר בכמה מאות שורות. אם היא תגדל מעבר לזה, הנקודה
+ * לעמד בה היא **שנה שלמה** ולא תמונה — ככה נראה גם המסך.
+ */
+export async function getGallery(): Promise<GalleryYear[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  const [{ data: photos }, { data: races }] = await Promise.all([
+    supabase
+      .from("gallery_photos")
+      .select("*, uploader:profiles(full_name)")
+      .order("year", { ascending: false })
+      .order("created_at", { ascending: false }),
+    supabase.from("public_races").select("year, name"),
+  ]);
+
+  const raceNames = new Map(
+    ((races ?? []) as { year: number; name: string }[]).map((r) => [
+      r.year,
+      r.name,
+    ])
+  );
+
+  const years = new Map<number, GalleryYear>();
+  for (const row of (photos ?? []) as (GalleryPhoto & {
+    uploader: { full_name: string | null } | null;
+  })[]) {
+    const { uploader, ...photo } = row;
+    let bucket = years.get(photo.year);
+    if (!bucket) {
+      bucket = {
+        year: photo.year,
+        raceName: raceNames.get(photo.year) ?? null,
+        photos: [],
+      };
+      years.set(photo.year, bucket);
+    }
+    bucket.photos.push({ ...photo, uploader_name: uploader?.full_name ?? null });
+  }
+
+  return [...years.values()];
+}
+
+/**
+ * השנים שאפשר להעלות אליהן: כל מירוץ שקיים (כדי שהתמונה תקושר אליו),
+ * ובנוסף השנים ההיסטוריות — אלה נשמרות בלי `race_id` כי אין להן מירוץ
+ * במערכת בכלל.
+ */
+export async function getGalleryRaceOptions(): Promise<
+  { id: string; year: number; name: string }[]
+> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("public_races")
+    .select("id, year, name")
+    .order("year", { ascending: false });
+  return (data ?? []) as { id: string; year: number; name: string }[];
 }
 
 export const raceStatusLabel: Record<RaceStatus, string> = {

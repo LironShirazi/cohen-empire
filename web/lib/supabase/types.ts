@@ -174,6 +174,27 @@ export type FamilyMember = {
   updated_at: string;
 };
 
+/**
+ * תמונה בגלריה (docs/03, docs/04 §26). הטבלה קיימת מ-0001 ונפתחה
+ * לכתיבה ב-0012.
+ *
+ * `year` הוא השדה שלפיו הגלריה מסודרת, ולא `race_id`: ל-20 שנות
+ * המסורת שקדמו לאפליקציה אין שורת `races` בכלל. כשיש מירוץ, טריגר
+ * `sync_gallery_photo_year` כופה את שנת המירוץ על השורה.
+ *
+ * `storage_path` נשמר כדי שמחיקה תוכל למחוק גם את הקובץ מה-bucket.
+ */
+export type GalleryPhoto = {
+  id: string;
+  race_id: string | null;
+  year: number;
+  url: string;
+  storage_path: string | null;
+  caption: string | null;
+  uploaded_by: string | null;
+  created_at: string;
+};
+
 export type NotificationType = "mention" | "task_approved" | "admin_broadcast";
 
 /**
