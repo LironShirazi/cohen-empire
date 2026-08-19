@@ -9,6 +9,14 @@
   'use strict';
   const NS = (window.FT = window.FT || {});
 
+  /**
+   * ⚠️ הבכור מימין. `NS.compareSiblings` מחזיר בכור-ראשון (סדר קריאה),
+   * אבל כאן אינדקס 0 מקבל את ה-x הקטן ביותר — כלומר את הצד השמאלי.
+   * לכן כל שימוש בו כאן מסתיים ב-`.reverse()`, והצעיר יוצא שמאלה.
+   */
+  const siblingOrder = (a, b) =>
+    NS.compareSiblings ? NS.compareSiblings(a, b) : a.sortOrder - b.sortOrder;
+
   const C = (NS.CONST = {
     R: 36,          // רדיוס עיגול
     PW: 100,        // רוחב משבצת לאדם
@@ -79,7 +87,8 @@
       return persons
         .filter((p) => (p.fatherId && memberIds.has(p.fatherId)) || (p.motherId && memberIds.has(p.motherId)))
         .filter((p) => !memberIds.has(p.id))
-        .sort((a, b) => a.sortOrder - b.sortOrder);
+        .sort(siblingOrder)
+        .reverse();
     };
 
     /* ---- 2. שיוך לדורות (מסלול ארוך ביותר מהשורשים) ---- */
@@ -271,7 +280,8 @@
       const siblings = persons
         .filter((q) => (q.fatherId || '') === (p.fatherId || '') && (q.motherId || '') === (p.motherId || ''))
         .filter((q) => q.fatherId || q.motherId)
-        .sort((a, b) => a.sortOrder - b.sortOrder);
+        .sort(siblingOrder)
+        .reverse();
       const f = byId(p.fatherId), m = byId(p.motherId);
       const parentsHere = [f, m].filter(Boolean);
       if (!parentsHere.length) continue;

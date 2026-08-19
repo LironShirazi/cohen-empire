@@ -39,6 +39,26 @@
     return main.charAt(0);
   };
 
+  /**
+   * סדר אחים — **הבכור ראשון**, לפי שנת לידה.
+   *
+   * זה סדר הקריאה הטבעי (בכור→צעיר), ולכן הוא מה שמוצג בכרטיס העלה.
+   * ⚠️ בפריסת ה-SVG הסדר **הפוך**: שם אינדקס 0 הוא ה-x הקטן ביותר,
+   * כלומר הצד השמאלי, ואילו בעץ בעברית הבכור צריך להיות מימין. לכן
+   * `layout.js` מהפך את התוצאה. שינוי כאן משנה את שני המקומות.
+   *
+   * מי שאין לו שנת לידה יורד לסוף — אי אפשר לתת לו את מקום הבכור על
+   * סמך מידע שאין לנו; `sortOrder` (סדר ההוספה) שובר שוויון.
+   */
+  NS.compareSiblings = function (a, b) {
+    const ya = Number.isFinite(a.birthYear) ? a.birthYear : null;
+    const yb = Number.isFinite(b.birthYear) ? b.birthYear : null;
+    if (ya === null && yb === null) return a.sortOrder - b.sortOrder;
+    if (ya === null) return 1;
+    if (yb === null) return -1;
+    return ya - yb || a.sortOrder - b.sortOrder;
+  };
+
   // מזהה אמיתי מהסוג של העמודה — העלה נוצר בקליינט ורק אז נשמר,
   // ולכן הוא חייב להיות uuid תקין ולא המזהה הקצר שהיה ב-localStorage
   function uid() {
@@ -309,7 +329,9 @@
   }
 
   function childrenOf(id) {
-    return all().filter((p) => p.fatherId === id || p.motherId === id);
+    return all()
+      .filter((p) => p.fatherId === id || p.motherId === id)
+      .sort(NS.compareSiblings);
   }
 
   function parentsOf(id) {
