@@ -1,24 +1,21 @@
+import Link from "next/link";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
-import { GalleryScreen } from "@/components/gallery/gallery-screen";
+import { NewAlbumForm } from "@/components/gallery/new-album-form";
 import { Card } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
-import {
-  getGallery,
-  getGalleryRaceOptions,
-  getMyAdminRaces,
-  getProfile,
-  getUser,
-} from "@/lib/data";
+import { getAlbums, getUser } from "@/lib/data";
 
 export const metadata = {
   title: "📸 גלריה — אימפריית כהן",
 };
 
 /**
- * גלריית התמונות (docs/04 §26) — לפי שנים, החדשה למעלה.
+ * הגלריה המשפחתית (docs/04 §26) — רשימת האלבומים.
  *
- * מחוברים בלבד: מדיניות הקריאה על `gallery_photos` היא
- * `to authenticated` מאז 0001, כך שלמי שלא מחובר אין כאן מה לראות.
+ * אלבום ולא שנה: הגלריה היא של המשפחה לכל שימוש, לא רק של המירוץ
+ * (מיגרציה 0013). כל בן משפחה פותח אלבום ומוסיף מדיה לכל אלבום.
+ *
+ * מחוברים בלבד: מדיניות הקריאה היא `to authenticated` מאז 0001.
  */
 export default async function GalleryPage() {
   const user = await getUser();
@@ -30,8 +27,8 @@ export default async function GalleryPage() {
         <h1 className="font-display text-3xl text-brand">גלריה</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">
-            התמונות של כל השנים שמורות למשפחה — צריך להתחבר כדי לראות אותן
-            ולהוסיף משלכם.
+            האלבומים של המשפחה שמורים לבני המשפחה — צריך להתחבר כדי לראות
+            אותם ולהוסיף משלכם.
           </p>
           <GoogleSignInButton next="/gallery" />
         </Card>
@@ -39,27 +36,51 @@ export default async function GalleryPage() {
     );
   }
 
-  const [years, races, profile, adminRaces] = await Promise.all([
-    getGallery(),
-    getGalleryRaceOptions(),
-    getProfile(),
-    getMyAdminRaces(),
-  ]);
+  const albums = await getAlbums();
 
   return (
     <PageShell>
       <PageHeader title="📸 גלריה" back="/" backLabel="לדף הבית" />
-      <GalleryScreen
-        years={years}
-        races={races}
-        myUserId={user.id}
-        isOwner={!!profile?.is_owner}
-        // רק מירוץ שהמשתמש עדיין מנהל: `is_race_admin` בשרת מחזיר false
-        // למירוץ בארכיון, ואין טעם להציג כפתור שה-DB ידחה
-        adminRaceIds={adminRaces
-          .filter((race) => race.status !== "archived")
-          .map((race) => race.id)}
-      />
+
+      <NewAlbumForm myUserId={user.id} />
+
+      {albums.length === 0 ? (
+        <Card className="mt-6 text-center">
+          <p className="text-lg font-bold">עוד אין אלבומים 📭</p>
+          <p className="mt-1 text-muted">
+            חתונה, טיול, מירוץ — כל אירוע משפחתי יכול לקבל אלבום משלו.
+          </p>
+        </Card>
+      ) : (
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          {albums.map((album) => (
+            <Link
+              key={album.id}
+              href={`/gallery/${album.id}`}
+              className="overflow-hidden rounded-card border border-line bg-surface shadow-card"
+            >
+              <div className="flex aspect-square items-center justify-center bg-bg-2">
+                {album.cover_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={album.cover_url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-4xl opacity-40">📷</span>
+                )}
+              </div>
+              <div className="p-3">
+                <p className="truncate font-bold">{album.name}</p>
+                <p className="text-sm text-muted">
+                  {album.count === 1 ? "פריט אחד" : `${album.count} פריטים`}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </PageShell>
   );
 }

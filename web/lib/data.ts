@@ -3,6 +3,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Mentionable } from "@/lib/mentions";
 import type {
   ChatMessage,
+  GalleryAlbum,
   GalleryPhoto,
   JoinRequest,
   LeaderboardRow,
@@ -575,80 +576,80 @@ export async function getUnreadNotifications(
   return (data ?? []) as UnreadNotification[];
 }
 
-/** תמונה בגלריה + שם מי שהעלה, כפי שהמסך מציג אותה */
+/** פריט מדיה + שם מי שהעלה, כפי שהמסך מציג אותו */
 export type GalleryPhotoRow = GalleryPhoto & {
   uploader_name: string | null;
 };
 
-/** שנה בגלריה: הכותרת שמעליה, והתמונות שבתוכה */
-export type GalleryYear = {
-  year: number;
-  raceName: string | null;
-  photos: GalleryPhotoRow[];
+/** אלבום כפי שהוא נראה ברשימה: כמה מדיה יש בו ומה התמונה שעל הכריכה */
+export type GalleryAlbumSummary = GalleryAlbum & {
+  creator_name: string | null;
+  count: number;
+  cover_url: string | null;
 };
 
 /**
- * כל הגלריה, מקובצת לשנים — החדשה למעלה (docs/04 §26).
+ * כל האלבומים, החדש-שעודכן למעלה (מיגרציה 0013).
  *
- * הכל בשאילתה אחת ובלי עימוד: זו גלריה משפחתית של פעם בשנה, ואפילו
- * אחרי 20 שנה מדובר בכמה מאות שורות. אם היא תגדל מעבר לזה, הנקודה
- * לעמד בה היא **שנה שלמה** ולא תמונה — ככה נראה גם המסך.
+ * הכריכה והספירה מגיעות בשאילתה אחת עם האלבומים ומחושבות כאן. אם
+ * הגלריה תגדל עד שזה יכאב, הנקודה לשנות בה היא view שמחזיר את
+ * הספירה ואת הפריט האחרון בלבד — לא עוד round-trip מהמסך.
  */
-export async function getGallery(): Promise<GalleryYear[]> {
+export async function getAlbums(): Promise<GalleryAlbumSummary[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createClient();
 
-  const [{ data: photos }, { data: races }] = await Promise.all([
-    supabase
-      .from("gallery_photos")
-      .select("*, uploader:profiles(full_name)")
-      .order("year", { ascending: false })
-      .order("created_at", { ascending: false }),
-    supabase.from("public_races").select("year, name"),
-  ]);
+  const { data } = await supabase
+    .from("gallery_albums")
+    .select("*, creator:profiles(full_name), photos:gallery_photos(url, created_at)")
+    .order("updated_at", { ascending: false });
 
-  const raceNames = new Map(
-    ((races ?? []) as { year: number; name: string }[]).map((r) => [
-      r.year,
-      r.name,
-    ])
-  );
-
-  const years = new Map<number, GalleryYear>();
-  for (const row of (photos ?? []) as (GalleryPhoto & {
-    uploader: { full_name: string | null } | null;
-  })[]) {
-    const { uploader, ...photo } = row;
-    let bucket = years.get(photo.year);
-    if (!bucket) {
-      bucket = {
-        year: photo.year,
-        raceName: raceNames.get(photo.year) ?? null,
-        photos: [],
-      };
-      years.set(photo.year, bucket);
-    }
-    bucket.photos.push({ ...photo, uploader_name: uploader?.full_name ?? null });
-  }
-
-  return [...years.values()];
+  return ((data ?? []) as (GalleryAlbum & {
+    creator: { full_name: string | null } | null;
+    photos: { url: string; created_at: string }[];
+  })[]).map(({ creator, photos, ...album }) => {
+    const newest = [...photos].sort((a, b) =>
+      b.created_at.localeCompare(a.created_at)
+    )[0];
+    return {
+      ...album,
+      creator_name: creator?.full_name ?? null,
+      count: photos.length,
+      cover_url: newest?.url ?? null,
+    };
+  });
 }
 
-/**
- * השנים שאפשר להעלות אליהן: כל מירוץ שקיים (כדי שהתמונה תקושר אליו),
- * ובנוסף השנים ההיסטוריות — אלה נשמרות בלי `race_id` כי אין להן מירוץ
- * במערכת בכלל.
- */
-export async function getGalleryRaceOptions(): Promise<
-  { id: string; year: number; name: string }[]
-> {
-  if (!isSupabaseConfigured) return [];
+export async function getAlbum(albumId: string): Promise<GalleryAlbum | null> {
+  if (!isSupabaseConfigured) return null;
   const supabase = await createClient();
   const { data } = await supabase
-    .from("public_races")
-    .select("id, year, name")
-    .order("year", { ascending: false });
-  return (data ?? []) as { id: string; year: number; name: string }[];
+    .from("gallery_albums")
+    .select("*")
+    .eq("id", albumId)
+    .maybeSingle();
+  return (data as GalleryAlbum | null) ?? null;
+}
+
+/** המדיה שבאלבום — החדש למעלה */
+export async function getAlbumPhotos(
+  albumId: string
+): Promise<GalleryPhotoRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("gallery_photos")
+    .select("*, uploader:profiles(full_name)")
+    .eq("album_id", albumId)
+    .order("created_at", { ascending: false });
+
+  return ((data ?? []) as (GalleryPhoto & {
+    uploader: { full_name: string | null } | null;
+  })[]).map(({ uploader, ...photo }) => ({
+    ...photo,
+    uploader_name: uploader?.full_name ?? null,
+  }));
 }
 
 export const raceStatusLabel: Record<RaceStatus, string> = {

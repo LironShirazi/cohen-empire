@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { isVideoUrl } from "@/lib/media";
 import type { GalleryPhotoRow } from "@/lib/data";
 
 /**
@@ -12,21 +13,23 @@ import type { GalleryPhotoRow } from "@/lib/data";
  * מחדש והכותרת שבעריכה מתאפסת מעצמה — בלי אפקט שמסנכרן state ל-props.
  *
  * ⚠️ סדר המחיקה: קודם השורה, אחר-כך הקובץ. השורה היא מה שהמסך קורא,
- * ואם מחיקת הקובץ תיכשל (מנהל תורן שמוחק תמונה שמישהו אחר העלה —
- * מדיניות ה-Storage מרשה רק לבעל הקובץ ולמנהל-על) נשאר קובץ יתום
- * ב-bucket, ולא תמונה שבורה על המסך. זה החוב הידוע גם ב-chat-files.
+ * ואם מחיקת הקובץ תיכשל (מנהל-על שמוחק פריט שמישהו אחר העלה — מדיניות
+ * ה-Storage מרשה מחיקת קובץ רק לבעליו) נשאר קובץ יתום ב-bucket, ולא
+ * תמונה שבורה על המסך. זה החוב הידוע גם ב-chat-files.
  */
 export function PhotoLightbox({
   photos,
   index,
-  canManage,
+  myUserId,
+  isOwner,
   onNavigate,
   onClose,
   onChanged,
 }: {
   photos: GalleryPhotoRow[];
   index: number;
-  canManage: (raceId: string | null, uploadedBy: string | null) => boolean;
+  myUserId: string;
+  isOwner: boolean;
   onNavigate: (index: number) => void;
   onClose: () => void;
   onChanged: () => void;
@@ -50,7 +53,9 @@ export function PhotoLightbox({
   }, [index, photos.length, onClose, onNavigate]);
 
   if (!photo) return null;
-  const mine = canManage(photo.race_id, photo.uploaded_by);
+  // אותה הכרעה כמו במדיניות ה-UPDATE/DELETE (0013). מה שכאן הוא נימוס
+  // — מי שינסה בכל זאת ייתקל ב-RLS
+  const mine = photo.uploaded_by === myUserId || isOwner;
 
   async function saveCaption() {
     setBusy(true);
@@ -101,9 +106,8 @@ export function PhotoLightbox({
         >
           ✕
         </button>
-        <span className="text-sm opacity-80">
-          {photo.year}
-          {photo.uploader_name ? ` · העלה/תה ${photo.uploader_name}` : ""}
+        <span className="truncate text-sm opacity-80">
+          {photo.uploader_name ? `העלה/תה ${photo.uploader_name}` : ""}
         </span>
         <span className="ms-auto text-sm opacity-80">
           {index + 1}/{photos.length}
@@ -121,12 +125,21 @@ export function PhotoLightbox({
         >
           ‹
         </button>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photo.url}
-          alt={photo.caption ?? `תמונה משנת ${photo.year}`}
-          className="mx-auto max-h-full min-h-0 flex-1 object-contain"
-        />
+        {isVideoUrl(photo.url) ? (
+          <video
+            src={photo.url}
+            controls
+            playsInline
+            className="mx-auto max-h-full min-h-0 flex-1"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photo.url}
+            alt={photo.caption ?? "תמונה מהאלבום"}
+            className="mx-auto max-h-full min-h-0 flex-1 object-contain"
+          />
+        )}
         <button
           onClick={() => onNavigate(index - 1)}
           disabled={index <= 0}
