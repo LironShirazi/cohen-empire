@@ -10,16 +10,18 @@
 לניהול המירוץ המשפחתי השנתי של משפחת כהן ביום העצמאות (מסורת 20+ שנה).
 פירוט מלא: [README.md](README.md).
 
-**מצב נוכחי: שלבים 0–2 מומשו.** אפליקציית Next.js חיה
-תחת `web/` (ראו §5), הסכמה וה-RPC-ים ב-`supabase/migrations/`. `family-tree/`
-הוא עדיין מודול עצמאי ב-vanilla JS שלא חובר ל-Supabase (שלב 3) — ראו §4.
+**מצב נוכחי: שלבים 0–2 הושלמו, שלב 3 בעבודה.** אפליקציית Next.js חיה
+תחת `web/` (ראו §5), הסכמה וה-RPC-ים ב-`supabase/migrations/`. העץ המשפחתי
+עבר ל-Supabase והוא כבר ראוט באפליקציה — ראו §4.
 
 **שלב 2** ([docs/05-roadmap.md](docs/05-roadmap.md)) הושלם: צ'אט קבוצתי בזמן
 אמת עם צירוף קבצים, אזכורים (@) והתראות In-App, הודעות רוחב מהמנהל (§7),
 תור אישורי המשימות, מפת המנהל החיה (§8) והוספת משתתפים ידניים להרכב.
 **החלוקה האוטומטית המאוזנת לקבוצות בוטלה** — הנימוק ב-docs/02 §3.6.
-הצעד הבא לפי ה-roadmap הוא **שלב 3**, שמתחיל בחיבור `family-tree/`
-ל-Supabase (§4, [docs/06](docs/06-family-tree.md)).
+
+**שלב 3** ([docs/05](docs/05-roadmap.md)) התחיל: העץ המשפחתי חובר ל-Supabase
+(מיגרציה `0010`, §4). מה שנשאר בשלב — התאמת העיצוב של העץ למערכת העיצוב,
+משפטי סבא וסבתא, היכל התהילה, גלריית תמונות ו-PWA.
 
 ## 1. תמיד תתחיל מכאן — מסמכי התכנון (`docs/`)
 
@@ -77,20 +79,37 @@ Browser Geolocation API · אירוח Vercel. אין שרת נפרד לתחזק.
 ב-`claude-design/design-system/components/`, ואז לממש ב-React/Tailwind
 תוך שימוש ב-tokens מ-`styles.css`.
 
-## 4. `family-tree/` — המודול העצמאי שעוד לא חובר ל-Supabase
+## 4. העץ המשפחתי — ראוט באפליקציה עם מנוע vanilla (שלב 3)
 
-Vanilla JS, ללא build, נפתח ישירות בדפדפן (`index.html` בשורש או
-`family-tree/index.html`). נתונים ב-localStorage (פר-דפדפן, זמני עד חיבור
-ל-Supabase). פירוט מלא כולל מודל הנתונים ותוכנית ההסבה: [docs/06-family-tree.md](docs/06-family-tree.md).
-כשמסבים אותו ל-Supabase — לשמור על אותו API ב-`js/store.js` (`get/all/childrenOf/...`)
-כדי לא לגעת ב-`layout.js`/`render.js`/`ui.js`.
+```
+web/app/family-tree/page.tsx        שער הכניסה: בלי משתמש מחובר אין עץ
+web/app/family-tree/tree-canvas.tsx המעטפת — ה-DOM שהמנוע מחפש + הזרקת הלקוח
+web/app/family-tree/family-tree.css העיצוב, כולו תחת `.ft-root`
+web/public/family-tree/js/*.js      המנוע עצמו (store/layout/render/export/ui/main)
+```
 
-⚠️ **`web/public/family-tree/` הוא עותק, לא מקור.** Vercel בונה את `web/`
-בלבד, ולכן הקישור מדף הבית ל-`/family-tree/index.html` החזיר 404 בפרודקשן.
-עד שהמודול יעבור לתוך האפליקציה כ-route בשלב 3 — **עורכים רק את
-`family-tree/` בשורש, ואז מריצים `npm run sync:family-tree` מתוך `web/`.**
-העותק שונה מהמקור בשורה אחת בלבד (כפתור הבית: `../index.html` ← `/`),
-והסקריפט מחיל אותה בעצמו.
+**עותק אחד בלבד.** עד שלב 3 היו שלושה (שורש הריפו, `claude-design/ui-screens/`,
+ו-`web/public/`) עם סקריפט סנכרון ביניהם. עכשיו המקור היחיד הוא
+`web/public/family-tree/js/` — הסקריפט והעותק בשורש נמחקו.
+
+**למה המנוע נשאר vanilla:** `layout.js` (union-find, שיוך דורות, מרכוז)
+ו-`render.js` (SVG + pan/zoom) עובדים, ו-React לא היה קונה להם כלום.
+הם **לא נגעו** במעבר ל-Supabase — רק `store.js` הוחלף ו-`main.js` קיבל
+`boot()` מפורש (ב-SPA האירוע `DOMContentLoaded` כבר קרה מזמן).
+
+⚠️ **הקריאות ב-`store.js` חייבות להישאר סינכרוניות.** `render.draw()`
+קורא ל-`all()` בתוך הרינדור, ו-ui.js משתמש באובייקט שחוזר מ-`addChild`/
+`addPartner` מיד. לכן המתאם טוען הכל פעם אחת למפה בזיכרון, קורא ממנה,
+וכותב אופטימית: מעדכן את המפה, מצייר, ושולח ל-Supabase ברקע (diff מול
+תמונת מצב אחרונה). Realtime מיישר קו. מי שיהפוך `get`/`all` לאסינכרוניים
+ישבור את שלושת הקבצים שבמפורש לא נגענו בהם.
+
+⚠️ **ה-CSS כולו תחת `.ft-root`.** הקובץ נכתב כשהעץ היה עמוד עצמאי והגדיר
+`:root` ו-`*` גלובליים — ובתוכם `--ink`, `--line`, `--gold`, `--danger`,
+`--radius` ו-`--shadow`, שכולם שמות שכבר קיימים ב-`globals.css`. בלי
+הסקופ הוא צובע מחדש את כל האפליקציה.
+
+פירוט מלא — מודל הנתונים, ה-RLS ומה שנשאר פתוח: [docs/06-family-tree.md](docs/06-family-tree.md).
 
 ## 5. האפליקציה בפועל (`web/`)
 
