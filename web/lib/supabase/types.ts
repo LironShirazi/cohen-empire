@@ -141,6 +141,36 @@ export type TeamLocation = {
   updated_at: string;
 };
 
+/**
+ * עלה בעץ המשפחתי (docs/03, docs/06 §4). הטבלה קיימת מ-0001 אבל
+ * נפתחה לכתיבה רק ב-0010, כשהעץ עבר מ-localStorage ל-Supabase.
+ *
+ * `profile_id` הוא "זה אני" — הקישור למשתמש רשום, ייחודי, והשדה
+ * היחיד בשורה שמוגן: כל בן משפחה עורך כל עלה (שם, תמונה, קשרים),
+ * אבל את הסימון הזה רק בעליו יכול לתת או להסיר (טריגר
+ * `guard_family_member_identity`).
+ *
+ * ⚠️ `father_id`/`mother_id` הם `on delete restrict` — מחיקת עלה עם
+ * צאצאים נכשלת ב-23503, וזו ההגנה האמיתית על מבנה העץ.
+ */
+export type FamilyMember = {
+  id: string;
+  profile_id: string | null;
+  name: string;
+  gender: "m" | "f" | null;
+  birth_year: number | null;
+  phone: string | null;
+  photo_url: string | null;
+  father_id: string | null;
+  mother_id: string | null;
+  partner_id: string | null;
+  is_root: boolean;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type NotificationType = "mention" | "task_approved" | "admin_broadcast";
 
 /**
