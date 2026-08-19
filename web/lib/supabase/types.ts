@@ -174,6 +174,42 @@ export type FamilyMember = {
   updated_at: string;
 };
 
+/**
+ * אלבום בגלריה (מיגרציה 0013). היחידה של הגלריה היא אלבום ולא שנה:
+ * הגלריה היא של המשפחה לכל שימוש — חתונה, טיול, מירוץ — ולא רק של
+ * יום העצמאות.
+ *
+ * האלבום שייך למשפחה ולא לפותח אותו: כל בן משפחה מוסיף אליו מדיה
+ * ומתקן את שמו (כמו עלה בעץ, docs/06 §4). רק המחיקה שמורה לפותח
+ * ולמנהל-על — והיא נכשלת כל עוד יש בו מדיה (`on delete restrict`).
+ */
+export type GalleryAlbum = {
+  id: string;
+  name: string;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * פריט מדיה בגלריה (docs/03, docs/04 §26). הטבלה קיימת מ-0001, נפתחה
+ * לכתיבה ב-0012, ועברה לאלבומים ב-0013.
+ *
+ * `storage_path` נשמר כדי שמחיקה תוכל למחוק גם את הקובץ מה-bucket.
+ * הסוג (תמונה/סרטון) נגזר מהסיומת ב-`lib/media.ts` ולא נשמר בשורה.
+ */
+export type GalleryPhoto = {
+  id: string;
+  album_id: string;
+  /** מ-0001. הגלריה כבר לא מסודרת לפי מירוץ ולכן הממשק לא ממלא אותו */
+  race_id: string | null;
+  url: string;
+  storage_path: string | null;
+  caption: string | null;
+  uploaded_by: string | null;
+  created_at: string;
+};
+
 export type NotificationType = "mention" | "task_approved" | "admin_broadcast";
 
 /**

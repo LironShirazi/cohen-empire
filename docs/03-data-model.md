@@ -159,7 +159,12 @@ erDiagram
 ### תוכן משפחתי
 
 - **`quotes`** — משפטים של סבא וסבתא: `text`, `who` (סבא/סבתא), `image_url` (תמונה/קריקטורה)
-- **`gallery_photos`** — גלריה: `race_id`, `url`, `caption`, `uploaded_by`
+- **`gallery_albums`** — אלבום בגלריה (0013): `name`, `created_by`. היחידה של
+  הגלריה היא אלבום ולא שנה — היא של המשפחה לכל שימוש, לא רק של המירוץ
+- **`gallery_photos`** — מדיה בגלריה: `album_id`, `url`, `storage_path`,
+  `caption`, `uploaded_by`. `album_id` הוא `on delete restrict` — אלבום לא
+  נמחק עם המדיה של כולם בתוכו. `storage_path` נשמר כדי שמחיקת שורה תוכל
+  למחוק גם את הקובץ מה-bucket. `race_id` נשאר מ-0001 ואינו בשימוש
 - **`hall_of_fame`** — היכל התהילה: `year`, `race_id?`, `team_name`, `team_color`,
   `members` (jsonb), `photo_url` — כולל הזנה ידנית של 20 שנות היסטוריה שקדמו לאפליקציה
 - **`family_members`** — העץ המשפחתי: `name`, `gender`, `birth_year`, `phone`,

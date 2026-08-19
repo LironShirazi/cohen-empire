@@ -103,12 +103,19 @@ export default async function Home() {
           </div>
         ) : null}
 
-        {/* העץ המשפחתי — ראוט באפליקציה מאז שלב 3 (docs/06) */}
-        <Link href="/family-tree">
-          <Button variant="secondary" className="w-full">
-            🌳 העץ המשפחתי
-          </Button>
-        </Link>
+        {/* קבועים בדף הבית ללא קשר למהלך המשחק (docs/04 §1) */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link href="/family-tree">
+            <Button variant="secondary" className="w-full">
+              🌳 העץ המשפחתי
+            </Button>
+          </Link>
+          <Link href="/gallery">
+            <Button variant="secondary" className="w-full">
+              📸 גלריה
+            </Button>
+          </Link>
+        </div>
 
         {showAdminLink ? (
           <Link href="/admin">

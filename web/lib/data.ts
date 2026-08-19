@@ -3,6 +3,8 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Mentionable } from "@/lib/mentions";
 import type {
   ChatMessage,
+  GalleryAlbum,
+  GalleryPhoto,
   JoinRequest,
   LeaderboardRow,
   NotificationType,
@@ -572,6 +574,82 @@ export async function getUnreadNotifications(
 
   const { data } = await query;
   return (data ?? []) as UnreadNotification[];
+}
+
+/** פריט מדיה + שם מי שהעלה, כפי שהמסך מציג אותו */
+export type GalleryPhotoRow = GalleryPhoto & {
+  uploader_name: string | null;
+};
+
+/** אלבום כפי שהוא נראה ברשימה: כמה מדיה יש בו ומה התמונה שעל הכריכה */
+export type GalleryAlbumSummary = GalleryAlbum & {
+  creator_name: string | null;
+  count: number;
+  cover_url: string | null;
+};
+
+/**
+ * כל האלבומים, החדש-שעודכן למעלה (מיגרציה 0013).
+ *
+ * הכריכה והספירה מגיעות בשאילתה אחת עם האלבומים ומחושבות כאן. אם
+ * הגלריה תגדל עד שזה יכאב, הנקודה לשנות בה היא view שמחזיר את
+ * הספירה ואת הפריט האחרון בלבד — לא עוד round-trip מהמסך.
+ */
+export async function getAlbums(): Promise<GalleryAlbumSummary[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("gallery_albums")
+    .select("*, creator:profiles(full_name), photos:gallery_photos(url, created_at)")
+    .order("updated_at", { ascending: false });
+
+  return ((data ?? []) as (GalleryAlbum & {
+    creator: { full_name: string | null } | null;
+    photos: { url: string; created_at: string }[];
+  })[]).map(({ creator, photos, ...album }) => {
+    const newest = [...photos].sort((a, b) =>
+      b.created_at.localeCompare(a.created_at)
+    )[0];
+    return {
+      ...album,
+      creator_name: creator?.full_name ?? null,
+      count: photos.length,
+      cover_url: newest?.url ?? null,
+    };
+  });
+}
+
+export async function getAlbum(albumId: string): Promise<GalleryAlbum | null> {
+  if (!isSupabaseConfigured) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("gallery_albums")
+    .select("*")
+    .eq("id", albumId)
+    .maybeSingle();
+  return (data as GalleryAlbum | null) ?? null;
+}
+
+/** המדיה שבאלבום — החדש למעלה */
+export async function getAlbumPhotos(
+  albumId: string
+): Promise<GalleryPhotoRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("gallery_photos")
+    .select("*, uploader:profiles(full_name)")
+    .eq("album_id", albumId)
+    .order("created_at", { ascending: false });
+
+  return ((data ?? []) as (GalleryPhoto & {
+    uploader: { full_name: string | null } | null;
+  })[]).map(({ uploader, ...photo }) => ({
+    ...photo,
+    uploader_name: uploader?.full_name ?? null,
+  }));
 }
 
 export const raceStatusLabel: Record<RaceStatus, string> = {
