@@ -170,7 +170,7 @@
   async function load() {
     try {
       prefs = JSON.parse(localStorage.getItem(PREFS_KEY)) || {};
-    } catch (e) { prefs = {}; }
+    } catch { prefs = {}; }
     prefs.editMode = !!prefs.editMode;
 
     await fetchAll();
@@ -200,15 +200,20 @@
   }
 
   /* ---------- שמירה ---------- */
+  // הכתיבות רצות בטור ולא במקביל. שתי שמירות מהירות (הוספה ואז עריכה)
+  // היו מחשבות diff מול אותה תמונת מצב, ושתיהן היו מנסות להכניס את
+  // אותה שורה — השנייה נופלת על 23505 ומציגה שגיאה על משהו שהצליח
+  let writeChain = Promise.resolve();
+
   function save() {
     // מציירים מיד; הכתיבה עצמה רצה ברקע
     if (typeof NS.onDataChanged === 'function') NS.onDataChanged();
-    void persist();
+    writeChain = writeChain.then(persist);
   }
 
   function savePrefs() {
     try { localStorage.setItem(PREFS_KEY, JSON.stringify({ editMode: prefs.editMode })); }
-    catch (e) { /* לא קריטי */ }
+    catch { /* לא קריטי */ }
   }
 
   // dataURL → קובץ ב-bucket. התמונה נבחרת במחבר כ-JPEG 512px
@@ -309,7 +314,7 @@
       try {
         await fetchAll();
         if (typeof NS.onDataChanged === 'function') NS.onDataChanged();
-      } catch (e) { /* אין מה לעשות מעבר להודעה שכבר הוצגה */ }
+      } catch { /* אין מה לעשות מעבר להודעה שכבר הוצגה */ }
     } finally {
       pendingWrites -= 1;
       if (pendingWrites === 0 && reloadQueued) {
@@ -478,8 +483,17 @@
   }
 
   /* ---------- פעולות הרסניות על נתונים משותפים ---------- */
-  // העץ כבר לא פרטי לדפדפן: איפוס או ייבוא מוחקים את מה שכל המשפחה
-  // הזינה. לכן הם למנהל-על בלבד (docs/06 §4), ולא לכל מי שנכנס
+  /*
+   * ⚠️ **הכפתורים "ייבוא נתונים" ו"איפוס לעץ ההתחלתי" הוסרו מהתפריט.**
+   * שניהם נכתבו כשהעץ היה פרטי לדפדפן, ומול מסד משותף הם מוחקים את מה
+   * שכל המשפחה הזינה. גרוע מזה — המחיקה רצה שורה-שורה, ו-`on delete
+   * restrict` על הורים מפיל אותה באמצע: התוצאה היא מחיקה חלקית, לא
+   * ביטול. שחזור אמיתי נעשה מול מסד הנתונים.
+   *
+   * הפונקציות נשארות כאן (ו-`#import-file` נשאר בעמוד) כי `ui.js`
+   * מתייחס אליהן ב-init, אבל אין יותר מסלול שמפעיל אותן.
+   * "גיבוי נתונים (JSON)" נשאר — הוא קריאה בלבד.
+   */
   function requireOwner() {
     if (!NS.isOwner) {
       throw new Error('הפעולה הזו שמורה למנהל-על — העץ משותף לכל המשפחה');
@@ -487,12 +501,7 @@
   }
 
   function resetToSeed() {
-    // ui.js לא עוטף את הקריאה הזו ב-try, ולכן מסבירים כאן ולא זורקים
-    if (!NS.isOwner) {
-      alert('איפוס העץ שמור למנהל-על — העץ משותף לכל המשפחה');
-      return;
-    }
-    alert('איפוס העץ ההתחלתי נעשה מול מסד הנתונים ולא מהדפדפן — פנו למנהל.');
+    throw new Error('איפוס העץ נעשה מול מסד הנתונים ולא מהדפדפן');
   }
 
   /* ---------- גיבוי / ייבוא ---------- */

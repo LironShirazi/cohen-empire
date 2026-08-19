@@ -91,9 +91,6 @@ export function TreeCanvas({
             <button data-act="pdf">📄 קובץ PDF</button>
             <hr />
             <button data-act="json">💾 גיבוי נתונים (JSON)</button>
-            <button data-act="import">📥 ייבוא נתונים</button>
-            <hr />
-            <button data-act="reset">↩️ איפוס לעץ ההתחלתי</button>
           </div>
         </div>
         <input
@@ -129,6 +126,9 @@ export function TreeCanvas({
       <div id="modal" className="overlay hidden">
         <div className="modal-box" id="modal-box"></div>
       </div>
+      {/* ui.js נרשם ל-change של השדה הזה ב-init, ולכן הוא נשאר בעמוד
+          למרות שאין יותר כפתור שמפעיל אותו — הסרתו הייתה מפילה את
+          האתחול כולו על querySelector שמחזיר null */}
       <input type="file" id="import-file" accept="application/json,.json" hidden />
       <div id="toast" className="toast hidden"></div>
     </div>
