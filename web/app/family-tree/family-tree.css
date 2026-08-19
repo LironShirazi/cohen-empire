@@ -2,27 +2,42 @@
    העץ המשפחתי — עיצוב (Mobile-First, RTL, שפה חמה ומשפחתית)
 
    ⚠️ הכל תחת `.ft-root` בכוונה. הקובץ הזה נכתב כשהעץ היה עמוד עצמאי,
-   ולכן הגדיר `:root` ו-`*` גלובליים — ובין המשתנים שלו יש `--ink`,
-   `--line`, `--gold`, `--danger`, `--radius` ו-`--shadow`, שכולם שמות
-   שכבר קיימים ב-web/app/globals.css. בתוך האפליקציה זה היה צובע מחדש
-   את כל המסכים האחרים. הסקופ מגביל אותם לעץ בלבד.
+   ולכן הגדיר `:root` ו-`*` גלובליים. הסקופ מגביל אותם לעץ בלבד, כדי
+   שה-reset (`margin/padding: 0`) לא ידרוס את שאר המסכים.
 
-   העיצוב עצמו עוד לא הותאם למערכת העיצוב — זה קומיט נפרד (docs/06).
+   הצבעים כאן הם **הטוקנים של האפליקציה** (web/app/globals.css, שמקורו
+   ב-claude-design/design-system/styles.css) — אין בקובץ הזה פלטה משלו.
+   עד קומיט העיצוב היו כאן `--cream`/`--green`/`--gold` משלו, וגם
+   הגדרות מקומיות ל-`--ink`/`--line`/`--danger` שהסתירו את הגלובליים.
+
+   היוצא מן הכלל היחיד: פלטת **הצמתים ב-SVG** (`--ft-*` למטה) — טבעת
+   זהב לשורש וטבעות לפי מגדר נושאות משמעות (docs/06 §2), ואדום/צהוב
+   המירוץ היו נלחמים בתמונות. `js/export.js` משכפל את הפלטה הזו כ-hex
+   קשיח כדי שהייצוא יהיה עצמאי — **כל שינוי צבע כאן חייב לגעת גם שם.**
    ============================================================ */
 .ft-root, .ft-root * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .ft-root {
-  --cream: #f7f1e6;
-  --cream-dark: #efe6d3;
-  --green: #23422f;
-  --green-light: #2e7d47;
-  --gold: #c9962e;
-  --ink: #2f2a1f;
-  --ink-soft: #7a715c;
-  --line: #b3a689;
-  --danger: #b3402e;
-  --radius: 14px;
-  --shadow: 0 6px 24px rgba(46, 36, 16, 0.18);
+  /* גיאומטריה — הטוקנים של מערכת העיצוב. הם מגיעים מ-`@theme` של
+     Tailwind (globals.css) ולא מ-`:root` ידני, ולכן יש כאן ערך גיבוי:
+     `@theme reference` היה מפסיק לפלוט אותם, ורדיוס 0 היה שינוי שקט. */
+  --ft-radius: var(--radius-card, 18px);
+  --ft-radius-sm: var(--radius-card-sm, 12px);
+  --ft-radius-lg: var(--radius-card-lg, 26px);
+  --ft-shadow: var(--shadow-card, 0 8px 28px rgba(26, 18, 6, 0.12));
+  --ft-shadow-lg: var(--shadow-card-lg, 0 16px 44px rgba(26, 18, 6, 0.16));
+
+  /* פלטת הצמתים ב-SVG (ראו האזהרה למעלה) */
+  --ft-branch: #b3a689;      /* ענפי הקשר */
+  --ft-gold: #c9962e;        /* טבעת השורש וקו הזוגיות */
+  --ft-heart: #c0392b;
+  --ft-ring: #8a8a7e;
+  --ft-ring-m: #4a7fb5;
+  --ft-ring-f: #c76b8e;
+  --ft-photo: #eee9dc;
+  --ft-photo-m: #dbe9f6;
+  --ft-photo-f: #f9e0ea;
+
   font-size: 16px;
 }
 
@@ -41,8 +56,8 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  font-family: -apple-system, "Segoe UI", Roboto, "Heebo", "Arial Hebrew", Arial, sans-serif;
-  background: var(--cream);
+  font-family: var(--font-rubik), "Noto Sans Hebrew", system-ui, sans-serif;
+  background: var(--bg);
   color: var(--ink);
 }
 
@@ -51,66 +66,92 @@
 /* הקנבס הוא מה שאמור לבלוע את כל מה שנשאר אחרי הכותרת והסרגל */
 .ft-root #tree-wrap { min-height: 0; }
 
+/* כותרות בפונט הכותרות של המותג. Secular One קיים במשקל 400 בלבד,
+   ולכן מבטלים את ה-bold שהדפדפן נותן ל-h1..h4 מעצמו. */
+.ft-root .titles h1,
+.ft-root .sheet-title h3,
+.ft-root .modal-head h3,
+.ft-root .full-box h2 {
+  font-family: var(--font-secular), var(--font-rubik), sans-serif;
+  font-weight: 400;
+}
+
 /* ---------- כותרת עליונה ---------- */
+/* הרקע מגיע מהמחלקה הגלובלית `.cosmic` (globals.css) — הרקע הקוסמי של
+   המותג. לכן אין כאן `background`: שתי המחלקות הן ספציפיות-שווה, ומי
+   שינצח תלוי בסדר טעינת הגיליונות. */
 .topbar {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px calc(6px);
-  background: var(--green);
-  color: #f6e7c1;
+  padding: 10px 14px;
   flex: 0 0 auto;
+  box-shadow: var(--shadow-navy, 0 14px 44px rgba(11, 27, 63, 0.38));
+  z-index: 30;
 }
 .home-link {
   font-size: 22px;
+  line-height: 1;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 8px 12px;
 }
-.titles h1 { font-size: 19px; line-height: 1.2; }
-.titles p { font-size: 12px; opacity: 0.8; }
+.titles h1 { font-size: 20px; line-height: 1.15; }
+.titles p { font-size: 12px; color: var(--gold-lite); }
 
 /* ---------- סרגל כלים ---------- */
 .toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background: var(--cream-dark);
-  border-bottom: 1px solid #ddd0b8;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
   overflow-x: auto;
   flex: 0 0 auto;
   -webkit-overflow-scrolling: touch;
 }
 .tb-btn {
   flex: 0 0 auto;
-  border: 1.5px solid var(--line);
-  background: #fff;
+  min-height: 40px;
+  border: 2px solid var(--line);
+  background: var(--surface);
   color: var(--ink);
   border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
+  transition: filter 0.12s, transform 0.06s;
 }
+.tb-btn:active { transform: translateY(1px); }
 .tb-btn.active {
-  background: var(--green-light);
-  border-color: var(--green-light);
+  background: var(--brand);
+  border-color: var(--brand);
   color: #fff;
 }
 .search-wrap { flex: 1 1 130px; min-width: 120px; }
 .tb-search {
   width: 100%;
-  border: 1.5px solid var(--line);
+  min-height: 40px;
+  border: 2px solid var(--line);
   border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 14px;
-  background: #fff;
+  padding: 8px 16px;
+  font: inherit;
+  /* 16px ולא פחות — ספארי בנייד מזנק זום על שדה עם טקסט קטן יותר */
+  font-size: 16px;
+  background: var(--surface);
   color: var(--ink);
 }
-.tb-search:focus { outline: none; border-color: var(--green-light); }
+.tb-search:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
 
 /* רשימת ההשלמה. fixed ולא absolute — ל-.toolbar יש overflow-x לגלילה,
    והרשימה הייתה נחתכת בתוכו. המיקום נקבע ב-ui.js מול השדה.
@@ -121,11 +162,11 @@
   max-height: 260px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  background: #fff;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--ft-radius);
+  box-shadow: var(--ft-shadow-lg);
+  padding: 6px;
 }
 .search-item {
   display: flex;
@@ -135,26 +176,28 @@
   text-align: start;
   background: none;
   border: none;
-  padding: 7px 8px;
-  border-radius: 10px;
+  padding: 8px;
+  border-radius: var(--ft-radius-sm);
   cursor: pointer;
   color: var(--ink);
-  font-size: 14px;
+  font: inherit;
+  font-size: 15px;
 }
-.search-item:hover, .search-item.active { background: var(--cream); }
+.search-item:hover, .search-item.active { background: var(--bg-2); }
 .search-item-text { display: flex; flex-direction: column; min-width: 0; }
-.search-item-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.search-item-name mark { background: rgba(201, 150, 46, 0.28); color: inherit; border-radius: 3px; }
-.search-item-meta { font-size: 12px; color: var(--ink-soft); }
-.search-empty { padding: 12px; font-size: 14px; color: var(--ink-soft); text-align: center; }
+.search-item-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-item-name mark { background: var(--yellow-soft); color: inherit; border-radius: 4px; }
+.search-item-meta { font-size: 12px; color: var(--muted); }
+.search-empty { padding: 12px; font-size: 15px; color: var(--muted); text-align: center; }
 .menu-wrap { position: relative; flex: 0 0 auto; }
 .menu {
   position: absolute;
   top: calc(100% + 6px);
   inset-inline-start: 0;
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--ft-radius);
+  box-shadow: var(--ft-shadow-lg);
   padding: 6px;
   z-index: 40;
   min-width: 210px;
@@ -165,14 +208,16 @@
   text-align: start;
   background: none;
   border: none;
-  padding: 10px 12px;
-  font-size: 14px;
-  border-radius: 8px;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--ft-radius-sm);
   cursor: pointer;
   color: var(--ink);
 }
-.menu button:hover { background: var(--cream); }
-.menu hr { border: none; border-top: 1px solid var(--cream-dark); margin: 4px 0; }
+.menu button:hover { background: var(--bg-2); }
+.menu hr { border: none; border-top: 1px solid var(--line); margin: 4px 0; }
 
 /* ---------- אזור העץ ---------- */
 #tree-wrap { position: relative; flex: 1 1 auto; overflow: hidden; }
@@ -185,79 +230,81 @@
   inset-inline-start: 0;
   width: 100%;
   text-align: center;
-  font-size: 11px;
-  color: var(--ink-soft);
+  font-size: 12px;
+  color: var(--muted);
   pointer-events: none;
 }
 
 .zoom-controls {
   position: absolute;
-  bottom: 26px;
+  bottom: 28px;
   inset-inline-end: 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   z-index: 20;
 }
 .zoom-controls button {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 1.5px solid var(--line);
-  background: #fff;
+  border: 2px solid var(--line);
+  background: var(--surface);
   font-size: 19px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(46, 36, 16, 0.15);
+  box-shadow: var(--ft-shadow);
   color: var(--ink);
 }
+.zoom-controls button:active { transform: translateY(1px); }
 
-/* ---------- עיצוב צמתים בתוך ה-SVG ---------- */
-.link { fill: none; stroke: var(--line); stroke-width: 2; }
-.couple { stroke: var(--gold); stroke-width: 2.5; }
+/* ---------- עיצוב צמתים בתוך ה-SVG ----------
+   הפלטה כאן משוכפלת ב-js/export.js (ראו האזהרה בראש הקובץ). */
+.link { fill: none; stroke: var(--ft-branch); stroke-width: 2; }
+.couple { stroke: var(--ft-gold); stroke-width: 2.5; }
 .couple.far { stroke-dasharray: 5 5; stroke-width: 1.5; opacity: 0.6; fill: none; }
-.heart { font-size: 13px; fill: #c0392b; paint-order: stroke; stroke: var(--cream); stroke-width: 5; }
+.heart { font-size: 13px; fill: var(--ft-heart); paint-order: stroke; stroke: var(--bg); stroke-width: 5; }
 /* שם המשפחה של הזוג, מתחת ללב */
 .couple-name {
   font-size: 11px;
   font-weight: 700;
-  fill: var(--gold);
+  fill: var(--ft-gold);
   paint-order: stroke;
-  stroke: var(--cream);
+  stroke: var(--bg);
   stroke-width: 4;
   pointer-events: none;
 }
 
 .person { cursor: pointer; }
-.person .ph-bg { fill: #eee9dc; }
-.person.g-m .ph-bg { fill: #dbe9f6; }
-.person.g-f .ph-bg { fill: #f9e0ea; }
-.person .ring { fill: none; stroke: #8a8a7e; stroke-width: 2.5; }
-.person.g-m .ring { stroke: #4a7fb5; }
-.person.g-f .ring { stroke: #c76b8e; }
-.person.root .ring { stroke: var(--gold); stroke-width: 5; }
-.person.me .ring { stroke: var(--green-light); stroke-width: 4; }
+.person .ph-bg { fill: var(--ft-photo); }
+.person.g-m .ph-bg { fill: var(--ft-photo-m); }
+.person.g-f .ph-bg { fill: var(--ft-photo-f); }
+.person .ring { fill: none; stroke: var(--ft-ring); stroke-width: 2.5; }
+.person.g-m .ring { stroke: var(--ft-ring-m); }
+.person.g-f .ring { stroke: var(--ft-ring-f); }
+.person.root .ring { stroke: var(--ft-gold); stroke-width: 5; }
+.person.me .ring { stroke: var(--ok); stroke-width: 4; }
 .person.selected .ring { stroke-width: 6; }
 .person .hit { fill: transparent; stroke: none; }
 
-.initial { font: 700 26px inherit; fill: #6b6152; pointer-events: none; }
+.initial { font: 700 26px inherit; fill: var(--muted); pointer-events: none; }
 .name {
   font-weight: 700;
   font-size: 13px;
   fill: var(--ink);
   paint-order: stroke;
-  stroke: var(--cream);
+  stroke: var(--bg);
   stroke-width: 4;
   pointer-events: none;
 }
 .year {
   font-size: 11px;
-  fill: var(--ink-soft);
+  fill: var(--muted);
   paint-order: stroke;
-  stroke: var(--cream);
+  stroke: var(--bg);
   stroke-width: 4;
   pointer-events: none;
 }
-.me-badge circle { fill: var(--green-light); }
+.me-badge circle { fill: var(--ok); }
 .me-badge text { font-size: 11px; pointer-events: none; }
 
 /* ---------- כרטיס עלה (Bottom Sheet) ---------- */
@@ -267,9 +314,11 @@
   inset-inline: 0;
   margin: 0 auto;
   max-width: 560px;
-  background: #fff;
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 -8px 30px rgba(46, 36, 16, 0.25);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: var(--ft-radius-lg) var(--ft-radius-lg) 0 0;
+  box-shadow: 0 -16px 44px rgba(26, 18, 6, 0.16);
   padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
   z-index: 50;
   max-height: 62vh;
@@ -278,104 +327,146 @@
 }
 @keyframes sheet-up { from { transform: translateY(40%); opacity: 0.4; } to { transform: none; opacity: 1; } }
 
-.sheet-grab { width: 44px; height: 4px; border-radius: 4px; background: #ddd0b8; margin: 4px auto 10px; }
+.sheet-grab { width: 44px; height: 4px; border-radius: 4px; background: var(--line); margin: 4px auto 10px; }
 .sheet-head { display: flex; align-items: center; gap: 12px; }
 .sheet-title { flex: 1; }
-.sheet-title h3 { font-size: 18px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.sheet-title p { font-size: 13px; color: var(--ink-soft); }
+.sheet-title h3 { font-size: 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sheet-title p { font-size: 14px; color: var(--muted); }
 .me-tag {
-  font-size: 11px;
-  background: var(--green-light);
-  color: #fff;
-  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #dbf3e6;      /* .chip-ok של מערכת העיצוב */
+  color: var(--ok);
+  padding: 3px 10px;
   border-radius: 999px;
 }
 
 .btn-close {
   border: none;
-  background: var(--cream);
+  background: var(--bg-2);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-size: 14px;
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
   cursor: pointer;
   color: var(--ink);
   flex: 0 0 auto;
 }
+.btn-close:hover { background: var(--line); }
 
-.sheet-rels { margin: 12px 0 4px; display: flex; flex-direction: column; gap: 6px; }
-.rel-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; }
-.rel-label { color: var(--ink-soft); font-weight: 600; }
+.sheet-rels { margin: 12px 0 4px; display: flex; flex-direction: column; gap: 8px; }
+.rel-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; }
+.rel-label { color: var(--muted); font-weight: 700; }
 
+/* צ'יפ קרוב — גרסת ה-`muted` של `components/ui/chip.tsx`. אדום
+   ה-brand-soft שמערכת העיצוב נותנת לצ'יפ ברירת המחדל היה צועק כאן,
+   כי ברשימת קרובים יש עשרה כאלה בשורה. */
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid var(--cream-dark);
-  background: var(--cream);
+  border: 1px solid var(--line);
+  background: var(--bg-2);
   border-radius: 999px;
-  padding: 3px 10px 3px 6px;
-  font-size: 13px;
+  padding: 4px 12px 4px 6px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   color: var(--ink);
 }
+.chip:hover { border-color: var(--brand); color: var(--brand); }
 .chip .avatar { flex: 0 0 auto; }
 
 .sheet-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.edit-actions { border-top: 1px dashed var(--cream-dark); padding-top: 12px; }
+.edit-actions { border-top: 1px dashed var(--line); padding-top: 12px; }
 
+/* כפתורים — מקבילים ל-`components/ui/button.tsx` בגודל מוקטן:
+   פינות `--radius-card-sm`, משקל 800, והצל הקשיח של המערכת שנשמט
+   ב-`:active`. 44px גובה מינימלי כדי שאצבע תפגע. */
 .btn {
-  border: 1.5px solid var(--line);
-  background: #fff;
-  border-radius: 10px;
-  padding: 9px 14px;
-  font-size: 14px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  border: 2px solid var(--line);
+  /* מילוי `--bg-2` ולא לבן: הכרטיס והמודאל עצמם לבנים, ומסגרת
+     `--line` לבדה על לבן נקראת כטקסט ולא ככפתור */
+  background: var(--bg-2);
+  border-radius: var(--ft-radius-sm);
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
   color: var(--ink);
+  transition: filter 0.12s, transform 0.06s, box-shadow 0.06s;
 }
-.btn-primary { background: var(--green-light); border-color: var(--green-light); color: #fff; }
-.btn-add { background: var(--cream); }
-.btn-danger { color: var(--danger); border-color: var(--danger); }
-.btn-ghost { border-style: dashed; color: var(--ink-soft); }
-/* ביטול/חזרה — כפתור מלא ורגיל. המקווקו נשמר להזמנה לפעולה
-   ("הפעלת מצב עריכה"), שם הוא אומר "עוד לא פעיל" ולא "ביטול". */
-.btn-cancel { background: var(--cream); border-color: var(--line); color: var(--ink); }
+.btn:hover { filter: brightness(1.03); }
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  box-shadow: 0 4px 0 var(--brand-deep);
+}
+.btn-primary:active { box-shadow: 0 2px 0 var(--brand-deep); }
+
+/* הוספת קרוב — הצהוב של הדגל. פעולה מזמינה, אבל לא הראשית בטופס. */
+.btn-add {
+  background: var(--yellow-soft);
+  border-color: var(--yellow-deep);
+  color: var(--ink);
+}
+
+.btn-danger { color: var(--danger); border-color: var(--danger); background: var(--surface); }
+.btn-ghost { border-style: dashed; color: var(--muted); }
+/* ביטול/חזרה — כפתור מלא ורגיל. המקווקו (`.btn-ghost`) נשמר להזמנה
+   לפעולה ("הפעלת מצב עריכה"), שם הוא אומר "עוד לא פעיל" ולא "ביטול". */
+.btn-cancel { background: var(--bg-2); border-color: var(--line); color: var(--ink); }
 .btn-link {
   border: none;
   background: none;
-  color: var(--green-light);
-  font-size: 13px;
+  color: var(--brand);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
   margin-top: 10px;
   cursor: pointer;
   text-decoration: underline;
 }
+.btn-link:hover { color: var(--brand-deep); }
 .btn-mini {
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 12px;
+  border: 2px solid var(--line);
+  background: var(--bg-2);
+  border-radius: var(--ft-radius-sm);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  color: var(--ink);
 }
 
 /* ---------- אווטאר ---------- */
-.avatar { border-radius: 50%; object-fit: cover; border: 2px solid var(--line); background: #eee9dc; }
-.avatar.g-m { border-color: #4a7fb5; }
-.avatar.g-f { border-color: #c76b8e; }
+.avatar { border-radius: 50%; object-fit: cover; border: 2px solid var(--line); background: var(--ft-photo); }
+.avatar.g-m { border-color: var(--ft-ring-m); }
+.avatar.g-f { border-color: var(--ft-ring-f); }
 .avatar-initial {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #6b6152;
+  color: var(--muted);
 }
 
 /* ---------- שכבות-על ---------- */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(35, 30, 18, 0.55);
+  background: rgba(26, 18, 6, 0.55);   /* --ink בשקיפות */
   z-index: 60;
   display: flex;
   align-items: center;
@@ -387,9 +478,10 @@
 /* תצוגה מוגדלת */
 .full-box {
   position: relative;
-  background: var(--cream);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--ft-radius-lg);
+  box-shadow: var(--ft-shadow-lg);
   padding: 28px 22px;
   width: 100%;
   max-width: 420px;
@@ -402,20 +494,20 @@
   gap: 8px;
 }
 .full-box .btn-close { position: absolute; top: 12px; inset-inline-start: 12px; }
-.full-box h2 { font-size: 24px; color: var(--green); }
-.full-year { color: var(--ink-soft); font-size: 15px; }
+.full-box h2 { font-size: 26px; color: var(--brand); }
+.full-year { color: var(--muted); font-size: 15px; }
 .full-phone { font-size: 16px; }
-.full-phone a { color: var(--green-light); font-weight: 700; text-decoration: none; }
+.full-phone a { color: var(--brand); font-weight: 700; text-decoration: none; }
 .full-rel { width: 100%; margin-top: 6px; }
-.full-rel h4 { font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
+.full-rel h4 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
 .full-rel .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .full-box .sheet-actions { justify-content: center; }
 
 /* מודאל */
 .modal-box {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: var(--shadow);
+  background: var(--surface);
+  border-radius: var(--ft-radius);
+  box-shadow: var(--ft-shadow-lg);
   width: 100%;
   max-width: 440px;
   max-height: calc(100vh - 40px);
@@ -425,33 +517,41 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--cream-dark);
+  border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
-  background: #fff;
+  background: var(--surface);
   z-index: 2;
 }
-.modal-head h3 { font-size: 17px; color: var(--green); }
+.modal-head h3 { font-size: 19px; color: var(--ink); }
 .modal-body { padding: 16px 18px 20px; }
 
-.field { margin-bottom: 12px; }
-.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
-.field .hint { font-weight: 400; color: var(--ink-soft); }
+/* שדות — מקבילים ל-`components/ui/field.tsx` בגודל מוקטן */
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+.field .hint { font-weight: 400; color: var(--muted); }
 .field input[type="text"],
 .field input[type="number"],
 .field input[type="tel"],
 .field select {
   width: 100%;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 9px 12px;
-  font-size: 15px;
-  background: #fff;
+  min-height: 48px;
+  border: 2px solid var(--line);
+  border-radius: var(--ft-radius-sm);
+  padding: 10px 14px;
+  font: inherit;
+  /* 16px ולא פחות — ראו ההערה ב-.tb-search */
+  font-size: 16px;
+  background: var(--surface);
   color: var(--ink);
-  font-family: inherit;
 }
-.field input:focus, .field select:focus { outline: 2px solid var(--green-light); border-color: transparent; }
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
 
 /* שדה תמונה — העיגול הוא הכפתור. ה-input עצמו מוסתר (ולא display:none,
    כדי ש-input.click() ימשיך לעבוד ושהוא יישאר נגיש לטפסים). */
@@ -460,7 +560,7 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--cream);
+  background: var(--bg-2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -469,13 +569,14 @@
   flex: 0 0 auto;
   padding: 0;
   cursor: pointer;
-  color: var(--ink-soft);
+  color: var(--muted);
   border: 2px dashed var(--line);
 }
 .photo-preview.has-photo { border-style: solid; }
+.photo-preview:hover { border-color: var(--brand); }
 .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
 .photo-buttons { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; min-width: 0; }
-.photo-buttons .btn-mini { min-height: 40px; padding: 8px 14px; font-size: 13px; }
+.photo-buttons .btn-mini { min-height: 40px; padding: 8px 14px; font-size: 14px; }
 .photo-input {
   position: absolute;
   inset-inline-start: 0;
@@ -491,27 +592,29 @@
 .form-actions .btn { flex: 1; }
 
 .parents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.parent-col h4 { font-size: 14px; color: var(--green); margin-bottom: 8px; }
+.parent-col h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
 .parent-col .exists { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
-.parent-col .hint, .modal-body > .hint, form .hint { font-size: 12px; color: var(--ink-soft); }
+.parent-col .hint, .modal-body > .hint, form .hint { font-size: 13px; color: var(--muted); }
 form > .hint { display: block; margin-top: 4px; }
 
 .sub-box {
-  background: var(--cream);
-  border-radius: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ft-radius-sm);
   padding: 12px;
   margin-bottom: 12px;
 }
 
 .self-tabs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-.radio { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.radio { display: flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
+.radio input { accent-color: var(--brand); width: 20px; height: 20px; }
 
 /* ---------- מיקום התמונה בעיגול ---------- */
 .crop-overlay { z-index: 70; }
 .crop-box {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: var(--shadow);
+  background: var(--surface);
+  border-radius: var(--ft-radius);
+  box-shadow: var(--ft-shadow-lg);
   width: 100%;
   max-width: 420px;
   max-height: calc(100dvh - 36px);
@@ -524,13 +627,13 @@ form > .hint { display: block; margin-top: 4px; }
   align-items: center;
   gap: 12px;
 }
-.crop-body .hint { font-size: 12px; color: var(--ink-soft); text-align: center; }
+.crop-body .hint { font-size: 13px; color: var(--muted); text-align: center; }
 /* touch-action: none — בלי זה הגרירה על הקנבס גוללת את הדף בנייד */
 .crop-stage {
   position: relative;
   overflow: hidden;
-  border-radius: 14px;
-  background: var(--cream-dark);
+  border-radius: var(--ft-radius-sm);
+  background: var(--bg-2);
   touch-action: none;
   cursor: grab;
 }
@@ -542,15 +645,16 @@ form > .hint { display: block; margin-top: 4px; }
   inset: 0;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 0 0 9999px rgba(35, 30, 18, 0.45);
+  box-shadow: 0 0 0 9999px rgba(26, 18, 6, 0.45);
   pointer-events: none;
 }
 .crop-zoom { display: flex; align-items: center; gap: 10px; width: 100%; }
 .crop-zoom .btn-mini { min-width: 44px; min-height: 40px; font-size: 16px; }
-.crop-range { flex: 1; min-width: 0; accent-color: var(--green-light); height: 28px; }
+.crop-range { flex: 1; min-width: 0; accent-color: var(--brand); height: 28px; }
 .crop-body .form-actions { width: 100%; }
 
 /* ---------- טוסט ---------- */
+/* נאבי עם זהב — `.chip-navy` של מערכת העיצוב */
 .toast {
   position: fixed;
   bottom: calc(18px + env(safe-area-inset-bottom));
@@ -558,21 +662,37 @@ form > .hint { display: block; margin-top: 4px; }
   margin: 0 auto;
   width: fit-content;
   max-width: 86vw;
-  background: var(--green);
-  color: #f6e7c1;
-  padding: 10px 20px;
+  background: var(--navy);
+  color: var(--gold-lite);
+  padding: 12px 20px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 700;
   z-index: 90;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-navy, 0 14px 44px rgba(11, 27, 63, 0.38));
   animation: sheet-up 0.2s ease-out;
 }
 
 .hidden { display: none !important; }
 
+/* מכבדים העדפת מערכת — בלי אנימציות למי שביקש פחות תנועה (globals.css
+   עושה את אותו הדבר לשאר המסכים) */
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .toast { animation: none; }
+  .btn, .tb-btn { transition: none; }
+}
+
 /* ---------- מסכים רחבים ---------- */
 @media (min-width: 700px) {
-  .titles h1 { font-size: 22px; }
-  .sheet { inset-inline-start: auto; inset-inline-end: 24px; max-width: 400px; border-radius: 18px; bottom: 24px; }
+  .titles h1 { font-size: 24px; }
+  .sheet {
+    inset-inline-start: auto;
+    inset-inline-end: 24px;
+    max-width: 400px;
+    border-radius: var(--ft-radius);
+    border-bottom: 1px solid var(--line);
+    bottom: 24px;
+    box-shadow: var(--ft-shadow-lg);
+  }
   .parents-grid { gap: 20px; }
 }
