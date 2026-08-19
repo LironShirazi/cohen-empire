@@ -103,12 +103,12 @@ export default async function Home() {
           </div>
         ) : null}
 
-        {/* העץ המשפחתי חי כמודול עצמאי עד שיחובר ל-Supabase בשלב 3 */}
-        <a href="/family-tree/index.html">
+        {/* העץ המשפחתי — ראוט באפליקציה מאז שלב 3 (docs/06) */}
+        <Link href="/family-tree">
           <Button variant="secondary" className="w-full">
             🌳 העץ המשפחתי
           </Button>
-        </a>
+        </Link>
 
         {showAdminLink ? (
           <Link href="/admin">

@@ -105,6 +105,8 @@
     return `
       <div class="field"><label>שם *</label>
         <input type="text" id="${prefix}-name" required maxlength="60" value="${esc(p.name || '')}" placeholder="שם מלא"></div>
+      <div class="field"><label>שם משפחה <span class="hint">(יוצג מתחת ללב של בני הזוג)</span></label>
+        <input type="text" id="${prefix}-last" maxlength="40" value="${esc(p.lastName || '')}" placeholder="למשל כהן"></div>
       ${opts.fixedGender ? '' : `
       <div class="field"><label>מגדר</label>
         <select id="${prefix}-gender">
@@ -123,6 +125,7 @@
     const g = root.querySelector(`#${prefix}-gender`);
     return {
       name: root.querySelector(`#${prefix}-name`).value.trim(),
+      lastName: root.querySelector(`#${prefix}-last`).value,
       gender: g ? g.value || null : undefined,
       birthYear: root.querySelector(`#${prefix}-year`).value,
       phone: root.querySelector(`#${prefix}-phone`).value,

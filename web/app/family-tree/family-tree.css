@@ -1,9 +1,17 @@
 /* ============================================================
    העץ המשפחתי — עיצוב (Mobile-First, RTL, שפה חמה ומשפחתית)
-   ============================================================ */
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
+   ⚠️ הכל תחת `.ft-root` בכוונה. הקובץ הזה נכתב כשהעץ היה עמוד עצמאי,
+   ולכן הגדיר `:root` ו-`*` גלובליים — ובין המשתנים שלו יש `--ink`,
+   `--line`, `--gold`, `--danger`, `--radius` ו-`--shadow`, שכולם שמות
+   שכבר קיימים ב-web/app/globals.css. בתוך האפליקציה זה היה צובע מחדש
+   את כל המסכים האחרים. הסקופ מגביל אותם לעץ בלבד.
+
+   העיצוב עצמו עוד לא הותאם למערכת העיצוב — זה קומיט נפרד (docs/06).
+   ============================================================ */
+.ft-root, .ft-root * { box-sizing: border-box; margin: 0; padding: 0; }
+
+.ft-root {
   --cream: #f7f1e6;
   --cream-dark: #efe6d3;
   --green: #23422f;
@@ -18,15 +26,30 @@
   font-size: 16px;
 }
 
-html, body {
-  height: 100%;
+/*
+ * גובה מפורש ולא `height: 100%`. כשהעץ היה עמוד עצמאי ההורה היה
+ * `html,body` עם גובה מלא, אבל באפליקציה ה-`body` מוגדר `min-h-full`
+ * בלבד — כלומר ה-`height` שלו הוא `auto`, ואחוזים מול הורה `auto`
+ * מתחשבים כ-`auto`. התוצאה: `.ft-root` התכווץ לגובה התוכן, ול-
+ * `#tree-wrap` (שהוא `flex: 1`) לא נשאר לאן לגדול — העץ נדחס לרצועה
+ * צרה בראש המסך.
+ *
+ * `dvh` ולא `vh` בגלל הנייד: סרגל הכתובת שנפתח ונסגר משנה את הגובה
+ * הזמין, ו-`vh` היה משאיר את תחתית העץ מתחת לקיפול.
+ */
+.ft-root {
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   font-family: -apple-system, "Segoe UI", Roboto, "Heebo", "Arial Hebrew", Arial, sans-serif;
   background: var(--cream);
   color: var(--ink);
 }
 
-body { display: flex; flex-direction: column; }
+.ft-root { display: flex; flex-direction: column; }
+
+/* הקנבס הוא מה שאמור לבלוע את כל מה שנשאר אחרי הכותרת והסרגל */
+.ft-root #tree-wrap { min-height: 0; }
 
 /* ---------- כותרת עליונה ---------- */
 .topbar {
@@ -156,6 +179,16 @@ body { display: flex; flex-direction: column; }
 .couple { stroke: var(--gold); stroke-width: 2.5; }
 .couple.far { stroke-dasharray: 5 5; stroke-width: 1.5; opacity: 0.6; fill: none; }
 .heart { font-size: 13px; fill: #c0392b; paint-order: stroke; stroke: var(--cream); stroke-width: 5; }
+/* שם המשפחה של הזוג, מתחת ללב */
+.couple-name {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--gold);
+  paint-order: stroke;
+  stroke: var(--cream);
+  stroke-width: 4;
+  pointer-events: none;
+}
 
 .person { cursor: pointer; }
 .person .ph-bg { fill: #eee9dc; }

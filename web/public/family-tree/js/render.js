@@ -11,6 +11,18 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+  /**
+   * שם המשפחה שמוצג מתחת ללב. השדה הוא פר-אדם ולא פר-זוג, כי יש
+   * כלות וחתנים ששמרו על שם המשפחה שלהם — ולכן: שם משותף מוצג פעם
+   * אחת, שני שמות שונים מוצגים שניהם, ואם רק לאחד יש שם מוצג שלו.
+   */
+  function coupleLastName(a, b) {
+    const na = String((a && a.lastName) || '').trim();
+    const nb = String((b && b.lastName) || '').trim();
+    if (na && nb) return na === nb ? na : `${na} · ${nb}`;
+    return na || nb || '';
+  }
+
   /* שם ארוך נשבר לשתי שורות בקרבת האמצע */
   function nameLines(name) {
     const n = String(name || '').trim();
@@ -104,9 +116,13 @@
         const left = pa.x < pb.x ? pa : pb;
         const right = pa.x < pb.x ? pb : pa;
         const midX = (left.x + right.x) / 2;
+        const family = coupleLastName(a, b);
         couples +=
           `<line class="couple" x1="${left.x + R}" y1="${left.y}" x2="${right.x - R}" y2="${right.y}"/>` +
-          `<text class="heart" x="${midX}" y="${pa.y + 4}" text-anchor="middle">♥</text>`;
+          `<text class="heart" x="${midX}" y="${pa.y + 4}" text-anchor="middle">♥</text>` +
+          (family
+            ? `<text class="couple-name" x="${midX}" y="${pa.y + 20}" text-anchor="middle">${esc(family)}</text>`
+            : '');
       } else {
         couples += `<path class="couple far" d="M ${pa.x} ${pa.y} L ${pb.x} ${pb.y}"/>`;
       }
@@ -265,7 +281,19 @@
       { passive: false }
     );
 
-    window.addEventListener('resize', () => { /* התצוגה נשארת; המשתמש יכול למרכז */ });
+    // סיבוב מכשיר או שינוי גודל חלון מחזירים את העץ להתאמה למסך.
+    // ה-debounce הוא בגלל הנייד: פתיחת סרגל הכתובת מייצרת רצף אירועים,
+    // ו-fit() לכל אחד מהם היה קופץ מול העיניים
+    let refitTimer = null;
+    window.addEventListener('resize', () => {
+      if (refitTimer) clearTimeout(refitTimer);
+      refitTimer = setTimeout(() => {
+        refitTimer = null;
+        // המסך אולי כבר לא מוצג (ניווט לראוט אחר) — אין מה למדוד
+        if (!wrap || !wrap.isConnected || !model) return;
+        fit();
+      }, 180);
+    });
   }
 
   function init() {
