@@ -26,8 +26,20 @@
   font-size: 16px;
 }
 
+/*
+ * גובה מפורש ולא `height: 100%`. כשהעץ היה עמוד עצמאי ההורה היה
+ * `html,body` עם גובה מלא, אבל באפליקציה ה-`body` מוגדר `min-h-full`
+ * בלבד — כלומר ה-`height` שלו הוא `auto`, ואחוזים מול הורה `auto`
+ * מתחשבים כ-`auto`. התוצאה: `.ft-root` התכווץ לגובה התוכן, ול-
+ * `#tree-wrap` (שהוא `flex: 1`) לא נשאר לאן לגדול — העץ נדחס לרצועה
+ * צרה בראש המסך.
+ *
+ * `dvh` ולא `vh` בגלל הנייד: סרגל הכתובת שנפתח ונסגר משנה את הגובה
+ * הזמין, ו-`vh` היה משאיר את תחתית העץ מתחת לקיפול.
+ */
 .ft-root {
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   font-family: -apple-system, "Segoe UI", Roboto, "Heebo", "Arial Hebrew", Arial, sans-serif;
   background: var(--cream);
@@ -35,6 +47,9 @@
 }
 
 .ft-root { display: flex; flex-direction: column; }
+
+/* הקנבס הוא מה שאמור לבלוע את כל מה שנשאר אחרי הכותרת והסרגל */
+.ft-root #tree-wrap { min-height: 0; }
 
 /* ---------- כותרת עליונה ---------- */
 .topbar {
@@ -164,6 +179,16 @@
 .couple { stroke: var(--gold); stroke-width: 2.5; }
 .couple.far { stroke-dasharray: 5 5; stroke-width: 1.5; opacity: 0.6; fill: none; }
 .heart { font-size: 13px; fill: #c0392b; paint-order: stroke; stroke: var(--cream); stroke-width: 5; }
+/* שם המשפחה של הזוג, מתחת ללב */
+.couple-name {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--gold);
+  paint-order: stroke;
+  stroke: var(--cream);
+  stroke-width: 4;
+  pointer-events: none;
+}
 
 .person { cursor: pointer; }
 .person .ph-bg { fill: #eee9dc; }

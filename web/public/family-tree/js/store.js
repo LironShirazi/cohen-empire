@@ -49,6 +49,7 @@
     return {
       id,
       name: '',
+      lastName: null,    // מוצג מתחת ללב של בני הזוג (render.js)
       gender: null,      // 'm' | 'f' | null
       birthYear: null,
       phone: null,       // מוצג בתצוגה המלאה בלבד
@@ -65,6 +66,7 @@
   function rowToPerson(row) {
     const p = blankPerson(row.id);
     p.name = row.name;
+    p.lastName = row.last_name;
     p.gender = row.gender;
     p.birthYear = row.birth_year;
     p.phone = row.phone;
@@ -81,6 +83,7 @@
     return {
       id: p.id,
       name: p.name || 'ללא שם',
+      last_name: p.lastName,
       gender: p.gender,
       birth_year: p.birthYear,
       phone: p.phone,
@@ -97,6 +100,7 @@
     if (!raw || !raw.id || !String(raw.name || '').trim()) return null;
     const p = blankPerson(String(raw.id));
     p.name = String(raw.name).trim().slice(0, 60);
+    p.lastName = raw.lastName ? String(raw.lastName).trim().slice(0, 40) : null;
     p.gender = raw.gender === 'm' || raw.gender === 'f' ? raw.gender : null;
     const y = parseInt(raw.birthYear, 10);
     p.birthYear = y >= 1800 && y <= 2200 ? y : null;
@@ -347,6 +351,8 @@
   function applyPatch(p, data) {
     if (!data) return;
     if (data.name !== undefined) p.name = String(data.name).trim().slice(0, 60);
+    if (data.lastName !== undefined)
+      p.lastName = data.lastName ? String(data.lastName).trim().slice(0, 40) : null;
     if (data.gender !== undefined)
       p.gender = data.gender === 'm' || data.gender === 'f' ? data.gender : null;
     if (data.birthYear !== undefined) {

@@ -57,6 +57,7 @@
       .couple{stroke:#c9962e;stroke-width:2.5}
       .couple.far{stroke-dasharray:5 5;stroke-width:1.5;opacity:.6;fill:none}
       .heart{font-size:13px;fill:#c0392b;paint-order:stroke;stroke:#f7f1e6;stroke-width:5}
+      .couple-name{font:700 11px 'Segoe UI',Arial,sans-serif;fill:#c9962e;paint-order:stroke;stroke:#f7f1e6;stroke-width:4}
       .person .ph-bg{fill:#eee9dc;stroke:none}
       .person.g-m .ph-bg{fill:#dbe9f6}
       .person.g-f .ph-bg{fill:#f9e0ea}

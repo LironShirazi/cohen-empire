@@ -64,7 +64,7 @@ export function TreeCanvas({
   }, [userId, isOwner]);
 
   return (
-    <div className="ft-root flex-1">
+    <div className="ft-root">
       <header className="topbar">
         <Link className="home-link" href="/" title="חזרה לדף הבית">
           🏠

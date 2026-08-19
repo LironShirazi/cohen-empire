@@ -157,6 +157,9 @@ export type FamilyMember = {
   id: string;
   profile_id: string | null;
   name: string;
+  /** מוצג מתחת ללב של בני הזוג. פר-אדם ולא פר-זוג — יש כלות וחתנים
+   *  ששמרו על שם המשפחה שלהם (מיגרציה 0011) */
+  last_name: string | null;
   gender: "m" | "f" | null;
   birth_year: number | null;
   phone: string | null;
