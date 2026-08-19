@@ -45,56 +45,240 @@
     });
   }
 
-  /* שדה תמונה: בחירת קובץ + הקטנה אוטומטית */
+  /* ---------- מיקום התמונה בעיגול ----------
+     מה שנשמר הוא בדיוק הריבוע שנחתך כאן, ולכן אף מקום תצוגה לא צריך
+     לדעת על החיתוך: ה-SVG (preserveAspectRatio="…slice") וה-CSS
+     (object-fit: cover) ממשיכים לקבל תמונה מרובעת כמו קודם. */
+  function cropOverlay() {
+    let el = document.getElementById('crop-overlay');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'crop-overlay';
+      el.className = 'overlay crop-overlay hidden';
+      (document.querySelector('.ft-root') || document.body).appendChild(el);
+    }
+    return el;
+  }
+
+  function closeCropper() {
+    const el = document.getElementById('crop-overlay');
+    if (!el) return;
+    el.classList.add('hidden');
+    el.innerHTML = '';   // משחרר את התמונה ואת המאזינים
+  }
+
+  function openCropper(src, onDone) {
+    const overlay = cropOverlay();
+    const stage = Math.max(
+      200,
+      Math.min(300, Math.min(window.innerWidth, window.innerHeight) - 150)
+    );
+    overlay.innerHTML = `
+      <div class="crop-box">
+        <div class="modal-head">
+          <h3>מיקום התמונה בעיגול</h3>
+          <button class="btn-close" data-crop-cancel>✕</button>
+        </div>
+        <div class="crop-body">
+          <div class="crop-stage" style="width:${stage}px;height:${stage}px">
+            <canvas class="crop-canvas"></canvas>
+            <div class="crop-ring"></div>
+          </div>
+          <p class="hint">גררו את התמונה עם האצבע וכוונו את הזום — מה שנמצא בתוך העיגול הוא מה שיישמר.</p>
+          <div class="crop-zoom">
+            <button type="button" class="btn-mini" data-zoom="out" aria-label="הקטנה">－</button>
+            <input type="range" class="crop-range" min="1" max="4" step="0.01" value="1" aria-label="זום">
+            <button type="button" class="btn-mini" data-zoom="in" aria-label="הגדלה">＋</button>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" data-crop-save>שמירת התמונה</button>
+            <button type="button" class="btn btn-cancel" data-crop-cancel>ביטול</button>
+          </div>
+        </div>
+      </div>`;
+    overlay.classList.remove('hidden');
+
+    const canvas = overlay.querySelector('.crop-canvas');
+    const range = overlay.querySelector('.crop-range');
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = canvas.height = Math.round(stage * dpr);
+
+    // ox/oy הם שברים מצלע הריבוע, ולכן אותו מצב מתאר גם את התצוגה
+    // על המסך וגם את הפלט ב-512 בלי חישוב נוסף
+    const state = { scale: 1, ox: 0, oy: 0 };
+    const img = new Image();
+    img.crossOrigin = 'anonymous';   // תמונה שכבר ב-bucket — בלי זה הקנבס "מזוהם"
+
+    function clamp() {
+      const m = Math.min(img.width, img.height);
+      const lx = ((img.width / m) * state.scale - 1) / 2;
+      const ly = ((img.height / m) * state.scale - 1) / 2;
+      state.ox = Math.max(-lx, Math.min(lx, state.ox));
+      state.oy = Math.max(-ly, Math.min(ly, state.oy));
+    }
+
+    function paintTo(g, S) {
+      clamp();
+      const eff = (S / Math.min(img.width, img.height)) * state.scale;
+      const dw = img.width * eff;
+      const dh = img.height * eff;
+      g.fillStyle = '#fff';
+      g.fillRect(0, 0, S, S);
+      g.drawImage(img, (S - dw) / 2 + state.ox * S, (S - dh) / 2 + state.oy * S, dw, dh);
+    }
+
+    const paint = () => paintTo(ctx, canvas.width);
+
+    function output() {
+      // בלי הגדלה מלאכותית: הריבוע הנראה מכסה min(w,h)/scale פיקסלים במקור
+      const OUT = Math.max(128, Math.min(512, Math.round(Math.min(img.width, img.height) / state.scale)));
+      const c = document.createElement('canvas');
+      c.width = c.height = OUT;
+      paintTo(c.getContext('2d'), OUT);
+      return c.toDataURL('image/jpeg', 0.85);
+    }
+
+    function setScale(v) {
+      state.scale = Math.max(1, Math.min(4, v));
+      range.value = String(state.scale);
+      paint();
+    }
+
+    /* גרירה באצבע אחת, צביטה בשתיים */
+    const pts = new Map();
+    let pinch = 0;
+    const spread = () => {
+      const [a, b] = Array.from(pts.values());
+      return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
+    };
+    canvas.addEventListener('pointerdown', (e) => {
+      canvas.setPointerCapture(e.pointerId);
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size === 2) pinch = spread();
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      const prev = pts.get(e.pointerId);
+      if (!prev) return;
+      const now = { x: e.clientX, y: e.clientY };
+      pts.set(e.pointerId, now);
+      if (pts.size >= 2) {
+        const d = spread();
+        if (pinch > 0 && d > 0) setScale(state.scale * (d / pinch));
+        pinch = d;
+        return;
+      }
+      state.ox += (now.x - prev.x) / stage;
+      state.oy += (now.y - prev.y) / stage;
+      paint();
+    });
+    const drop = (e) => {
+      pts.delete(e.pointerId);
+      pinch = pts.size === 2 ? spread() : 0;
+    };
+    canvas.addEventListener('pointerup', drop);
+    canvas.addEventListener('pointercancel', drop);
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      setScale(state.scale * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
+    }, { passive: false });
+
+    range.addEventListener('input', () => setScale(parseFloat(range.value)));
+    overlay.querySelectorAll('[data-zoom]').forEach((b) =>
+      b.addEventListener('click', () =>
+        setScale(state.scale * (b.getAttribute('data-zoom') === 'in' ? 1.2 : 1 / 1.2))
+      )
+    );
+    overlay.querySelectorAll('[data-crop-cancel]').forEach((b) =>
+      b.addEventListener('click', closeCropper)
+    );
+    overlay.querySelector('[data-crop-save]').addEventListener('click', () => {
+      let out;
+      try {
+        out = output();
+      } catch {
+        closeCropper();
+        return toast('לא הצלחנו לחתוך את התמונה — בחרו אותה מחדש מהמכשיר');
+      }
+      closeCropper();
+      onDone(out);
+    });
+
+    img.onload = paint;
+    img.onerror = () => {
+      closeCropper();
+      toast('טעינת התמונה נכשלה — בחרו אותה מחדש מהמכשיר');
+    };
+    img.src = src;
+  }
+
+  /* שדה תמונה: העיגול עצמו הוא הכפתור שפותח את בורר הקבצים.
+     ה-input נשאר בעמוד אבל מוסתר — "לא נבחר קובץ" של הדפדפן היה
+     יעד מגע זעיר בנייד, ובעברית הוא גם נשבר לרוחב. */
   function photoFieldHTML(fid, existing) {
     return `
       <div class="field photo-field" id="${fid}">
         <label>תמונה</label>
         <div class="photo-row">
-          <span class="photo-preview">${existing ? `<img src="${existing}" alt="">` : '📷'}</span>
-          <input type="file" accept="image/*">
-          <button type="button" class="btn-mini photo-clear" ${existing ? '' : 'hidden'}>הסרה</button>
+          <button type="button" class="photo-preview${existing ? ' has-photo' : ''}" aria-label="בחירת תמונה">${
+            existing ? `<img src="${esc(existing)}" alt="">` : '📷'
+          }</button>
+          <div class="photo-buttons">
+            <button type="button" class="btn-mini photo-pick">${existing ? 'החלפת תמונה' : 'בחירת תמונה'}</button>
+            <button type="button" class="btn-mini photo-adjust" ${existing ? '' : 'hidden'}>מיקום בעיגול</button>
+            <button type="button" class="btn-mini photo-clear" ${existing ? '' : 'hidden'}>הסרה</button>
+          </div>
+          <input type="file" accept="image/*" class="photo-input" tabindex="-1" aria-hidden="true">
         </div>
+        <p class="hint photo-hint">הקישו על העיגול כדי לבחור תמונה מהמכשיר, ואז מקמו אותה בתוך העיגול.</p>
       </div>`;
   }
 
   function wirePhotoField(root, fid, existing) {
     const box = root.querySelector('#' + fid);
-    const input = box.querySelector('input[type=file]');
+    const input = box.querySelector('.photo-input');
     const preview = box.querySelector('.photo-preview');
+    const pickBtn = box.querySelector('.photo-pick');
+    const adjustBtn = box.querySelector('.photo-adjust');
     const clearBtn = box.querySelector('.photo-clear');
     let value = existing || null;
+    let source = null;   // התמונה כפי שנבחרה, כדי שאפשר יהיה למקם מחדש בלי בחירה חוזרת
+
+    function render() {
+      preview.innerHTML = value ? `<img src="${esc(value)}" alt="">` : '📷';
+      preview.classList.toggle('has-photo', !!value);
+      pickBtn.textContent = value ? 'החלפת תמונה' : 'בחירת תמונה';
+      adjustBtn.hidden = !value;
+      clearBtn.hidden = !value;
+    }
+
+    const browse = () => input.click();
+    preview.addEventListener('click', browse);
+    pickBtn.addEventListener('click', browse);
+
     input.addEventListener('change', () => {
       const file = input.files && input.files[0];
+      input.value = '';   // כדי שבחירה חוזרת של אותו קובץ תפעיל change שוב
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX = 512;
-          const k = Math.min(1, MAX / Math.max(img.width, img.height));
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.round(img.width * k);
-          canvas.height = Math.round(img.height * k);
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#fff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          value = canvas.toDataURL('image/jpeg', 0.85);
-          preview.innerHTML = `<img src="${value}" alt="">`;
-          clearBtn.hidden = false;
-        };
-        img.onerror = () => toast('קריאת התמונה נכשלה');
-        img.src = reader.result;
+        source = reader.result;
+        openCropper(source, (out) => { value = out; render(); });
       };
+      reader.onerror = () => toast('קריאת התמונה נכשלה');
       reader.readAsDataURL(file);
     });
+
+    adjustBtn.addEventListener('click', () => {
+      if (value) openCropper(source || value, (out) => { value = out; render(); });
+    });
+
     clearBtn.addEventListener('click', () => {
       value = null;
-      input.value = '';
-      preview.textContent = '📷';
-      clearBtn.hidden = true;
+      source = null;
+      render();
     });
+
     return { get: () => value };
   }
 
@@ -243,7 +427,7 @@
         ${rel('הורים', parents)}${rel('בן/בת זוג', partners)}${rel(`ילדים (${children.length})`, children)}
         <div class="sheet-actions">
           <button class="btn" id="full-edit">✏️ עריכת העלה</button>
-          <button class="btn btn-ghost" id="full-back">חזרה לעץ</button>
+          <button class="btn btn-cancel" id="full-back">חזרה לעץ</button>
         </div>
       </div>`;
     overlay.classList.remove('hidden');
@@ -264,7 +448,7 @@
         ${personFieldsHTML('pe', p)}
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">שמירה</button>
-          <button type="button" class="btn btn-ghost" data-close>ביטול</button>
+          <button type="button" class="btn btn-cancel" data-close>ביטול</button>
         </div>
       </form>`);
     const photo = wirePhotoField(box, 'pe-photo', p.photo);
@@ -300,7 +484,7 @@
         <p class="hint">אפשר להוסיף רק אחד מההורים — פרטים נוספים ותמונה אפשר להשלים אחר-כך בעריכת העלה.</p>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">הוספה</button>
-          <button type="button" class="btn btn-ghost" data-close>ביטול</button>
+          <button type="button" class="btn btn-cancel" data-close>ביטול</button>
         </div>
       </form>`);
     wireChips(box);
@@ -341,7 +525,7 @@
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">הוספה</button>
-          <button type="button" class="btn btn-ghost" data-close>ביטול</button>
+          <button type="button" class="btn btn-cancel" data-close>ביטול</button>
         </div>
       </form>`);
     const photo = wirePhotoField(box, 'ch-photo', null);
@@ -375,7 +559,7 @@
         ${personFieldsHTML('pa', null)}
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">הוספה</button>
-          <button type="button" class="btn btn-ghost" data-close>ביטול</button>
+          <button type="button" class="btn btn-cancel" data-close>ביטול</button>
         </div>
       </form>`);
     const photo = wirePhotoField(box, 'pa-photo', null);
@@ -429,7 +613,7 @@
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">שמירה</button>
-          <button type="button" class="btn btn-ghost" data-close>ביטול</button>
+          <button type="button" class="btn btn-cancel" data-close>ביטול</button>
         </div>
       </form>`);
     const photo = wirePhotoField(box, 'se-photo', null);
@@ -485,25 +669,134 @@
     meBtn.textContent = NS.store.prefs.myId ? '🙋 העיגול שלי' : '🙋 אני בעץ';
   }
 
+  /* ---------- חיפוש עם השלמה אוטומטית ----------
+     קודם כאן ישב `<datalist>` עם כל בני המשפחה. ככל שהעץ גדל זו הפכה
+     לרשימה שאי אפשר לסרוק בעין (ובנייד היא נפתחת על חצי מסך), ולכן
+     החיפוש מציג עכשיו רק את ההתאמות למה שהוקלד — עד MAX_RESULTS,
+     בתיבה שגובהה חמש שורות וכל השאר בגלילה. */
+  const MAX_RESULTS = 30;
+  let suggestions = [];   // ההתאמות המוצגות כרגע
+  let suggIndex = -1;     // הפריט המסומן במקלדת (-1 = אין)
+
+  const norm = (s) => String(s == null ? '' : s).trim().toLowerCase();
+
+  // דירוג: מי שהשם שלו מתחיל בשאילתה קודם, אחריו מי שמילה בשם מתחילה
+  // בה, ורק אז התאמה באמצע מילה. ככה "דוד" מביא קודם את דוד ולא את "אבידוד".
+  function matchRank(name, q) {
+    const n = norm(name);
+    const i = n.indexOf(q);
+    if (i < 0) return -1;
+    if (i === 0) return 0;
+    return /\s/.test(n[i - 1]) ? 1 : 2;
+  }
+
+  function findMatches(query) {
+    const q = norm(query);
+    if (!q) return [];
+    const scored = [];
+    NS.store.all().forEach((p) => {
+      const rank = Math.min(
+        ...[p.name, p.lastName].map((f) => {
+          const r = matchRank(f, q);
+          return r < 0 ? 9 : r;
+        })
+      );
+      if (rank < 9) scored.push({ p, rank });
+    });
+    scored.sort((a, b) => a.rank - b.rank || a.p.name.localeCompare(b.p.name, 'he'));
+    return scored.slice(0, MAX_RESULTS).map((x) => x.p);
+  }
+
+  function highlight(name, query) {
+    const q = norm(query);
+    const i = norm(name).indexOf(q);
+    if (!q || i < 0) return esc(name);
+    return (
+      esc(name.slice(0, i)) +
+      '<mark>' + esc(name.slice(i, i + q.length)) + '</mark>' +
+      esc(name.slice(i + q.length))
+    );
+  }
+
+  // התיבה היא position:fixed — ל-.toolbar יש overflow-x לגלילה, ותיבה
+  // absolute בתוכו הייתה נחתכת. לכן המיקום מחושב מול השדה עצמו.
+  function placeSuggestions() {
+    const box = $('#search-results');
+    const r = $('#search').getBoundingClientRect();
+    // בנייד השדה יכול להיות צר מכדי להציג שם ושנת לידה, ולכן הרשימה
+    // רחבה ממנו במידת הצורך — ואז נדחפת פנימה כדי לא לחרוג מהמסך
+    const width = Math.min(Math.max(r.width, 220), window.innerWidth - 16);
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
+    box.style.top = r.bottom + 6 + 'px';
+    box.style.left = left + 'px';
+    box.style.width = width + 'px';
+  }
+
+  function closeSuggestions() {
+    suggestions = [];
+    suggIndex = -1;
+    const box = $('#search-results');
+    box.classList.add('hidden');
+    box.innerHTML = '';
+    $('#search').setAttribute('aria-expanded', 'false');
+  }
+
+  function renderSuggestions(query) {
+    if (!norm(query)) return closeSuggestions();
+    const box = $('#search-results');
+    suggestions = findMatches(query);
+    suggIndex = -1;
+    box.innerHTML = suggestions.length
+      ? suggestions
+          .map((p, i) => {
+            const meta = [p.lastName, p.birthYear].filter(Boolean).join(' · ');
+            return `<button type="button" class="search-item" role="option" aria-selected="false" data-idx="${i}">
+              ${avatarHTML(p, 26)}
+              <span class="search-item-text">
+                <span class="search-item-name">${highlight(p.name, query)}</span>
+                ${meta ? `<span class="search-item-meta">${esc(meta)}</span>` : ''}
+              </span>
+            </button>`;
+          })
+          .join('')
+      : '<p class="search-empty">לא נמצא בעץ</p>';
+    box.scrollTop = 0;
+    box.classList.remove('hidden');
+    placeSuggestions();
+    $('#search').setAttribute('aria-expanded', 'true');
+  }
+
+  function setActiveSuggestion(i) {
+    const items = $('#search-results').querySelectorAll('.search-item');
+    if (!items.length) return;
+    suggIndex = (i + items.length) % items.length;
+    items.forEach((el, n) => {
+      const on = n === suggIndex;
+      el.classList.toggle('active', on);
+      el.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  function pickSuggestion(person) {
+    const search = $('#search');
+    search.value = '';
+    closeSuggestions();
+    search.blur();
+    openCard(person.id);
+  }
+
   function refreshSearch() {
-    const dl = $('#search-list');
-    dl.innerHTML = NS.store.all()
-      .map((p) => `<option value="${esc(p.name)}"></option>`)
-      .join('');
+    const box = $('#search-results');
+    // רק אם הרשימה פתוחה — עריכה בעץ יכולה לשנות שם בזמן שהיא מוצגת
+    if (box && !box.classList.contains('hidden')) renderSuggestions($('#search').value);
   }
 
   function doSearch(q) {
-    q = q.trim();
-    if (!q) return;
-    const people = NS.store.all();
-    const found =
-      people.find((p) => p.name === q) || people.find((p) => p.name.includes(q));
-    if (found) {
-      $('#search').value = '';
-      openCard(found.id);
-    } else {
-      toast('לא נמצא בעץ: ' + q);
-    }
+    if (!norm(q)) return;
+    const found = findMatches(q)[0];
+    if (found) pickSuggestion(found);
+    else toast('לא נמצא בעץ: ' + q.trim());
   }
 
   function initToolbar() {
@@ -514,8 +807,40 @@
     $('#zoom-fit').addEventListener('click', NS.render.fit);
 
     const search = $('#search');
-    search.addEventListener('change', () => doSearch(search.value));
-    search.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(search.value); } });
+    const results = $('#search-results');
+    search.addEventListener('input', () => renderSuggestions(search.value));
+    search.addEventListener('focus', () => renderSuggestions(search.value));
+    search.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (!suggestions.length) return;
+        e.preventDefault();
+        setActiveSuggestion(suggIndex + (e.key === 'ArrowDown' ? 1 : -1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (suggestions[suggIndex]) pickSuggestion(suggestions[suggIndex]);
+        else doSearch(search.value);
+      } else if (e.key === 'Escape') {
+        closeSuggestions();
+      }
+    });
+    // mousedown לפני ה-blur של השדה — אחרת הרשימה נסגרת לפני ה-click
+    results.addEventListener('mousedown', (e) => e.preventDefault());
+    results.addEventListener('click', (e) => {
+      const el = e.target.closest('.search-item');
+      if (!el) return;
+      const person = suggestions[Number(el.getAttribute('data-idx'))];
+      if (person) pickSuggestion(person);
+    });
+    document.addEventListener('click', (e) => {
+      if (e.target !== search && !results.contains(e.target)) closeSuggestions();
+    });
+    // הסרגל נגלל אופקית והמסך מסתובב — התיבה fixed וצריכה להתיישר מחדש
+    $('.toolbar').addEventListener('scroll', () => {
+      if (!results.classList.contains('hidden')) placeSuggestions();
+    });
+    window.addEventListener('resize', () => {
+      if (!results.classList.contains('hidden')) placeSuggestions();
+    });
 
     // תפריט ייצוא
     const menu = $('#export-menu');

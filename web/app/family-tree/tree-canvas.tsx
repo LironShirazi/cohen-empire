@@ -93,15 +93,25 @@ export function TreeCanvas({
             <button data-act="json">💾 גיבוי נתונים (JSON)</button>
           </div>
         </div>
-        <input
-          id="search"
-          className="tb-search"
-          list="search-list"
-          placeholder="🔍 חיפוש בעץ..."
-          autoComplete="off"
-        />
-        <datalist id="search-list"></datalist>
+        {/* השלמה אוטומטית משלנו ולא datalist: הרשימה המלאה של המשפחה
+            ארוכה מדי, ו-ui.js מציג רק את ההתאמות לטקסט שהוקלד */}
+        <div className="search-wrap">
+          <input
+            id="search"
+            className="tb-search"
+            placeholder="🔍 חיפוש בעץ..."
+            autoComplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="search-results"
+          />
+        </div>
       </div>
+
+      {/* מחוץ לסרגל בכוונה: ל-.toolbar יש overflow-x לגלילה, והרשימה
+          נפתחת מתחתיו ולא בתוכו */}
+      <div id="search-results" className="search-results hidden" role="listbox"></div>
 
       <main id="tree-wrap">
         <svg id="tree-svg" xmlns="http://www.w3.org/2000/svg"></svg>

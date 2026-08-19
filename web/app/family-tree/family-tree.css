@@ -100,9 +100,9 @@
   border-color: var(--green-light);
   color: #fff;
 }
+.search-wrap { flex: 1 1 130px; min-width: 120px; }
 .tb-search {
-  flex: 1 1 130px;
-  min-width: 120px;
+  width: 100%;
   border: 1.5px solid var(--line);
   border-radius: 999px;
   padding: 7px 14px;
@@ -110,6 +110,43 @@
   background: #fff;
   color: var(--ink);
 }
+.tb-search:focus { outline: none; border-color: var(--green-light); }
+
+/* רשימת ההשלמה. fixed ולא absolute — ל-.toolbar יש overflow-x לגלילה,
+   והרשימה הייתה נחתכת בתוכו. המיקום נקבע ב-ui.js מול השדה.
+   הגובה = חמש שורות, והשאר בגלילה. */
+.search-results {
+  position: fixed;
+  z-index: 60;
+  max-height: 260px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 4px;
+}
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: start;
+  background: none;
+  border: none;
+  padding: 7px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 14px;
+}
+.search-item:hover, .search-item.active { background: var(--cream); }
+.search-item-text { display: flex; flex-direction: column; min-width: 0; }
+.search-item-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-item-name mark { background: rgba(201, 150, 46, 0.28); color: inherit; border-radius: 3px; }
+.search-item-meta { font-size: 12px; color: var(--ink-soft); }
+.search-empty { padding: 12px; font-size: 14px; color: var(--ink-soft); text-align: center; }
 .menu-wrap { position: relative; flex: 0 0 auto; }
 .menu {
   position: absolute;
@@ -301,6 +338,9 @@
 .btn-add { background: var(--cream); }
 .btn-danger { color: var(--danger); border-color: var(--danger); }
 .btn-ghost { border-style: dashed; color: var(--ink-soft); }
+/* ביטול/חזרה — כפתור מלא ורגיל. המקווקו נשמר להזמנה לפעולה
+   ("הפעלת מצב עריכה"), שם הוא אומר "עוד לא פעיל" ולא "ביטול". */
+.btn-cancel { background: var(--cream); border-color: var(--line); color: var(--ink); }
 .btn-link {
   border: none;
   background: none;
@@ -413,22 +453,39 @@
 }
 .field input:focus, .field select:focus { outline: 2px solid var(--green-light); border-color: transparent; }
 
-.photo-row { display: flex; align-items: center; gap: 10px; }
+/* שדה תמונה — העיגול הוא הכפתור. ה-input עצמו מוסתר (ולא display:none,
+   כדי ש-input.click() ימשיך לעבוד ושהוא יישאר נגיש לטפסים). */
+.photo-row { display: flex; align-items: center; gap: 12px; position: relative; }
 .photo-preview {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: var(--cream);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 24px;
   overflow: hidden;
   flex: 0 0 auto;
-  border: 2px solid var(--line);
+  padding: 0;
+  cursor: pointer;
+  color: var(--ink-soft);
+  border: 2px dashed var(--line);
 }
+.photo-preview.has-photo { border-style: solid; }
 .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-.photo-row input[type="file"] { flex: 1; font-size: 12px; min-width: 0; }
+.photo-buttons { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; min-width: 0; }
+.photo-buttons .btn-mini { min-height: 40px; padding: 8px 14px; font-size: 13px; }
+.photo-input {
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.photo-hint { display: block; margin-top: 8px; }
 
 .form-actions { display: flex; gap: 10px; margin-top: 16px; }
 .form-actions .btn { flex: 1; }
@@ -448,6 +505,50 @@ form > .hint { display: block; margin-top: 4px; }
 
 .self-tabs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
 .radio { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+
+/* ---------- מיקום התמונה בעיגול ---------- */
+.crop-overlay { z-index: 70; }
+.crop-box {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+}
+.crop-body {
+  padding: 14px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.crop-body .hint { font-size: 12px; color: var(--ink-soft); text-align: center; }
+/* touch-action: none — בלי זה הגרירה על הקנבס גוללת את הדף בנייד */
+.crop-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--cream-dark);
+  touch-action: none;
+  cursor: grab;
+}
+.crop-stage:active { cursor: grabbing; }
+.crop-canvas { display: block; width: 100%; height: 100%; }
+/* הצל הענק נחתך ע"י overflow של הבמה, וכך מכהה את מה שמחוץ לעיגול */
+.crop-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 9999px rgba(35, 30, 18, 0.45);
+  pointer-events: none;
+}
+.crop-zoom { display: flex; align-items: center; gap: 10px; width: 100%; }
+.crop-zoom .btn-mini { min-width: 44px; min-height: 40px; font-size: 16px; }
+.crop-range { flex: 1; min-width: 0; accent-color: var(--green-light); height: 28px; }
+.crop-body .form-actions { width: 100%; }
 
 /* ---------- טוסט ---------- */
 .toast {
