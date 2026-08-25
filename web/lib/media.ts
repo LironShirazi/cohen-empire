@@ -17,6 +17,26 @@ export function isVideoUrl(url: string): boolean {
   return videoExtensions.includes(extensionOf(url));
 }
 
+/**
+ * תקרת ה-bucket — 50MB, זהה ב-`gallery` וב-`chat-files` (מיגרציות 0005
+ * ו-0013). זו התקרה שנאכפת באמת; בדיקה מולה בקליינט רק חוסכת העלאה
+ * ארוכה שתידחה בסופה.
+ */
+export const STORAGE_MAX_MB = 50;
+export const STORAGE_MAX_BYTES = STORAGE_MAX_MB * 1024 * 1024;
+
+/**
+ * סרטון או תמונה — לפני ההעלאה, כשיש `File` ולא URL. ה-MIME לבדו לא
+ * מספיק: בנייד סרטון מגיע לא פעם עם `""` או `application/octet-stream`
+ * (אותה בעיה שמתועדת ב-`attachmentKind`), ואז הוא היה נשלח להקטנת
+ * תמונה ונדחה מולה. כשה-MIME לא מכריע — נופלים לסיומת.
+ */
+export function isVideoFile(file: File): boolean {
+  if (file.type.startsWith("video/")) return true;
+  if (file.type.startsWith("image/")) return false;
+  return videoExtensions.includes(extensionOf(file.name));
+}
+
 export type AttachmentKind = "image" | "video" | "audio" | "file";
 
 /**

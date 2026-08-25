@@ -9,8 +9,15 @@
  */
 
 export const GALLERY_MAX_PX = 1600;
-export const GALLERY_MAX_MB = 10;
-export const GALLERY_MAX_BYTES = GALLERY_MAX_MB * 1024 * 1024;
+
+/**
+ * תקרה לתמונה **אחרי** ההקטנה. תמונה טיפוסית יורדת לכ-300KB, אז 10MB
+ * כאן הם רשת ביטחון לקובץ שההקטנה לא נגעה בו (GIF מונפש, HEIC שהדפדפן
+ * לא פיענח) — ולא תקרת ההעלאה של הגלריה כולה: סרטון לא עובר כאן בכלל,
+ * ולו יש את תקרת ה-bucket (`STORAGE_MAX_MB` ב-`lib/media.ts`).
+ */
+export const GALLERY_IMAGE_MAX_MB = 10;
+export const GALLERY_IMAGE_MAX_BYTES = GALLERY_IMAGE_MAX_MB * 1024 * 1024;
 
 export type PreparedImage = { blob: Blob; extension: string };
 
