@@ -271,12 +271,48 @@ body {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────
+   מסך הזוכים — סקיצה 2h.
+   בניגוד לקונפטי של פתיחת הרמז (reveal-burst), שנורה פעם אחת בלחיצה,
+   כאן הוא רץ בלולאה: המסך הזה נשאר פתוח בזמן שמצלמים אותו.
+   ────────────────────────────────────────────────────────────── */
+.cheer i {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  animation: cheer-pop 1.7s ease-out infinite;
+}
+
+@keyframes cheer-pop {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(200deg);
+  }
+}
+
+.cheer-trophy {
+  animation: cheer-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes cheer-pulse {
+  50% {
+    transform: scale(1.07);
+  }
+}
+
 /* מכבדים העדפת מערכת — בלי אנימציות למי שביקש פחות תנועה */
 @media (prefers-reduced-motion: reduce) {
   .reveal-env,
   .reveal-tap,
   .reveal-clue,
   .reveal-burst i,
+  .cheer i,
+  .cheer-trophy,
   .distpulse,
   .notification-toast,
   .mention-flash {

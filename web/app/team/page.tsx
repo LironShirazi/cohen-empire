@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { WinnerWatcher } from "@/components/game/winner-watcher";
 import { TeamHeader } from "@/components/team-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import {
   getMyMembership,
   getUnreadNotifications,
   getUser,
+  hasFinishedRoute,
   raceStatusLabel,
 } from "@/lib/data";
 
@@ -21,7 +23,17 @@ export default async function TeamPage() {
   if (!membership) redirect("/join");
 
   const { team, race } = membership;
-  const unread = await getUnreadNotifications(team.id);
+  const [unread, teamDone] = await Promise.all([
+    getUnreadNotifications(team.id),
+    hasFinishedRoute(team.id),
+  ]);
+
+  // ⚠️ **לא** "יש אלופים" אלא "מותר לי לדעת שיש אלופים" (docs/02 §3.11):
+  // כל עוד המירוץ רץ, רק קבוצה שסיימה את המסלול שלה רואה את הכפתור.
+  // קבוצה שעוד בשטח לא אמורה לדעת שההכרעה נפלה — היא אמורה לסיים.
+  const showWinners =
+    race.status === "finished" ||
+    (race.winner_declared_at !== null && teamDone);
 
   return (
     <PageShell className="flex flex-col gap-4">
@@ -34,8 +46,21 @@ export default async function TeamPage() {
         </Chip>
       </div>
 
+      {/* סיימנו — מסך הזוכים הוא הכפתור הראשי, לא מהלך המשחק */}
+      {showWinners ? (
+        <Link href="/winners">
+          <Button size="lg" variant="accent" className="w-full">
+            🏆 מסך הזוכים
+          </Button>
+        </Link>
+      ) : null}
+
       <Link href="/team/play">
-        <Button size="lg" className="w-full">
+        <Button
+          size="lg"
+          variant={showWinners ? "secondary" : "primary"}
+          className="w-full"
+        >
           ▶️ מהלך המשחק
         </Button>
       </Link>
@@ -74,6 +99,10 @@ export default async function TeamPage() {
       >
         לדף הבית
       </Link>
+
+      {race.status === "live" ? (
+        <WinnerWatcher raceId={race.id} teamDone={teamDone} />
+      ) : null}
     </PageShell>
   );
 }

@@ -316,6 +316,31 @@ export async function broadcastAction(
   return { teams: data as number };
 }
 
+/**
+ * הכרזת הזוכים — **בלי לסגור את המירוץ** (docs/02 §3.11).
+ *
+ * זו הפעולה שהמנהל עושה כשהקבוצה הראשונה חוזרת לבית סבא. כל מי
+ * שעוד בשטח ממשיך לרוץ בדיוק כמו קודם, ואפילו לא יודע שההכרעה
+ * נפלה — `get_race_results` ו-`get_team_state` מסננים לפי מי ששואל.
+ */
+export async function declareWinnerAction(
+  raceId: string
+): Promise<{ error?: string; winner?: FinishResult["winner"] }> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("declare_winner", {
+    p_race_id: raceId,
+  });
+  if (error) return { error: error.message };
+  refresh();
+  return { winner: (data as FinishResult).winner };
+}
+
+/**
+ * סגירת המירוץ — **נועלת את המשחק לכל מי שעוד בשטח**: גם
+ * `arrive_at_station` וגם `complete_station` דורשים `status = 'live'`.
+ * לכן זה כפתור נפרד מההכרזה, ולוחצים עליו רק כשכולם חזרו.
+ * מי שלא הכריז קודם — הפונקציה מכריזה בשבילו.
+ */
 export async function finishRaceAction(
   raceId: string
 ): Promise<{ error?: string; winner?: FinishResult["winner"] }> {

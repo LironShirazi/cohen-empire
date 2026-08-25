@@ -29,6 +29,16 @@ export type Race = {
   status: RaceStatus;
   start_lat: number | null;
   start_lng: number | null;
+  /**
+   * האלופים, מרגע `declare_winner` (0015). **נשמר ולא מחושב מחדש**:
+   * אחרי ההכרזה קבוצות אחרות ממשיכות להשלים משימות, ומי שיחשב "מקום 1"
+   * שוב יקבל בסוף קבוצה אחרת. האלופים הם מי שחזר ראשון.
+   *
+   * ⚠️ `winner_declared_at` הוא **לא** "המירוץ נגמר" — הוא "יש אלופים,
+   * וכל השאר עדיין רצים". הסיום הוא `status = 'finished'`.
+   */
+  winner_team_id: string | null;
+  winner_declared_at: string | null;
   created_at: string;
 };
 
@@ -264,6 +274,27 @@ export type Notification = {
   created_at: string;
 };
 
+/**
+ * מה שמחזירה get_race_results (0015) — התוצאות המלאות של מירוץ
+ * **שהסתיים**: ספירת משימות, שעת החצייה וחברי הקבוצה.
+ *
+ * ⚠️ זו לא גרסה "עשירה" של `LeaderboardRow` ואסור להחליף ביניהן.
+ * הלידרבורד מחזיר דירוג בלבד כדי לשמור על המתח (docs/02 §3.3);
+ * השדות הנוספים כאן קיימים רק כי המירוץ כבר נגמר, וה-RPC עצמו
+ * מסרב לרוץ על מירוץ שאינו `finished`/`archived`.
+ */
+export type RaceResultRow = {
+  rank: number;
+  team_id: string;
+  team_name: string;
+  team_color: string;
+  team_animal: string | null;
+  stations_done: number;
+  /** ההשלמה האחרונה — "חצו את הקו". null לקבוצה שלא סיימה אף משימה */
+  finished_at: string | null;
+  members: string[];
+};
+
 /** מה שמחזירה get_leaderboard — דירוג בלבד, בלי ספירת משימות (docs/02 §3.3) */
 export type LeaderboardRow = {
   rank: number;
@@ -287,7 +318,18 @@ export type GameStateName =
 
 export type GameState = {
   team: { id: string; name: string; color: string; animal: string | null };
-  race: { id: string; name: string; status: RaceStatus };
+  race: {
+    id: string;
+    name: string;
+    status: RaceStatus;
+    /**
+     * ⚠️ **לא** `winner_declared_at is not null` גולמי. השרת מחזיר כאן
+     * `true` רק לקבוצה שסיימה את המסלול שלה או אחרי שהמירוץ נסגר —
+     * קבוצה שעוד בשטח מקבלת `false` גם כשכבר יש אלופים, כדי שלא תדע
+     * שההכרעה נפלה (0015).
+     */
+    winner_declared: boolean;
+  };
   state: GameStateName;
   station: {
     id: string;
@@ -310,6 +352,7 @@ export type CompleteResult = {
   error?: string;
   awaiting_approval?: boolean;
 };
+/** מה שמחזירות declare_winner ו-finish_race (0015) */
 export type FinishResult = {
   winner: {
     team_id: string;
