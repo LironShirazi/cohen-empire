@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Countdown } from "@/components/countdown";
+import { QuoteCard } from "@/components/family/quote-card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import {
   getMyJoinRequest,
   getMyMembership,
   getProfile,
+  getRandomQuote,
   getUser,
 } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -18,13 +20,17 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 export default async function Home() {
   const user = await getUser();
 
-  const [race, membership, request, adminRaces, profile] = await Promise.all([
-    getFeaturedRace(),
-    user ? getMyMembership() : null,
-    user ? getMyJoinRequest() : null,
-    user ? getMyAdminRaces() : [],
-    user ? getProfile() : null,
-  ]);
+  const [race, membership, request, adminRaces, profile, quote] =
+    await Promise.all([
+      getFeaturedRace(),
+      user ? getMyMembership() : null,
+      user ? getMyJoinRequest() : null,
+      user ? getMyAdminRaces() : [],
+      user ? getProfile() : null,
+      // `quotes` היא `to authenticated` מאז 0001 — למי שלא מחובר
+      // השאילתה תמיד תחזור ריקה, ואין טעם לשלוח אותה
+      user ? getRandomQuote() : null,
+    ]);
 
   const showAdminLink = adminRaces.length > 0 || profile?.is_owner;
 
@@ -61,6 +67,8 @@ export default async function Home() {
 
         {race?.status === "live" ? <Chip tone="brand">🔴 רץ עכשיו</Chip> : null}
       </section>
+
+      <QuoteCard quote={quote} variant="feature" className="max-w-sm" />
 
       <Card className="flex w-full max-w-sm flex-col gap-3">
         {user ? (
@@ -113,6 +121,11 @@ export default async function Home() {
           <Link href="/gallery">
             <Button variant="secondary" className="w-full">
               📸 גלריה
+            </Button>
+          </Link>
+          <Link href="/hall-of-fame" className="col-span-2">
+            <Button variant="navy" className="w-full">
+              🏆 היכל התהילה
             </Button>
           </Link>
         </div>
