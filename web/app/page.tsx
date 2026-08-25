@@ -96,6 +96,16 @@ export default async function Home() {
       </Card>
 
       <nav className="flex w-full max-w-sm flex-col gap-3">
+        {/* מירוץ שהסתיים — ההכרזה היא הדבר הראשון שרוצים לראות,
+            גם כמה ימים אחרי (מסך הזוכים הוא ראוט קבוע, לא רגע) */}
+        {user && race?.status === "finished" ? (
+          <Link href="/winners">
+            <Button variant="accent" size="lg" className="w-full">
+              🏆 מסך הזוכים
+            </Button>
+          </Link>
+        ) : null}
+
         {user ? (
           <div className="grid grid-cols-2 gap-3">
             <Link href="/leaderboard">

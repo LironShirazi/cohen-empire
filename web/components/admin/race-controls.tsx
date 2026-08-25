@@ -1,30 +1,46 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
   archiveRaceAction,
+  declareWinnerAction,
   finishRaceAction,
   setRaceStatusAction,
 } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Chip } from "@/components/ui/chip";
 import { FormError } from "@/components/ui/page";
-import type { FinishResult, RaceStatus } from "@/lib/supabase/types";
+import type { RaceStatus } from "@/lib/supabase/types";
 
 const nextStep: Partial<Record<RaceStatus, { status: RaceStatus; label: string }>> = {
   draft: { status: "open", label: "פתיחת הרשמה 🔓" },
   open: { status: "live", label: "יוצאים לדרך! 🏁" },
 };
 
+/**
+ * ⚠️ **הכרזת זוכים וסיום מירוץ הם שני כפתורים שונים** (docs/02 §3.11).
+ *
+ * עד 0015 זו הייתה לחיצה אחת, והיא נעלה את כל מי שעוד היה בשטח:
+ * `arrive_at_station` ו-`complete_station` דורשים `status = 'live'`,
+ * אז קבוצה באמצע המסלול קיבלה "המירוץ לא פעיל" ונשארה בלי סיום.
+ *
+ * עכשיו: מכריזים כשהראשונים חוזרים (המירוץ ממשיך), וסוגרים כשכולם
+ * חזרו. הכפתור השני נשאר "כבד" (navy) בכוונה — הוא זה שנועל.
+ */
 export function RaceControls({
   raceId,
   status,
+  winnerDeclared,
 }: {
   raceId: string;
   status: RaceStatus;
+  winnerDeclared: boolean;
 }) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [winner, setWinner] = useState<FinishResult["winner"]>(null);
   const [pending, startTransition] = useTransition();
 
   function run(fn: () => Promise<{ error?: string }>) {
@@ -36,6 +52,7 @@ export function RaceControls({
   }
 
   const step = nextStep[status];
+  const winnersHref = `/winners?race=${raceId}`;
 
   return (
     <Card className="flex flex-col gap-3">
@@ -51,21 +68,62 @@ export function RaceControls({
         </Button>
       ) : null}
 
-      {status === "live" ? (
-        <Button
-          size="lg"
-          variant="navy"
-          disabled={pending}
-          onClick={() =>
-            run(async () => {
-              const result = await finishRaceAction(raceId);
-              if (result.winner) setWinner(result.winner);
-              return result;
-            })
-          }
-        >
-          סיום המירוץ והכרזת זוכים 🏆
-        </Button>
+      {status === "live" && !winnerDeclared ? (
+        <>
+          <Button
+            size="lg"
+            variant="accent"
+            disabled={pending}
+            onClick={() =>
+              run(async () => {
+                const result = await declareWinnerAction(raceId);
+                // המנהל רואה בדיוק את המסך שהקבוצות שסיימו מוקפצות אליו
+                if (!result.error) router.push(winnersHref);
+                return result;
+              })
+            }
+          >
+            🏆 הכרזת הזוכים
+          </Button>
+          <p className="text-sm text-muted">
+            לוחצים כשהקבוצה הראשונה חוזרת לבית סבא. <b>המירוץ ממשיך לרוץ</b> —
+            מי שעוד בשטח מסיים את המסלול שלו ואפילו לא יודע שכבר יש אלופים.
+          </p>
+        </>
+      ) : null}
+
+      {status === "live" && winnerDeclared ? (
+        <>
+          <div className="flex items-center justify-between gap-2">
+            <Chip tone="yellow">🏆 האלופים הוכרזו</Chip>
+            <Link
+              href={winnersHref}
+              className="text-sm font-bold text-brand hover:underline"
+            >
+              למסך הזוכים →
+            </Link>
+          </div>
+          <Button
+            size="lg"
+            variant="navy"
+            disabled={pending}
+            onClick={() => run(() => finishRaceAction(raceId))}
+          >
+            🏁 סיום המירוץ לכולם
+          </Button>
+          <p className="text-sm text-muted">
+            רק כשכל הקבוצות חזרו. הסגירה <b>נועלת את המשחק</b> — מרגע זה אי
+            אפשר להגיע לתחנה או להשלים משימה.
+          </p>
+        </>
+      ) : null}
+
+      {status === "finished" || status === "archived" ? (
+        <Link href={winnersHref}>
+          <Button variant="accent" className="w-full">
+            🏆 מסך הזוכים
+          </Button>
+        </Link>
       ) : null}
 
       {status === "finished" ? (
@@ -86,17 +144,6 @@ export function RaceControls({
 
       {status === "archived" ? (
         <p className="text-sm text-muted">המירוץ בארכיון — לקריאה בלבד.</p>
-      ) : null}
-
-      {winner ? (
-        <div
-          className="rounded-card p-4 text-center"
-          style={{ background: `color-mix(in srgb, ${winner.color} 15%, #fff)` }}
-        >
-          <p className="text-4xl">🏆</p>
-          <p className="font-display text-2xl">{winner.name}</p>
-          <p className="text-sm text-muted">{winner.members.join(" · ")}</p>
-        </div>
       ) : null}
 
       <FormError>{error}</FormError>

@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CompleteStation } from "@/components/game/complete-station";
 import { DistanceMeter } from "@/components/game/distance-meter";
 import { StationReveal } from "@/components/game/station-reveal";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { WalkingSpinner } from "@/components/ui/walking-spinner";
@@ -43,13 +45,56 @@ export function PlayScreen({ state }: { state: GameState }) {
     );
   }
 
+  // המירוץ נסגר בזמן שהקבוצה עוד באמצע המסלול. השרת כבר דוחה גם
+  // הגעה וגם השלמה (שניהם דורשים `status = 'live'`), אז מסך רמז עם
+  // כפתור מת הוא הדבר הכי מבלבל שאפשר להראות כאן.
+  const raceClosed =
+    state.race.status === "finished" || state.race.status === "archived";
+
+  if (raceClosed && state.state !== "finished") {
+    return (
+      <Card className="flex flex-col items-center gap-3 text-center">
+        <span className="text-6xl">🏁</span>
+        <h2 className="font-display text-2xl">המירוץ נסגר</h2>
+        <p className="text-muted">
+          המנהל סגר את המירוץ. חבל שלא הספקתם את כל התחנות — אבל
+          ההליכה נחשבת, וגם הסיפורים בדרך 😄
+        </p>
+        <Link href="/winners" className="w-full">
+          <Button variant="accent" size="lg" className="w-full">
+            🏆 למסך הזוכים
+          </Button>
+        </Link>
+      </Card>
+    );
+  }
+
   if (state.state === "finished") {
+    // ⚠️ `winner_declared` מגיע מהשרת כבר מסונן (0015): הוא `true` רק
+    // אם הקבוצה הזו סיימה או שהמירוץ נסגר. לא לגזור אותו מהסטטוס.
+    const announced = state.race.winner_declared;
+
     return (
       <Card className="flex flex-col items-center gap-3 border-ok text-center">
         <span className="text-6xl">🏁</span>
         <h2 className="font-display text-2xl">סיימתם את כל התחנות!</h2>
-        <p className="text-lg font-bold">חזרו לבית סבא! 🏠</p>
-        <p className="text-muted">נתראה בקו הסיום — שם מכריזים על הזוכים.</p>
+        {announced ? (
+          <>
+            <p className="text-lg font-bold">המירוץ נגמר 🏆</p>
+            <Link href="/winners" className="w-full">
+              <Button variant="accent" size="lg" className="w-full">
+                🏆 למסך הזוכים
+              </Button>
+            </Link>
+          </>
+        ) : (
+          <>
+            <p className="text-lg font-bold">חזרו לבית סבא! 🏠</p>
+            <p className="text-muted">
+              נתראה בקו הסיום — שם מכריזים על הזוכים.
+            </p>
+          </>
+        )}
       </Card>
     );
   }

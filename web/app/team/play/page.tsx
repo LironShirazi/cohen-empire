@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { LocationReporter } from "@/components/game/location-reporter";
 import { PlayScreen } from "@/components/game/play-screen";
+import { WinnerWatcher } from "@/components/game/winner-watcher";
 import { Card } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
 import { getMyMembership, getUser } from "@/lib/data";
@@ -42,6 +43,15 @@ export default async function PlayPage() {
         <div className="mt-4">
           <LocationReporter teamId={membership.team.id} />
         </div>
+      ) : null}
+
+      {/* הקבוצה שסיימה מוקפצת לזוכים ברגע ההכרזה; מי שעוד בשטח
+          נשאר בדיוק במקום שבו הוא נמצא (docs/02 §3.11) */}
+      {membership.race.status === "live" ? (
+        <WinnerWatcher
+          raceId={membership.race.id}
+          teamDone={state?.state === "finished"}
+        />
       ) : null}
     </PageShell>
   );

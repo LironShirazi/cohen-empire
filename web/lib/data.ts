@@ -12,6 +12,7 @@ import type {
   Profile,
   Quote,
   Race,
+  RaceResultRow,
   RaceStatus,
   Station,
   Team,
@@ -230,6 +231,78 @@ export async function getLeaderboard(raceId: string): Promise<LeaderboardRow[]> 
   const supabase = await createClient();
   const { data } = await supabase.rpc("get_leaderboard", { p_race_id: raceId });
   return (data ?? []) as LeaderboardRow[];
+}
+
+/**
+ * התוצאות המלאות של מירוץ שהסתיים — מזינות את מסך הזוכים (0015).
+ *
+ * ⚠️ **לא תחליף ל-`getLeaderboard`.** ה-RPC מסרב לרוץ על מירוץ
+ * שאינו `finished`/`archived` וזורק שגיאה, כי ספירת המשימות והזמנים
+ * הם בדיוק מה ש-docs/02 §3.3 מסתיר כל עוד המירוץ רץ. אם המסך הזה
+ * ייקרא בטעות על מירוץ חי — תחזור רשימה ריקה, לא נתונים חלקיים.
+ */
+export async function getRaceResults(
+  raceId: string
+): Promise<RaceResultRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("get_race_results", {
+    p_race_id: raceId,
+  });
+  if (error) {
+    console.error("get_race_results", error.message);
+    return [];
+  }
+  return (data ?? []) as RaceResultRow[];
+}
+
+/**
+ * האם הקבוצה סיימה את כל התחנות שלה.
+ *
+ * זה התנאי שקובע מי רשאי לראות תוצאות בזמן שהמירוץ עוד רץ
+ * (docs/02 §3.11). כאן זה רק כדי לצייר את המסך הנכון — האכיפה עצמה
+ * היא בשרת, בתוך `get_race_results` ו-`get_team_state`.
+ */
+export async function hasFinishedRoute(teamId: string): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("has_finished_route", {
+    p_team_id: teamId,
+  });
+  return data === true;
+}
+
+/**
+ * המירוץ שמסך הזוכים חוגג: קודם כל **שלי**, אם מותר לי לראות אותו.
+ *
+ * ⚠️ "מותר לי" הוא לא רק "יש אלופים": כל עוד המירוץ רץ, רק קבוצה
+ * שסיימה את המסלול שלה מגיעה לכאן (docs/02 §3.11). קבוצה שעוד בשטח
+ * תיפול לענף הבא ותראה את המירוץ הקודם — לא את זה שהיא באמצעו.
+ *
+ * אחרת: האחרון שהסתיים אי-פעם, כדי שהקישור לא יוביל לשום מקום אחרי
+ * הארכוב. `archived` נכלל בכוונה — הארכוב נועל עריכה, לא זיכרון.
+ */
+export async function getWinnersRace(): Promise<Race | null> {
+  if (!isSupabaseConfigured) return null;
+
+  const membership = await getMyMembership();
+  if (membership) {
+    const { race, team } = membership;
+    if (race.status === "finished") return race;
+    if (race.winner_declared_at && (await hasFinishedRoute(team.id))) {
+      return race;
+    }
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("races")
+    .select("*")
+    .in("status", ["finished", "archived"])
+    .order("year", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as Race | null) ?? null;
 }
 
 export async function getRace(raceId: string): Promise<Race | null> {

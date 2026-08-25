@@ -95,7 +95,11 @@ export default async function RaceDashboardPage(
 
       <RaceAdmins raceId={raceId} admins={admins} candidates={profiles} />
 
-      <RaceControls raceId={raceId} status={race.status} />
+      <RaceControls
+        raceId={raceId}
+        status={race.status}
+        winnerDeclared={race.winner_declared_at !== null}
+      />
     </PageShell>
   );
 }
