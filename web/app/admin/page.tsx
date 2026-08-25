@@ -37,10 +37,24 @@ export default async function AdminHomePage() {
       ))}
 
       {profile?.is_owner ? (
-        <Card className="flex flex-col gap-4">
-          <h2 className="font-display text-xl">מירוץ חדש</h2>
-          <CreateRaceForm />
-        </Card>
+        <>
+          <Link href="/admin/content">
+            <Card className="flex items-center gap-3">
+              <span className="text-2xl">🏛️</span>
+              <div>
+                <p className="font-display text-xl">תוכן משפחתי</p>
+                <p className="text-sm text-muted">
+                  משפטי סבא וסבתא · היכל התהילה
+                </p>
+              </div>
+            </Card>
+          </Link>
+
+          <Card className="flex flex-col gap-4">
+            <h2 className="font-display text-xl">מירוץ חדש</h2>
+            <CreateRaceForm />
+          </Card>
+        </>
       ) : (
         <Card className="text-sm text-muted">
           יצירת מירוץ חדש שמורה למנהל-על. אם צריך למנות אתכם — פנו אליו.

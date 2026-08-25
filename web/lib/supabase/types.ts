@@ -210,6 +210,42 @@ export type GalleryPhoto = {
   created_at: string;
 };
 
+/**
+ * משפט של סבא או סבתא (docs/01 §7, docs/03). הטבלה קיימת מ-0001
+ * ונפתחה לכתיבה ב-0014 — למנהל-על בלבד (docs/01 §2).
+ *
+ * `who` הוא 'סבא' / 'סבתא' — קובע לאיזה צד פונה בועת הדיבור ואיזה
+ * אימוג'י מוצג כשאין `image_url`.
+ */
+export type Quote = {
+  id: string;
+  text: string;
+  who: string;
+  image_url: string | null;
+  created_at: string;
+};
+
+/**
+ * שורה בהיכל התהילה (docs/01 §7, docs/04 §1). קיימת מ-0001, ונכתבת
+ * משני מקורות: `finish_race` (0002) עושה upsert בסיום מירוץ, ומנהל-על
+ * מזין ידנית את השנים שקדמו לאפליקציה.
+ *
+ * `race_id` הוא מה שמבדיל ביניהם, ולכן הוא **מחוץ ל-grant** של 0014
+ * ואי אפשר לשנות אותו מהממשק.
+ *
+ * לטבלה אין עמודה לחיה המייצגת — האימוג'י מוטמע ב-`team_name` עצמו
+ * ("🐬 הדולפינים"), כמו בסקיצות. כך שורה ידנית ושורה אוטומטית נראות זהות.
+ */
+export type HallOfFameRow = {
+  id: string;
+  year: number;
+  race_id: string | null;
+  team_name: string;
+  team_color: string | null;
+  members: string[];
+  photo_url: string | null;
+};
+
 export type NotificationType = "mention" | "task_approved" | "admin_broadcast";
 
 /**

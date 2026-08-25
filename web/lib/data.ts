@@ -5,10 +5,12 @@ import type {
   ChatMessage,
   GalleryAlbum,
   GalleryPhoto,
+  HallOfFameRow,
   JoinRequest,
   LeaderboardRow,
   NotificationType,
   Profile,
+  Quote,
   Race,
   RaceStatus,
   Station,
@@ -659,3 +661,56 @@ export const raceStatusLabel: Record<RaceStatus, string> = {
   finished: "הסתיים",
   archived: "בארכיון",
 };
+
+/**
+ * משפט אקראי של סבא או סבתא, או `null` כשעוד לא הוזנו משפטים.
+ *
+ * ⚠️ **ההגרלה כאן ולא בקומפוננטה של הלקוח.** `Math.random()` ברינדור
+ * לקוח מייצר hydration mismatch — השרת והדפדפן יגרילו משפטים שונים.
+ * שני המסכים שמציגים ציטוט הם דינמיים ממילא (שניהם קוראים `getUser()`),
+ * ולכן הגרלה בשרת נותנת משפט אחר בכל כניסה בלי שום עלות.
+ *
+ * ⚠️ **`null` הוא מצב תקין ולא שגיאה.** המשפטים נאספים מהמשפחה לאורך
+ * זמן, והאפליקציה תרוץ שבועות עם טבלה ריקה. מי שקורא לפונקציה הזו
+ * חייב פשוט לא לרנדר כלום — ראו `QuoteCard`.
+ *
+ * מושכים את כל השורות ובוחרים כאן, כי PostgREST לא יודע
+ * `order by random()`. הטבלה היא עשרות משפטים קצרים לכל היותר; אם
+ * אי-פעם תגדל, הנקודה לשנות בה היא RPC שמחזיר שורה אחת.
+ */
+export async function getRandomQuote(): Promise<Quote | null> {
+  if (!isSupabaseConfigured) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.from("quotes").select("*");
+
+  const quotes = (data ?? []) as Quote[];
+  if (quotes.length === 0) return null;
+  return quotes[Math.floor(Math.random() * quotes.length)];
+}
+
+/** כל המשפטים, החדש למעלה — למסך הניהול של מנהל-על */
+export async function getQuotes(): Promise<Quote[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("quotes")
+    .select("*")
+    .order("created_at", { ascending: false });
+  return (data ?? []) as Quote[];
+}
+
+/**
+ * היכל התהילה — כל השנים, החדשה למעלה (docs/04 §1).
+ *
+ * שני מקורות באותה טבלה: שורות שנוצרו ע"י `finish_race` בסיום מירוץ,
+ * ושורות שמנהל-על הזין מהזיכרון עבור השנים שקדמו לאפליקציה.
+ */
+export async function getHallOfFame(): Promise<HallOfFameRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("hall_of_fame")
+    .select("*")
+    .order("year", { ascending: false });
+  return (data ?? []) as HallOfFameRow[];
+}

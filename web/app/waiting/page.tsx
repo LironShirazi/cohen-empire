@@ -1,12 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { QuoteCard } from "@/components/family/quote-card";
 import { WaitingWatcher } from "@/components/join/waiting-watcher";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { PageShell } from "@/components/ui/page";
 import { WalkingSpinner } from "@/components/ui/walking-spinner";
-import { getMyJoinRequest, getMyMembership, getUser } from "@/lib/data";
+import {
+  getMyJoinRequest,
+  getMyMembership,
+  getRandomQuote,
+  getUser,
+} from "@/lib/data";
 
 export default async function WaitingPage() {
   const user = await getUser();
@@ -36,6 +42,10 @@ export default async function WaitingPage() {
       </PageShell>
     );
   }
+
+  // ציטוט להנעמת ההמתנה (docs/04 §2). `null` כשעוד לא הוזנו משפטים,
+  // ואז QuoteCard לא מרנדר כלום
+  const quote = await getRandomQuote();
 
   const team = request.team;
 
@@ -67,6 +77,8 @@ export default async function WaitingPage() {
           ברגע שהמנהל התורן יאשר — המסך יתחלף לבד ותיכנסו לקבוצה 🏁
         </p>
       </Card>
+
+      <QuoteCard quote={quote} className="mt-6" />
     </PageShell>
   );
 }
