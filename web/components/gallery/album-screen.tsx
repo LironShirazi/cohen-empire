@@ -7,8 +7,17 @@ import { Card } from "@/components/ui/card";
 import { FormError } from "@/components/ui/page";
 import { PhotoLightbox } from "@/components/gallery/photo-lightbox";
 import { createClient } from "@/lib/supabase/client";
-import { isVideoUrl } from "@/lib/media";
-import { GALLERY_MAX_BYTES, GALLERY_MAX_MB, prepareImage } from "@/lib/image";
+import {
+  isVideoFile,
+  isVideoUrl,
+  STORAGE_MAX_BYTES,
+  STORAGE_MAX_MB,
+} from "@/lib/media";
+import {
+  GALLERY_IMAGE_MAX_BYTES,
+  GALLERY_IMAGE_MAX_MB,
+  prepareImage,
+} from "@/lib/image";
 import type { GalleryAlbum } from "@/lib/supabase/types";
 import type { GalleryPhotoRow } from "@/lib/data";
 
@@ -93,15 +102,20 @@ export function AlbumScreen({
     for (const file of files) {
       setBusy(`מעלה ${done + 1} מתוך ${files.length}...`);
       try {
-        // סרטון עובר כמו שהוא — ההקטנה היא לתמונות בלבד
-        const { blob, extension } = file.type.startsWith("video/")
-          ? { blob: file as Blob, extension: file.name.split(".").pop() || "mp4" }
+        // סרטון עובר כמו שהוא — ההקטנה היא לתמונות בלבד. לכן גם התקרה
+        // שלו אחרת: מה שה-bucket מרשה, ולא התקרה של תמונה אחרי הקטנה
+        const isVideo = isVideoFile(file);
+        const { blob, extension } = isVideo
+          ? {
+              blob: file as Blob,
+              extension: file.name.split(".").pop()?.toLowerCase() || "mp4",
+            }
           : await prepareImage(file);
 
-        if (blob.size > GALLERY_MAX_BYTES) {
-          throw new Error(
-            `${file.name} גדול מדי (מעל ${GALLERY_MAX_MB}MB)`
-          );
+        const maxBytes = isVideo ? STORAGE_MAX_BYTES : GALLERY_IMAGE_MAX_BYTES;
+        const maxMb = isVideo ? STORAGE_MAX_MB : GALLERY_IMAGE_MAX_MB;
+        if (blob.size > maxBytes) {
+          throw new Error(`${file.name} גדול מדי (מעל ${maxMb}MB)`);
         }
 
         const path = `${album.id}/${crypto.randomUUID()}.${extension}`;
@@ -222,7 +236,8 @@ export function AlbumScreen({
       </Button>
       <p className="mt-2 text-sm text-muted">
         אפשר לבחור כמה קבצים בבת אחת. תמונות מוקטנות במכשיר לפני ההעלאה, כדי
-        שהאלבום ייפתח מהר גם ברשת סלולרית.
+        שהאלבום ייפתח מהר גם ברשת סלולרית. סרטון עולה כמו שהוא, עד{" "}
+        {STORAGE_MAX_MB}MB.
       </p>
       <div className="mt-2">
         <FormError>{error}</FormError>
