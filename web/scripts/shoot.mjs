@@ -19,12 +19,15 @@ import { join } from "node:path";
 
 const CHROME =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const [route = "/", out = "shot.png", w = "402", h = "874"] =
+// הארגומנט האחרון הוא "כמה זמן וירטואלי לתת לעמוד לפני הצילום".
+// לאנימציות מחזוריות זה למעשה בורר הפריים: רצועת ההליכה חוצה ב-9
+// שניות, וב-1500ms היא עדיין מחוץ למסך.
+const [route = "/", out = "shot.png", w = "402", h = "874", budget = "1500"] =
   process.argv.slice(2);
 
 const width = Number(w);
 const height = Number(h);
-const url = route.startsWith("http") ? route : `http://localhost:3000${route}`;
+const url = route.includes("://") ? route : `http://localhost:3000${route}`;
 
 const dir = mkdtempSync(join(tmpdir(), "shoot-"));
 const harness = join(dir, "frame.html");
@@ -43,8 +46,8 @@ const args = [
   "--hide-scrollbars",
   `--window-size=${width},${height}`,
   `--screenshot=${out}`,
-  // שנייה לפונטים ולציור הראשון — בלעדיה נתפס לפעמים מסך לבן
-  "--virtual-time-budget=1500",
+  // זמן לפונטים ולציור הראשון — בלעדיו נתפס לפעמים מסך לבן
+  `--virtual-time-budget=${Number(budget)}`,
   harness,
 ];
 

@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 
-export function SignOutButton() {
+export function SignOutButton({
+  variant = "secondary",
+  ...props
+}: Omit<ButtonProps, "onClick" | "disabled">) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +20,12 @@ export function SignOutButton() {
   }
 
   return (
-    <Button variant="secondary" onClick={handleSignOut} disabled={loading}>
+    <Button
+      variant={variant}
+      onClick={handleSignOut}
+      disabled={loading}
+      {...props}
+    >
       {loading ? "מתנתק…" : "התנתקות"}
     </Button>
   );

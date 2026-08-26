@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { Countdown } from "@/components/countdown";
 import { QuoteCard } from "@/components/family/quote-card";
+import { HomeHero } from "@/components/home/hero";
+import { WalkerBand } from "@/components/home/walker-band";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Chip } from "@/components/ui/chip";
 import {
   getFeaturedRace,
   getMyAdminRaces,
@@ -16,6 +16,26 @@ import {
   getUser,
 } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+
+/** אריח ניווט — ‎.card.card-tight בסקיצה 1a */
+function Tile({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: string;
+  label: string;
+}) {
+  return (
+    <Link href={href} className="flex-1">
+      <Card tight className="px-1.5 py-3.5 text-center">
+        <span className="block text-[26px]">{icon}</span>
+        <span className="mt-0.5 block text-small font-bold">{label}</span>
+      </Card>
+    </Link>
+  );
+}
 
 export default async function Home() {
   const user = await getUser();
@@ -39,63 +59,32 @@ export default async function Home() {
     ? { href: "/team", label: "לקבוצה שלי 🏁" }
     : request?.status === "pending"
       ? { href: "/waiting", label: "הבקשה שלכם ממתינה ⏳" }
-      : { href: "/join", label: "כניסה למשחק" };
+      : { href: "/join", label: "כניסה למשחק 🏁" };
 
   return (
-    <main className="flex flex-1 flex-col items-center gap-8 px-6 py-10 text-center">
-      <header className="flex flex-col items-center gap-3">
-        <span className="text-6xl">🏁</span>
-        <h1 className="font-display text-4xl text-brand sm:text-5xl">
-          המירוץ למיליון
-        </h1>
-        <p className="text-lg text-muted">אימפריית כהן · מסורת של 20+ שנה</p>
-      </header>
-
-      <section className="flex flex-col items-center gap-4">
-        {race?.starts_at ? (
-          <>
-            <h2 className="text-sm font-bold tracking-wide text-muted">
-              {race.status === "live" ? "המירוץ בעיצומו" : `${race.name} — בעוד`}
-            </h2>
-            <Countdown target={race.starts_at} />
-          </>
-        ) : (
-          <p className="text-muted">
-            עוד לא נקבע תאריך למירוץ הבא — תכף מעדכנים 🗓️
-          </p>
-        )}
-
-        {race?.status === "live" ? <Chip tone="brand">🔴 רץ עכשיו</Chip> : null}
-      </section>
-
-      <QuoteCard quote={quote} variant="feature" className="max-w-sm" />
-
-      <Card className="flex w-full max-w-sm flex-col gap-3">
-        {user ? (
-          <>
-            <p className="text-lg font-semibold">
-              שלום, {profile?.full_name ?? user.email} 👋
-            </p>
+    <main className="flex flex-1 flex-col">
+      <HomeHero
+        race={race}
+        action={
+          user ? (
             <Link href={primary.href}>
-              <Button size="lg" className="w-full">
+              <Button variant="accent" size="lg" className="w-full">
                 {primary.label}
               </Button>
             </Link>
-            <SignOutButton />
-          </>
-        ) : isSupabaseConfigured ? (
-          <>
-            <p>מתחברים עם Google ואז מזינים את קוד המשחק 🔑</p>
-            <GoogleSignInButton next="/join" />
-          </>
-        ) : (
-          <Button size="lg" disabled>
-            התחברות עם Google — בקרוב
-          </Button>
-        )}
-      </Card>
+          ) : isSupabaseConfigured ? (
+            <GoogleSignInButton variant="accent" next="/join" />
+          ) : (
+            <Button variant="accent" size="lg" className="w-full" disabled>
+              התחברות עם Google — בקרוב
+            </Button>
+          )
+        }
+      />
 
-      <nav className="flex w-full max-w-sm flex-col gap-3">
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-3.5 px-5 pt-4.5 pb-2">
+        <QuoteCard quote={quote} variant="feature" />
+
         {/* מירוץ שהסתיים — ההכרזה היא הדבר הראשון שרוצים לראות,
             גם כמה ימים אחרי (מסך הזוכים הוא ראוט קבוע, לא רגע) */}
         {user && race?.status === "finished" ? (
@@ -106,39 +95,21 @@ export default async function Home() {
           </Link>
         ) : null}
 
+        {/* קבועים בדף הבית ללא קשר למהלך המשחק (docs/04 §1).
+            הסקיצה מראה שלושה אריחים ומשמיטה את העץ; docs/04 §1 מונה
+            אותו במפורש, והוא מאוחר יותר — ולכן הוא כאן. */}
+        <div className="flex gap-2.5">
+          <Tile href="/hall-of-fame" icon="🏆" label="היכל התהילה" />
+          <Tile href="/gallery" icon="📸" label="גלריה" />
+          <Tile href="/family-tree" icon="🌳" label="העץ המשפחתי" />
+        </div>
+
         {user ? (
-          <div className="grid grid-cols-2 gap-3">
-            <Link href="/leaderboard">
-              <Button variant="navy" className="w-full">
-                🏅 לוח מובילים
-              </Button>
-            </Link>
-            <Link href="/teams">
-              <Button variant="accent" className="w-full">
-                👥 הקבוצות
-              </Button>
-            </Link>
+          <div className="flex gap-2.5">
+            <Tile href="/leaderboard" icon="🏅" label="לוח מובילים" />
+            <Tile href="/teams" icon="👥" label="הקבוצות" />
           </div>
         ) : null}
-
-        {/* קבועים בדף הבית ללא קשר למהלך המשחק (docs/04 §1) */}
-        <div className="grid grid-cols-2 gap-3">
-          <Link href="/family-tree">
-            <Button variant="secondary" className="w-full">
-              🌳 העץ המשפחתי
-            </Button>
-          </Link>
-          <Link href="/gallery">
-            <Button variant="secondary" className="w-full">
-              📸 גלריה
-            </Button>
-          </Link>
-          <Link href="/hall-of-fame" className="col-span-2">
-            <Button variant="navy" className="w-full">
-              🏆 היכל התהילה
-            </Button>
-          </Link>
-        </div>
 
         {showAdminLink ? (
           <Link href="/admin">
@@ -147,7 +118,18 @@ export default async function Home() {
             </Button>
           </Link>
         ) : null}
-      </nav>
+
+        {user ? (
+          <div className="text-center">
+            <p className="text-small text-muted">
+              שלום, {profile?.full_name ?? user.email} 👋
+            </p>
+            <SignOutButton variant="quiet" />
+          </div>
+        ) : null}
+
+        <WalkerBand />
+      </div>
     </main>
   );
 }

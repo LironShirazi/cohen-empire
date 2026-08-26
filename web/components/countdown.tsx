@@ -57,7 +57,9 @@ export function Countdown({ target }: { target: string }) {
   );
 
   if (total === 0) {
-    return <p className="font-display text-2xl text-brand">המירוץ יצא לדרך! 🏁</p>;
+    return (
+      <p className="goldtext font-display text-3xl">המירוץ יצא לדרך! 🏁</p>
+    );
   }
 
   const parts: Record<Unit, number> =
@@ -74,16 +76,21 @@ export function Countdown({ target }: { target: string }) {
     // ימים משמאל ושניות מימין — הספירה נקראת כמו שעון דיגיטלי,
     // ולכן LTR. (ב-design-system/components/countdown.html הסדר הפוך,
     // כי שם הוא יורש RTL מה-html; זו החלטה מודעת לסטות ממנו.)
-    <div className="flex justify-center gap-3 sm:gap-4" dir="ltr">
+    // האריחים שקופים ולא כחולים־מלאים: הם יושבים **בתוך** ההיירו
+    // הקוסמי (סקיצה 1a), ולא עומדים לבדם על נייר. כרטיס navy מלא על
+    // רקע navy היה קופסה בתוך קופסה.
+    <div className="flex justify-center gap-2" dir="ltr">
       {(Object.keys(labels) as Unit[]).map((unit) => (
         <div
           key={unit}
-          className="flex w-18 flex-col items-center rounded-card bg-navy px-2 py-3 text-gold-lite shadow-navy sm:w-22"
+          className="min-w-[72px] rounded-[14px] border border-gold-lite/35 bg-white/8 px-1.5 py-3"
         >
-          <span className="font-display text-3xl tabular-nums sm:text-4xl">
+          <span className="block font-display text-[36px] leading-none font-normal tabular-nums text-gold-lite">
             {total === null ? "--" : String(parts[unit]).padStart(2, "0")}
           </span>
-          <span className="mt-1 text-xs text-white/70">{labels[unit]}</span>
+          <span className="mt-1 block text-xs text-on-navy-muted">
+            {labels[unit]}
+          </span>
         </div>
       ))}
     </div>

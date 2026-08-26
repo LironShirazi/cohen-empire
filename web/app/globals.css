@@ -136,6 +136,24 @@ body {
   font-weight: 800;
 }
 
+/* תג השנה המשושה — ‎.badge2026 ב-foundations/brand.html.
+   כאן ולא ב-Tailwind כי ה-clip-path ארוך מכדי להיות קריא כמחלקה שרירותית. */
+.hex-badge {
+  clip-path: polygon(8% 0, 92% 0, 100% 50%, 92% 100%, 8% 100%, 0 50%);
+}
+
+/* הזוג חוצה את המסך — רצועת ההפתעה בדף הבית (סקיצה 1a).
+   `inset-inline-start` ולא `left`: ב-RTL הם נכנסים מימין ויוצאים
+   שמאלה, וזה הכיוון שבו קוראים את העמוד. */
+@keyframes cross {
+  from {
+    inset-inline-start: -90px;
+  }
+  to {
+    inset-inline-start: 110%;
+  }
+}
+
 /* המצפן — סימן הניווט של המותג (foundations/brand.html, סקיצה 1b).
    כאן ולא ב-Tailwind בגלל ה-conic-gradient וטבעת ה-::before. */
 .compass {
@@ -369,9 +387,15 @@ body {
   .cheer-trophy,
   .distpulse,
   .notification-toast,
-  .mention-flash {
+  .mention-flash,
+  .walker-band {
     animation: none !important;
     transition: none !important;
+  }
+
+  /* הרצועה עצמה מיותרת בלי התנועה — הזוג היה נשאר תקוע באמצע */
+  .walker-band-wrap {
+    display: none;
   }
 }
 
