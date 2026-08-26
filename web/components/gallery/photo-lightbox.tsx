@@ -93,7 +93,7 @@ export function PhotoLightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-black/90 p-4"
+      className="fixed inset-0 z-50 flex flex-col bg-ink/92 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

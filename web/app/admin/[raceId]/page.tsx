@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
+import { DistanceToggle } from "@/components/admin/distance-toggle";
 import { JoinRequests } from "@/components/admin/join-requests";
 import { RaceAdmins } from "@/components/admin/race-admins";
 import { RaceControls } from "@/components/admin/race-controls";
@@ -107,6 +108,8 @@ export default async function RaceDashboardPage(
         </Link>
 
         <JoinRequests requests={requests} />
+
+        <DistanceToggle raceId={raceId} showDistance={race.show_distance} />
 
         <RaceAdmins raceId={raceId} admins={admins} candidates={profiles} />
 

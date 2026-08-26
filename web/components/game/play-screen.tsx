@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CompleteStation } from "@/components/game/complete-station";
+import { BlindArrival } from "@/components/game/blind-arrival";
 import { DistanceMeter } from "@/components/game/distance-meter";
 import { StationReveal } from "@/components/game/station-reveal";
 import { Button } from "@/components/ui/button";
@@ -149,12 +150,20 @@ export function PlayScreen({ state }: { state: GameState }) {
             </p>
           </Card>
 
-          <DistanceMeter
-            teamId={team.id}
-            lat={station.lat}
-            lng={station.lng}
-            radiusM={station.radius_m}
-          />
+          {/* ⚠️ בודקים את הקואורדינטות עצמן ולא רק את `show_distance`:
+              כשהמתג כבוי השרת מחזיר אותן `null` (0016), ואין דרך
+              להציג מד בלי יעד. הכפתור הידני נשאר — הוא הדרך היחידה
+              לבקש מהשרת לבדוק הגעה כשאין חץ. */}
+          {station.lat !== null && station.lng !== null && station.radius_m !== null ? (
+            <DistanceMeter
+              teamId={team.id}
+              lat={station.lat}
+              lng={station.lng}
+              radiusM={station.radius_m}
+            />
+          ) : (
+            <BlindArrival teamId={team.id} />
+          )}
 
           <p className="rounded-card-sm border border-line bg-bg-2 px-3.5 py-3 text-center text-sm text-muted">
             המשימה תיחשף רק כשתגיעו פיזית לנקודה 🤫

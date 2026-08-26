@@ -251,12 +251,21 @@ export function AlbumScreen({
           </p>
         </Card>
       ) : (
-        <div className="mt-6 grid grid-cols-3 gap-1.5">
-          {photos.map((photo) => (
+        // רשת masonry (סקיצה 2e): הפריט הראשון תופס 2×2 והרביעי
+        // נמתח לרוחב, כדי שהאלבום ייראה כמו קיר תמונות ולא כמו
+        // גיליון. `grid-auto-rows: 1fr` שומר על השורות שוות גובה.
+        <div className="mt-6 grid auto-rows-[1fr] grid-cols-3 gap-1.5">
+          {photos.map((photo, index) => (
             <button
               key={photo.id}
               onClick={() => setOpenPhotoId(photo.id)}
-              className="relative aspect-square overflow-hidden rounded-card-sm border border-line bg-bg-2"
+              className={`relative overflow-hidden rounded-card-sm border border-line bg-bg-2 ${
+                index === 0
+                  ? "col-span-2 row-span-2 aspect-square"
+                  : index === 3
+                    ? "col-span-2 aspect-[2/1]"
+                    : "aspect-square"
+              }`}
             >
               {isVideoUrl(photo.url) ? (
                 <>
