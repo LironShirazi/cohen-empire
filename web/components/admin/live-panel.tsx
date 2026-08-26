@@ -81,8 +81,9 @@ export function LivePanel({
             ) : null}
 
             <div className="flex gap-2">
+              {/* אותה אי-סימטריה כמו בתור ההצטרפות (סקיצה 3h) */}
               <Button
-                className="min-h-10 flex-1 text-base"
+                className="min-h-11 flex-[2] text-base"
                 disabled={pending}
                 onClick={() =>
                   run(() =>
@@ -93,8 +94,8 @@ export function LivePanel({
                 אישור ✓
               </Button>
               <Button
-                variant="quiet"
-                className="min-h-10 px-3 text-base"
+                variant="secondary"
+                className="min-h-11 flex-1 px-3 text-base"
                 disabled={pending}
                 onClick={() =>
                   run(() =>

@@ -13,7 +13,7 @@ import {
 } from "@/lib/data";
 
 export default async function AdminTeamChatPage(
-  props: PageProps<"/admin/[raceId]/chat/[teamId]">
+  props: PageProps<"/admin/[raceId]/chat/[teamId]">,
 ) {
   const user = await getUser();
   if (!user) redirect("/");

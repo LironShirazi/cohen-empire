@@ -55,21 +55,28 @@ export function JoinRequests({ requests }: { requests: PendingRequest[] }) {
             <p className="font-bold">{request.profile?.full_name ?? "משתתף"}</p>
             <p className="text-sm text-muted">{request.team.name}</p>
           </div>
-          <Button
-            className="min-h-10 px-4 text-base"
-            disabled={pending}
-            onClick={() => decide(request.id, true)}
-          >
-            אישור ✓
-          </Button>
-          <Button
-            variant="quiet"
-            className="min-h-10 px-3 text-base"
-            disabled={pending}
-            onClick={() => decide(request.id, false)}
-          >
-            דחייה
-          </Button>
+          {/* ⚠️ **אי-סימטריה מכוונת** (סקיצות 3b/3h): אישור `flex-2`
+              מול דחייה `flex-1`. המנהל מאשר עשרות פעמים ודוחה לעיתים
+              נדירות, ובאמצע מירוץ הוא לוחץ תוך כדי הליכה — הפעולה
+              השכיחה צריכה להיות המטרה הגדולה, והנדירה צריכה לדרוש
+              כוונה. */}
+          <div className="flex w-full gap-2">
+            <Button
+              className="min-h-11 flex-[2] text-base"
+              disabled={pending}
+              onClick={() => decide(request.id, true)}
+            >
+              אישור ✓
+            </Button>
+            <Button
+              variant="secondary"
+              className="min-h-11 flex-1 px-3 text-base"
+              disabled={pending}
+              onClick={() => decide(request.id, false)}
+            >
+              דחייה
+            </Button>
+          </div>
         </div>
       ))}
 

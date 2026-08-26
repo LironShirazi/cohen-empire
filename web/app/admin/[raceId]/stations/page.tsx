@@ -3,7 +3,7 @@ import { StationEditor } from "@/components/admin/station-editor";
 import { StationMap } from "@/components/admin/station-map";
 import { StationOrder } from "@/components/admin/station-order";
 import { Card, cardSurface } from "@/components/ui/card";
-import { PageHeader, PageShell } from "@/components/ui/page";
+import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
 import {
   getRace,
   getRaceStations,
@@ -16,7 +16,7 @@ import {
 const DEFAULT_CENTER = { lat: 31.4222, lng: 34.5895 };
 
 export default async function AdminStationsPage(
-  props: PageProps<"/admin/[raceId]/stations">
+  props: PageProps<"/admin/[raceId]/stations">,
 ) {
   const user = await getUser();
   if (!user) redirect("/");
@@ -44,58 +44,67 @@ export default async function AdminStationsPage(
   }));
 
   return (
-    <PageShell className="flex flex-col gap-4">
-      <PageHeader
+    <main className="flex flex-1 flex-col">
+      <AdminHeader
         title="📍 תחנות"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
       />
-
-      {stations.length === 0 ? (
-        <Card className="text-center text-muted">
-          עוד אין תחנות. מוסיפים את הראשונה למטה 👇
-        </Card>
-      ) : (
-        // מפה של כל התחנות יחד (docs/04-screens-ux.md §4) — קל לראות
-        // אם תחנה נפלה רחוק מדי או שתיים יושבות אחת על השנייה
-        <Card className="flex flex-col gap-2">
-          <h2 className="font-display text-h2">כל התחנות על המפה</h2>
-          <StationMap
-            lat={stations[0].lat}
-            lng={stations[0].lng}
-            radiusM={stations[0].radius_m}
-            others={points.slice(1)}
-          />
-        </Card>
-      )}
-
-      {stations.map((station) => (
-        <details key={station.id} className="rounded-card">
-          <summary className={`${cardSurface} cursor-pointer p-4 font-bold`}>
-            {station.name}
-            <span className="ms-2 text-sm font-normal text-muted">
-              רדיוס {station.radius_m} מ׳
-            </span>
-          </summary>
-          <div className="mt-2">
-            <StationEditor
-              raceId={raceId}
-              station={station}
-              others={points.filter((point) => point.label !== station.name)}
-              fallbackCenter={center}
+      <AdminBody className="flex flex-col gap-4">
+        {stations.length === 0 ? (
+          <Card className="text-center text-muted">
+            עוד אין תחנות. מוסיפים את הראשונה למטה 👇
+          </Card>
+        ) : (
+          // מפה של כל התחנות יחד (docs/04-screens-ux.md §4) — קל לראות
+          // אם תחנה נפלה רחוק מדי או שתיים יושבות אחת על השנייה
+          <Card className="flex flex-col gap-2">
+            <h2 className="font-display text-h2">כל התחנות על המפה</h2>
+            <StationMap
+              lat={stations[0].lat}
+              lng={stations[0].lng}
+              radiusM={stations[0].radius_m}
+              others={points.slice(1)}
             />
-          </div>
-        </details>
-      ))}
+          </Card>
+        )}
 
-      <StationOrder
-        raceId={raceId}
-        orders={orders}
-        locked={race.status === "live" || race.status === "finished" || race.status === "archived"}
-      />
+        {stations.map((station) => (
+          <details key={station.id} className="rounded-card">
+            <summary className={`${cardSurface} cursor-pointer p-4 font-bold`}>
+              {station.name}
+              <span className="ms-2 text-sm font-normal text-muted">
+                רדיוס {station.radius_m} מ׳
+              </span>
+            </summary>
+            <div className="mt-2">
+              <StationEditor
+                raceId={raceId}
+                station={station}
+                others={points.filter((point) => point.label !== station.name)}
+                fallbackCenter={center}
+              />
+            </div>
+          </details>
+        ))}
 
-      <h2 className="font-display text-h2">תחנה חדשה</h2>
-      <StationEditor raceId={raceId} others={points} fallbackCenter={center} />
-    </PageShell>
+        <StationOrder
+          raceId={raceId}
+          orders={orders}
+          locked={
+            race.status === "live" ||
+            race.status === "finished" ||
+            race.status === "archived"
+          }
+        />
+
+        <h2 className="font-display text-h2">תחנה חדשה</h2>
+        <StationEditor
+          raceId={raceId}
+          others={points}
+          fallbackCenter={center}
+        />
+      </AdminBody>
+    </main>
   );
 }
