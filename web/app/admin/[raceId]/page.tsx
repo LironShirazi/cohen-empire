@@ -56,7 +56,7 @@ export default async function RaceDashboardPage(
       <AdminBody>
         {/* קוד המשחק על הדגל הצהוב (סקיצה 3a) — הוא מוכתב בקול
             לחדר מלא אנשים, ולכן הוא האלמנט הכי גדול במסך */}
-        <div className="flag px-4.5 py-4 text-center">
+        <div className="flag rounded-card px-4.5 py-4 text-center">
           <p className="text-[13px] font-extrabold text-ink opacity-70">
             קוד המשחק לשיתוף
           </p>

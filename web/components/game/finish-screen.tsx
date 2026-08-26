@@ -31,7 +31,7 @@ export function FinishScreen({
   const [navOpen, setNavOpen] = useState(false);
 
   return (
-    <main className="flag relative flex flex-1 flex-col gap-3.5 overflow-hidden rounded-none px-5 pt-14 pb-10 text-center">
+    <main className="flag relative flex flex-1 flex-col gap-3.5 overflow-hidden px-5 pt-14 pb-10 text-center">
       {/* הסרט השחור עובר מאחורי האמבלם ויוצא מהמסך משני הצדדים.
           המיקום נגזר מהאמבלם ולא מהסקיצה כלשונה: שם הריפוד העליון
           הוא 76px (סרגל הסטטוס של מסגרת ה-iPhone) והסרט ב-150,
@@ -156,7 +156,11 @@ function useWatchPosition(
     );
 
     return () => navigator.geolocation.clearWatch(id);
-    // `onDistance` הוא ה-setter של useState ולכן יציב — האפקט לא
-    // ירוץ מחדש בגללו, וה-watch לא נפתח שוב בכל רינדור
-  }, [home, onDistance]);
+    // ⚠️ תלות בפרימיטיבים ולא באובייקט `home`. הוא מפוענח מחדש
+    // מ-payload של RSC בכל רינדור, ו-`WinnerWatcher` שלצידנו קורא
+    // ל-`router.refresh()` כל 20 שניות — כלומר האובייקט מקבל זהות
+    // חדשה, האפקט רץ שוב, וה-GPS נסגר ונפתח מחדש עם
+    // `enableHighAccuracy` כל 20 שניות. בדיוק ההפך מהכוונה.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [home?.lat, home?.lng, onDistance]);
 }

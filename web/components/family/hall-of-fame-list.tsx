@@ -10,6 +10,12 @@ import { Card } from "@/components/ui/card";
  * ויזואלית ביניהן** — למשפחה 2009 ו-2026 הן אותה מסורת.
  */
 export function HallOfFameList({ rows }: { rows: HallOfFameRow[] }) {
+  // ⚠️ הרכיב מקבל `HallOfFameRow[]` ולא מבטיח כלום על אורכו. הקורא
+  // היחיד היום בודק ריקנות לפניו, אבל הפירוק למטה (`[champion,
+  // ...rest]` ו-`sort(...)[0]`) קורס על מערך ריק — והקורא הבא לא
+  // יידע שהוא חייב לבדוק.
+  if (rows.length === 0) return null;
+
   const [champion, ...rest] = rows;
 
   return (

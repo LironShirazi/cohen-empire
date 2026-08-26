@@ -120,12 +120,19 @@ body {
   color: #fff;
 }
 
-/* דגל העצמאות הצהוב — כותרת מסך המשימה (סקיצה 1h) */
+/* דגל העצמאות הצהוב — כותרת מסך המשימה (סקיצה 1h) ומסך החזרה
+   הביתה (2g).
+
+   ⚠️ **בלי `border-radius` בכוונה — הקורא קובע.** המחלקה הזו לא
+   ב-`@layer`, ובקסקייד כלל לא-משוכב מנצח כל שכבה בלי קשר
+   לספציפיות. כלומר `rounded-none` של Tailwind (שיושב ב-
+   `@layer utilities`) **לא היה מצליח לדרוס אותה**, ומסך "מקצה
+   לקצה" היה נשאר עם פינות מעוגלות מול מסך מרובע. אותה מלכודת
+   חלה על דריסת `color:#fff` של `.cosmic` ב-`text-*`. */
 .flag {
   position: relative;
   background: var(--yellow);
   color: var(--ink);
-  border-radius: var(--radius-card);
   overflow: hidden;
 }
 

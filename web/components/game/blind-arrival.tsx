@@ -36,6 +36,16 @@ export function BlindArrival({ teamId }: { teamId: string }) {
             position.coords.longitude,
             position.coords.accuracy ?? null
           );
+          // ⚠️ `arriveAction` מחזיר `{arrived:false, distance_m:0, error}`
+          // גם כשה-RPC נכשל (מירוץ לא `live`, אין הרשאה, רשת). בלי
+          // הבדיקה הזו כישלון אמיתי מוצג כ-"השרת מדד 0 מ׳", וכאן זו
+          // דרך ההגעה **היחידה** — אין ערוץ משוב אחר.
+          if (result.error) {
+            setError(result.error);
+            setTooFar(null);
+            return;
+          }
+          setError(null);
           // המסך מתרענן לבד כשהשרת מאשר
           if (!result.arrived) setTooFar(result.distance_m);
         }),

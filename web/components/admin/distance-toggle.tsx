@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { setShowDistanceAction } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,6 +20,7 @@ export function DistanceToggle({
   showDistance: boolean;
 }) {
   const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <Card className="flex flex-col gap-2">
@@ -32,14 +33,27 @@ export function DistanceToggle({
       <Button
         variant={showDistance ? "secondary" : "accent"}
         disabled={pending}
+        // ⚠️ הקולבק חייב להיות `async` ולהמתין: קולבק סינכרוני מסיים
+        // את ה-transition מיד, `pending` חוזר ל-false לפני שהבקשה
+        // בכלל נחתה, והכפתור לא באמת ננעל מפני לחיצה כפולה.
         onClick={() =>
-          startTransition(() => {
-            void setShowDistanceAction(raceId, !showDistance);
+          startTransition(async () => {
+            const result = await setShowDistanceAction(raceId, !showDistance);
+            setError(result.error ?? null);
           })
         }
       >
         {showDistance ? "כיבוי המד — חיפוש אמיתי 🔎" : "הדלקת המד 📍"}
       </Button>
+
+      {/* בלי זה כישלון נראה בדיוק כמו הצלחה: על מירוץ בארכיון
+          `is_race_admin` מחזירה false, ה-RPC זורק, והמנהל לוחץ
+          ולא קורה כלום */}
+      {error ? (
+        <p className="rounded-card-sm bg-brand-soft px-3.5 py-2.5 text-sm font-bold text-brand">
+          {error}
+        </p>
+      ) : null}
     </Card>
   );
 }
