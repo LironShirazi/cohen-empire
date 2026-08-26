@@ -21,7 +21,7 @@ export default async function JoinPage() {
       <Card className="flex flex-col gap-5">
         {user ? (
           <>
-            <h2 className="text-center font-display text-xl">קוד המשחק</h2>
+            <h2 className="text-center font-display text-h2">קוד המשחק</h2>
             <GameCodeForm />
           </>
         ) : (

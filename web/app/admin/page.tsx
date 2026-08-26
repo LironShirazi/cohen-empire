@@ -51,7 +51,7 @@ export default async function AdminHomePage() {
           </Link>
 
           <Card className="flex flex-col gap-4">
-            <h2 className="font-display text-xl">מירוץ חדש</h2>
+            <h2 className="font-display text-h2">מירוץ חדש</h2>
             <CreateRaceForm />
           </Card>
         </>

@@ -40,7 +40,7 @@ export function LivePanel({
   return (
     <div className="flex flex-col gap-4">
       <Card className="flex flex-col gap-3">
-        <h2 className="font-display text-xl">
+        <h2 className="font-display text-h2">
           תור אישורי משימות
           {approvals.length > 0 ? (
             <span className="ms-2 rounded-full bg-brand px-2.5 py-0.5 text-sm text-white">
@@ -110,7 +110,7 @@ export function LivePanel({
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-display text-xl">איפה כל קבוצה</h2>
+        <h2 className="font-display text-h2">איפה כל קבוצה</h2>
         <p className="text-sm text-muted">
           למנהל מותר לראות הכל — למשתתפים הלידרבורד מראה דירוג בלבד.
         </p>

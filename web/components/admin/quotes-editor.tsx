@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { QuoteCard } from "@/components/family/quote-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
@@ -95,21 +96,20 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">💬 משפטי סבא וסבתא</h2>
+      <h2 className="font-display text-h2">💬 משפטי סבא וסבתא</h2>
 
       {open ? (
         <Card className="flex flex-col gap-3">
           <label className="text-sm font-bold text-muted" htmlFor="quote-text">
             מה הם היו אומרים?
           </label>
-          <textarea
+          <Textarea
             id="quote-text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             maxLength={MAX_LEN}
             rows={3}
             autoFocus
-            className="w-full rounded-card-sm border-2 border-line bg-surface p-3 text-[17px]"
           />
           <span className="-mt-1 text-xs text-muted">
             {text.length}/{MAX_LEN}

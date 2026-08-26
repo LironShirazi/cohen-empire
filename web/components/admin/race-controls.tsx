@@ -56,7 +56,7 @@ export function RaceControls({
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">מצב המירוץ</h2>
+      <h2 className="font-display text-h2">מצב המירוץ</h2>
 
       {step ? (
         <Button

@@ -29,7 +29,7 @@ export default async function WaitingPage() {
       <PageShell>
         <Card className="flex flex-col items-center gap-4 text-center">
           <span className="text-5xl">😕</span>
-          <h1 className="font-display text-2xl">הבקשה לא אושרה</h1>
+          <h1 className="font-display text-h1">הבקשה לא אושרה</h1>
           <p className="text-muted">
             אולי שובצתם לקבוצה אחרת — אפשר לנסות שוב עם קוד קבוצה אחר.
           </p>
@@ -67,7 +67,7 @@ export default async function WaitingPage() {
         </div>
 
         <div>
-          <h1 className="font-display text-2xl">{team.name}</h1>
+          <h1 className="font-display text-h1">{team.name}</h1>
           <p className="text-muted">{request.race.name}</p>
         </div>
 

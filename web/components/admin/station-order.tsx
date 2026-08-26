@@ -46,7 +46,7 @@ export function StationOrder({
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">סדר התחנות</h2>
+      <h2 className="font-display text-h2">סדר התחנות</h2>
 
       {locked ? (
         <p className="text-sm text-muted">

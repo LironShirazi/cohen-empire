@@ -51,8 +51,8 @@ export default async function AdminChatIndexPage(
 
       {teams.map((team) => (
         <Link key={team.id} href={`/admin/${raceId}/chat/${team.id}`}>
-          <div
-            className="flex items-center gap-3 rounded-card border border-line bg-surface p-4 shadow-card"
+          <Card
+            className="flex items-center gap-3 p-4"
             style={{
               borderInlineStartWidth: 8,
               borderInlineStartColor: team.color,
@@ -80,7 +80,7 @@ export default async function AdminChatIndexPage(
             ) : (
               <span className="ms-auto text-xl">💬</span>
             )}
-          </div>
+          </Card>
         </Link>
       ))}
     </PageShell>

@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { StationEditor } from "@/components/admin/station-editor";
 import { StationMap } from "@/components/admin/station-map";
 import { StationOrder } from "@/components/admin/station-order";
-import { Card } from "@/components/ui/card";
+import { Card, cardSurface } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
 import {
   getRace,
@@ -59,7 +59,7 @@ export default async function AdminStationsPage(
         // מפה של כל התחנות יחד (docs/04-screens-ux.md §4) — קל לראות
         // אם תחנה נפלה רחוק מדי או שתיים יושבות אחת על השנייה
         <Card className="flex flex-col gap-2">
-          <h2 className="font-display text-xl">כל התחנות על המפה</h2>
+          <h2 className="font-display text-h2">כל התחנות על המפה</h2>
           <StationMap
             lat={stations[0].lat}
             lng={stations[0].lng}
@@ -71,7 +71,7 @@ export default async function AdminStationsPage(
 
       {stations.map((station) => (
         <details key={station.id} className="rounded-card">
-          <summary className="cursor-pointer rounded-card border border-line bg-surface p-4 font-bold shadow-card">
+          <summary className={`${cardSurface} cursor-pointer p-4 font-bold`}>
             {station.name}
             <span className="ms-2 text-sm font-normal text-muted">
               רדיוס {station.radius_m} מ׳
@@ -94,7 +94,7 @@ export default async function AdminStationsPage(
         locked={race.status === "live" || race.status === "finished" || race.status === "archived"}
       />
 
-      <h2 className="font-display text-xl">תחנה חדשה</h2>
+      <h2 className="font-display text-h2">תחנה חדשה</h2>
       <StationEditor raceId={raceId} others={points} fallbackCenter={center} />
     </PageShell>
   );

@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import type { Team } from "@/lib/supabase/types";
 
 /** כותרת הקבוצה — פס צבע + חיה, לפי design-system/components/team-card.html */
@@ -9,8 +10,8 @@ export function TeamHeader({
   subtitle?: string;
 }) {
   return (
-    <div
-      className="flex items-center gap-3 rounded-card border border-line bg-surface p-4 shadow-card"
+    <Card
+      className="flex items-center gap-3 p-4"
       style={{ borderInlineStartWidth: 8, borderInlineStartColor: team.color }}
     >
       <span
@@ -23,6 +24,6 @@ export function TeamHeader({
         <p className="font-display text-xl">{team.name}</p>
         {subtitle ? <p className="text-sm text-muted">{subtitle}</p> : null}
       </div>
-    </div>
+    </Card>
   );
 }

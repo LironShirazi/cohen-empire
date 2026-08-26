@@ -54,7 +54,7 @@ export default async function AdminLivePage(
         </Card>
       ) : null}
 
-      <h2 className="font-display text-xl">איפה כולם עכשיו</h2>
+      <h2 className="font-display text-h2">איפה כולם עכשיו</h2>
       <LiveMap teams={locations} stations={stations} />
 
       <BroadcastForm
@@ -65,7 +65,7 @@ export default async function AdminLivePage(
 
       <LivePanel approvals={approvals} positions={positions} />
 
-      <h2 className="font-display text-xl">לוח מובילים</h2>
+      <h2 className="font-display text-h2">לוח מובילים</h2>
       <LeaderboardList rows={leaderboard} />
     </PageShell>
   );

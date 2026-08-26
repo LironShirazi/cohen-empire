@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
@@ -112,33 +113,31 @@ export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">🏆 היכל התהילה</h2>
+      <h2 className="font-display text-h2">🏆 היכל התהילה</h2>
 
       {open ? (
         <Card className="flex flex-col gap-3">
           <label className="text-sm font-bold text-muted" htmlFor="hof-year">
             שנה
           </label>
-          <input
+          <Input
             id="hof-year"
             value={year}
             onChange={(e) => setYear(e.target.value)}
             inputMode="numeric"
             placeholder="2009"
             autoFocus
-            className="min-h-12 w-full rounded-card-sm border-2 border-line bg-surface px-3 text-[17px]"
           />
 
           <label className="text-sm font-bold text-muted" htmlFor="hof-team">
             הקבוצה הזוכה
           </label>
-          <input
+          <Input
             id="hof-team"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
             maxLength={60}
             placeholder="🐬 הדולפינים"
-            className="min-h-12 w-full rounded-card-sm border-2 border-line bg-surface px-3 text-[17px]"
           />
           <span className="-mt-1 text-xs text-muted">
             אפשר להתחיל באימוג׳י של החיה — הוא חלק מהשם
@@ -160,12 +159,11 @@ export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
           <label className="text-sm font-bold text-muted" htmlFor="hof-members">
             חברי הקבוצה
           </label>
-          <input
+          <Input
             id="hof-members"
             value={members}
             onChange={(e) => setMembers(e.target.value)}
             placeholder="דני, שירה, עומר"
-            className="min-h-12 w-full rounded-card-sm border-2 border-line bg-surface px-3 text-[17px]"
           />
           <span className="-mt-1 text-xs text-muted">
             מופרדים בפסיקים. אפשר גם להשאיר ריק אם לא זוכרים

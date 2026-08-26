@@ -24,7 +24,7 @@ export default async function GalleryPage() {
     return (
       <PageShell className="flex flex-col items-center gap-6 text-center">
         <span className="text-6xl">📸</span>
-        <h1 className="font-display text-3xl text-brand">גלריה</h1>
+        <h1 className="font-display text-h1 text-brand">גלריה</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">
             האלבומים של המשפחה שמורים לבני המשפחה — צריך להתחבר כדי לראות

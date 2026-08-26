@@ -36,7 +36,7 @@ export default async function AdminTeamsPage(
         שלא (ילדים קטנים) מתווסף ידנית להרכב.
       </Card>
 
-      <h2 className="font-display text-xl">קבוצה חדשה</h2>
+      <h2 className="font-display text-h2">קבוצה חדשה</h2>
       <TeamEditor raceId={raceId} />
     </PageShell>
   );

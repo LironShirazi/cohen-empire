@@ -25,7 +25,7 @@ export default async function FamilyTreePage() {
     return (
       <PageShell className="flex flex-col items-center gap-6 text-center">
         <span className="text-6xl">🌳</span>
-        <h1 className="font-display text-3xl text-brand">העץ המשפחתי</h1>
+        <h1 className="font-display text-h1 text-brand">העץ המשפחתי</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">
             העץ שייך לכל המשפחה — צריך להתחבר כדי לראות אותו ולהוסיף את

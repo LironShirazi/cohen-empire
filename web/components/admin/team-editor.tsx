@@ -10,21 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
+import { teamColors } from "@/lib/team-colors";
 import type { Team } from "@/lib/supabase/types";
-
-// ערכת צבעי הקבוצות מ-design-system/styles.css
-const teamColors = [
-  "#E23D3D",
-  "#2E86DE",
-  "#27AE60",
-  "#F39C12",
-  "#8E5AC8",
-  "#F1C40F",
-  "#E84A8A",
-  "#129C9C",
-  "#9C6B3C",
-  "#5DBBEB",
-];
 
 const animals = [
   "🐬 דולפינים",

@@ -40,7 +40,7 @@ function ChampionCard({ row }: { row: HallOfFameRow }) {
         </p>
         <p className="truncate text-xl font-extrabold">{row.team_name}</p>
         {row.members.length > 0 ? (
-          <p className="mt-0.5 text-sm text-[#c9d3ea]">
+          <p className="mt-0.5 text-sm text-on-navy-muted">
             {row.members.join(", ")}
           </p>
         ) : null}

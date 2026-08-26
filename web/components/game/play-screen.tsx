@@ -37,7 +37,7 @@ export function PlayScreen({ state }: { state: GameState }) {
     return (
       <Card className="flex flex-col items-center gap-3 text-center">
         <span className="text-5xl">🛠️</span>
-        <h2 className="font-display text-xl">המירוץ עוד בהכנות</h2>
+        <h2 className="font-display text-h2">המירוץ עוד בהכנות</h2>
         <p className="text-muted">
           המנהל התורן עדיין מסדר את התחנות. תכף מתחילים!
         </p>
@@ -55,7 +55,7 @@ export function PlayScreen({ state }: { state: GameState }) {
     return (
       <Card className="flex flex-col items-center gap-3 text-center">
         <span className="text-6xl">🏁</span>
-        <h2 className="font-display text-2xl">המירוץ נסגר</h2>
+        <h2 className="font-display text-h1">המירוץ נסגר</h2>
         <p className="text-muted">
           המנהל סגר את המירוץ. חבל שלא הספקתם את כל התחנות — אבל
           ההליכה נחשבת, וגם הסיפורים בדרך 😄
@@ -77,7 +77,7 @@ export function PlayScreen({ state }: { state: GameState }) {
     return (
       <Card className="flex flex-col items-center gap-3 border-ok text-center">
         <span className="text-6xl">🏁</span>
-        <h2 className="font-display text-2xl">סיימתם את כל התחנות!</h2>
+        <h2 className="font-display text-h1">סיימתם את כל התחנות!</h2>
         {announced ? (
           <>
             <p className="text-lg font-bold">המירוץ נגמר 🏆</p>
@@ -117,7 +117,7 @@ export function PlayScreen({ state }: { state: GameState }) {
     return (
       <Card className="flex flex-col items-center gap-3 text-center">
         <Chip tone="yellow">✋ ממתינים לאישור המנהל</Chip>
-        <h2 className="font-display text-xl">{station.name}</h2>
+        <h2 className="font-display text-h2">{station.name}</h2>
         <WalkingSpinner label="המנהל בודק את המשימה…" height={88} />
         <p className="text-sm text-muted">ברגע שיאשר — הרמז הבא ייפתח לבד.</p>
       </Card>
@@ -143,7 +143,7 @@ export function PlayScreen({ state }: { state: GameState }) {
 
           <Card className="flex flex-col gap-3">
             <Chip className="self-start">🔒 בדרך לתחנה {station.position}</Chip>
-            <h2 className="font-display text-xl">הרמז</h2>
+            <h2 className="font-display text-h2">הרמז</h2>
             <p className="text-[19px] leading-relaxed">
               {station.clue ?? "אין רמז לתחנה הזו"}
             </p>
@@ -198,7 +198,7 @@ export function PlayScreen({ state }: { state: GameState }) {
         <Card className="flex flex-col gap-2.5">
           {station.backstory ? (
             <>
-              <h2 className="font-display text-xl">סיפור המקום</h2>
+              <h2 className="font-display text-h2">סיפור המקום</h2>
               <p className="leading-relaxed text-muted">{station.backstory}</p>
             </>
           ) : null}
@@ -206,7 +206,7 @@ export function PlayScreen({ state }: { state: GameState }) {
           {/* טקסט ומדיה שניהם רשות, אבל תחנה בלי שום משימה לא צריכה
               כותרת "המשימה" מרחפת מעל כלום */}
           {station.task_content?.text || station.task_content?.media ? (
-            <h2 className="mt-1.5 font-display text-xl">המשימה 📸</h2>
+            <h2 className="mt-1.5 font-display text-h2">המשימה 📸</h2>
           ) : null}
 
           {station.task_content?.text ? (

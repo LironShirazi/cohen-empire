@@ -29,7 +29,7 @@ export function JoinRequests({ requests }: { requests: PendingRequest[] }) {
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">
+      <h2 className="font-display text-h2">
         בקשות הצטרפות
         {requests.length > 0 ? (
           <span className="ms-2 rounded-full bg-brand px-2.5 py-0.5 text-sm text-white">

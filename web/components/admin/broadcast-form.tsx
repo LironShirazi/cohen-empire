@@ -61,7 +61,7 @@ export function BroadcastForm({
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">📣 הודעה מהמנהל התורן</h2>
+      <h2 className="font-display text-h2">📣 הודעה מהמנהל התורן</h2>
 
       {locked ? (
         <p className="text-sm text-muted">

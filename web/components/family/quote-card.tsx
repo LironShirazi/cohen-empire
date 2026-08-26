@@ -113,8 +113,8 @@ function QuoteFace({ quote, isGranny }: { quote: Quote; isGranny: boolean }) {
       aria-hidden
       className={`flex size-14 flex-none items-center justify-center rounded-full border-2 text-[30px] ${
         isGranny
-          ? "border-[#e9c7ec] bg-[#f6e3f7]"
-          : "border-yellow-deep bg-yellow-soft"
+          ? "border-line bg-granny"
+          : "border-line bg-yellow-soft"
       }`}
     >
       {isGranny ? "👵" : "👴"}
