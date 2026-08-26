@@ -34,14 +34,19 @@ export function QuoteCard({
       <figure className={`w-full rounded-card bg-yellow text-ink ${className}`}>
         <div className="flex items-center gap-3 p-5">
           {/* הפורטרט המצויר של שניהם — הנכס האמיתי היחיד שיש בריפו.
-              מי אמר את המשפט כתוב בשורת הייחוס ממילא (סקיצה 1a) */}
+              מי אמר את המשפט כתוב בשורת הייחוס ממילא (סקיצה 1a).
+
+              ⚠️ הקופסה **מלבנית ולא ריבועית**, לפי יחס הדיו של הקובץ
+              (781×1153 ≈ 0.677). כשהיא הייתה `size-[72px]` הדמות צוירה
+              44.8×66.2 ונשארו ~13px מקום מת בכל צד — כלומר המרווח
+              שהעין ראתה מול הטקסט היה כפול מ-`gap-3`. */}
           <Image
             src="/brand/grandparents.png"
             alt="סבא וסבתא"
-            width={144}
-            height={144}
+            width={114}
+            height={168}
             priority
-            className="size-[72px] flex-none object-contain"
+            className="h-[84px] w-[57px] flex-none object-contain"
           />
           <div className="min-w-0 flex-1 text-start">
             <span

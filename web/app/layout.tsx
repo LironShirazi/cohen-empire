@@ -15,10 +15,38 @@ const secularOne = Secular_One({
   subsets: ["hebrew", "latin"],
 });
 
+const TITLE = "המירוץ למיליון — אימפריית כהן";
+const DESCRIPTION =
+  "אפליקציית המירוץ המשפחתי השנתי של משפחת כהן — מסורת של 20+ שנה ביום העצמאות";
+
+// כתובת מלאה נדרשת ל-og:image. בוורסל `VERCEL_PROJECT_PRODUCTION_URL` מצביע
+// על דומיין הפרודקשן גם מתוך preview — בשונה מ-`VERCEL_URL` שמשתנה לכל דיפלוי,
+// והיה גורם לקישור משותף להצביע על דיפלוי חולף
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
+// האייקונים ותמונת השיתוף מגיעים מקונבנציית הקבצים של Next
+// (`app/icon.png`, `app/apple-icon.png`, `app/opengraph-image.png`)
+// ולכן לא מוגדרים כאן — ראו CLAUDE.md §13
 export const metadata: Metadata = {
-  title: "המירוץ למיליון — אימפריית כהן",
-  description:
-    "אפליקציית המירוץ המשפחתי השנתי של משפחת כהן — מסורת של 20+ שנה ביום העצמאות",
+  metadataBase: new URL(siteUrl),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    locale: "he_IL",
+    siteName: TITLE,
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
