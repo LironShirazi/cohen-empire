@@ -3,7 +3,7 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { HallOfFameList } from "@/components/family/hall-of-fame-list";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { PageHeader, PageShell } from "@/components/ui/page";
+import { PageShell } from "@/components/ui/page";
 import { getHallOfFame, getProfile, getUser } from "@/lib/data";
 
 export const metadata = {
@@ -29,8 +29,7 @@ export default async function HallOfFamePage() {
         <h1 className="font-display text-h1 text-brand">היכל התהילה</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">
-            עשרים שנות זוכים שמורות לבני המשפחה — צריך להתחבר כדי לראות
-            אותן.
+            עשרים שנות זוכים שמורות לבני המשפחה — צריך להתחבר כדי לראות אותן.
           </p>
           <GoogleSignInButton next="/hall-of-fame" />
         </Card>
@@ -41,28 +40,49 @@ export default async function HallOfFamePage() {
   const [rows, profile] = await Promise.all([getHallOfFame(), getProfile()]);
 
   return (
-    <PageShell>
-      <PageHeader title="🏆 היכל התהילה" back="/" backLabel="לדף הבית" />
+    <main className="flex flex-1 flex-col">
+      {/* כותרת קוסמית (סקיצה 2d) — היכל התהילה הוא ראוט יעד ולא מסך
+          שירות, והזהב הוא כל הנקודה שלו */}
+      <header className="cosmic rounded-b-[26px] px-5 pt-14 pb-6 text-center shadow-navy">
+        <p className="text-[40px]">🏆</p>
+        <h1 className="goldtext font-display text-4xl leading-[1.05]">
+          היכל התהילה
+        </h1>
+        <p className="mt-1.5 text-small text-on-navy-muted">
+          {rows.length > 0
+            ? `${rows.length} שנות מירוץ בבית סבא וסבתא`
+            : "כל שנות המירוץ בבית סבא וסבתא"}
+        </p>
+      </header>
 
-      {rows.length === 0 ? (
-        /* מצב ריק **מוצג** — בניגוד לציטוט. זה ראוט יעד: מי שנכנס
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-3 px-5 pt-4 pb-10">
+        {rows.length === 0 ? (
+          /* מצב ריק **מוצג** — בניגוד לציטוט. זה ראוט יעד: מי שנכנס
            בכוונה חייב לקבל תשובה ולא מסך ריק */
-        <Card className="text-center">
-          <span className="text-5xl">🏛️</span>
-          <p className="mt-3 text-lg font-bold">היכל התהילה עוד מתמלא</p>
-          <p className="mt-1 text-muted">
-            עשרים שנות מירוץ נאספות עכשיו מהמשפחה. כל מירוץ חדש שמסתיים
-            באפליקציה נכנס לכאן לבד 🏁
-          </p>
-          {profile?.is_owner ? (
-            <Link href="/admin/content" className="mt-4 inline-block">
-              <Button variant="secondary">הזנת שנים מההיסטוריה</Button>
-            </Link>
-          ) : null}
-        </Card>
-      ) : (
-        <HallOfFameList rows={rows} />
-      )}
-    </PageShell>
+          <Card className="text-center">
+            <span className="text-5xl">🏛️</span>
+            <p className="mt-3 text-lg font-bold">היכל התהילה עוד מתמלא</p>
+            <p className="mt-1 text-muted">
+              עשרים שנות מירוץ נאספות עכשיו מהמשפחה. כל מירוץ חדש שמסתיים
+              באפליקציה נכנס לכאן לבד 🏁
+            </p>
+            {profile?.is_owner ? (
+              <Link href="/admin/content" className="mt-4 inline-block">
+                <Button variant="secondary">הזנת שנים מההיסטוריה</Button>
+              </Link>
+            ) : null}
+          </Card>
+        ) : (
+          <HallOfFameList rows={rows} />
+        )}
+
+        <Link
+          href="/"
+          className="mt-auto pt-4 text-center text-small font-bold text-muted hover:text-brand"
+        >
+          → לדף הבית
+        </Link>
+      </div>
+    </main>
   );
 }
