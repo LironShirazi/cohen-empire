@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Rubik, Secular_One } from "next/font/google";
 import { NotificationCenter } from "@/components/notifications/notification-center";
+import { ConfirmProvider } from "@/components/ui/confirm";
 import "./globals.css";
 
 // הפונטים של מערכת העיצוב: Rubik לגוף, Secular One לכותרות
@@ -67,7 +68,12 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {/* באנר ההתראות חייב לחיות מעל כל מסך, גם "מהלך המשחק"
             (docs/02 §3.8) — לכן הוא כאן ולא בתוך הצ'אט */}
-        <NotificationCenter>{children}</NotificationCenter>
+        {/* דיאלוג האישור עוטף הכל מאותה סיבה שהבאנר עוטף: כל מסך
+            מוחק משהו, ו-`window.confirm` מושתק בספארי בנייד
+            (components/ui/confirm.tsx) */}
+        <ConfirmProvider>
+          <NotificationCenter>{children}</NotificationCenter>
+        </ConfirmProvider>
       </body>
     </html>
   );

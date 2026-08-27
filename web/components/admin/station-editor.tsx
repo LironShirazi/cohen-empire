@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Field, SelectField, TextareaField } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import type { CompletionType, Station } from "@/lib/supabase/types";
+import { useConfirm } from "@/components/ui/confirm";
 
 const completionLabels: Record<CompletionType, string> = {
   admin_approve: "אישור המנהל התורן",
@@ -47,6 +48,7 @@ export function StationEditor({
     station?.completion_type ?? "admin_approve"
   );
   const [deleting, startDelete] = useTransition();
+  const confirm = useConfirm();
 
   return (
     <Card className="flex flex-col gap-3">
@@ -173,8 +175,12 @@ export function StationEditor({
         <Button
           variant="quiet"
           disabled={deleting}
-          onClick={() => {
-            if (!confirm(`למחוק את התחנה "${station.name}"?`)) return;
+          onClick={async () => {
+            const ok = await confirm({
+              title: "מחיקת תחנה",
+              message: `למחוק את התחנה "${station.name}"?`,
+            });
+            if (!ok) return;
             startDelete(async () => {
               await deleteStationAction(station.id);
             });

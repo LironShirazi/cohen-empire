@@ -9,6 +9,7 @@ import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
 import type { HallOfFameRow } from "@/lib/supabase/types";
+import { useConfirm } from "@/components/ui/confirm";
 
 /**
  * הזנת היכל התהילה ההיסטורי (docs/04 §5) — למנהל-על בלבד.
@@ -21,6 +22,7 @@ import type { HallOfFameRow } from "@/lib/supabase/types";
  */
 export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [open, setOpen] = useState(false);
@@ -95,7 +97,11 @@ export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
   }
 
   async function remove(row: HallOfFameRow) {
-    if (!confirm(`למחוק את שנת ${row.year} מהיכל התהילה?`)) return;
+    const ok = await confirm({
+      title: "מחיקה מהיכל התהילה",
+      message: `למחוק את שנת ${row.year} מהיכל התהילה?`,
+    });
+    if (!ok) return;
 
     setBusy("מוחק...");
     setError(null);
@@ -233,9 +239,11 @@ export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
                 שמחיקתה מוחקת תיעוד של מירוץ אמיתי */}
             {row.race_id ? <span title="מתוך מירוץ באפליקציה">🏁</span> : null}
             <button
+              type="button"
+              aria-label={`מחיקת שנת ${row.year}`}
               onClick={() => void remove(row)}
               disabled={!!busy}
-              className="px-1 text-sm font-bold text-muted"
+              className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border-2 border-line text-muted active:bg-brand-soft active:text-brand disabled:opacity-50"
             >
               🗑️
             </button>

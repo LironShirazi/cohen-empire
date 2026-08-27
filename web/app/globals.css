@@ -420,3 +420,77 @@ body {
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
 }
+
+/* ──────────────────────────────────────────────────────────────
+   משוב לחיצה — כל כפתור, לא רק רכיב Button
+   ────────────────────────────────────────────────────────────── */
+
+/* ⚠️ `cursor: pointer` כאן הוא **תיקון פונקציונלי ולא ויזואלי**.
+   ב-Safari בנייד `:active` לא מופעל בכלל על אלמנט שהדפדפן לא רואה
+   כ"לחיץ"; בלי זה כל הכפתורים הבודדים באפליקציה (סל המחיקה
+   ב-/admin/content, פעולות הגלריה, שורות הניהול) נלחצו בלי שום
+   סימן שהלחיצה נקלטה — מה שנראה כמו כפתור תקוע.
+   `touch-action: manipulation` מבטל את השהיית ה-300ms של זיהוי
+   הקשה כפולה, ו-`user-select: none` מונע בחירת טקסט בלחיצה ארוכה. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ההבהוב הכחול של אנדרואיד/iOS מוחלף במשוב אחיד משלנו */
+button,
+[role="button"],
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* `filter` ולא `transform`/`opacity` — הוא מתחבר לכל וריאנט קיים
+   בלי לדרוס את הצל התחתון של ‎.btn או את ה-translate של ‎.tb-btn */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  filter: brightness(0.93);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active {
+    filter: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   שדות תאריך/שעה — הזינוק ב-/admin
+   ────────────────────────────────────────────────────────────── */
+
+/* ⚠️ ‎`datetime-local` בספארי בנייד הוא פקד מערכת ולא שדה טקסט: הוא
+   מתעלם מ-`width:100%` (יש לו רוחב מובנה), מוסיף שוליים משלו
+   ל-`::-webkit-date-and-time-value`, ומקבל מהעמוד `direction: rtl`
+   שמסובב את סדר הרכיבים. התוצאה באייפון הייתה ערך שחורג מהמסגרת.
+   התוכן חייב להישאר LTR (‎27/08/2026, 16:24) אבל צמוד לקצה הקריאה. */
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+  direction: ltr;
+  text-align: right;
+}
+
+input[type="datetime-local"]::-webkit-date-and-time-value,
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: right;
+}
+
+/* אייקון לוח השנה של כרום/אנדרואיד — ב-RTL הוא נדחק לקצה הלא נכון */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  margin-inline-start: 0;
+  margin-inline-end: auto;
+}

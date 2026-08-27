@@ -21,6 +21,7 @@ import {
 } from "@/lib/image";
 import type { GalleryAlbum } from "@/lib/supabase/types";
 import type { GalleryPhotoRow } from "@/lib/data";
+import { useConfirm } from "@/components/ui/confirm";
 
 /**
  * אלבום בגלריה: שם שאפשר לתקן, מדיה שכל בן משפחה מוסיף, ותצוגה מוגדלת.
@@ -44,6 +45,7 @@ export function AlbumScreen({
   isOwner: boolean;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(album.name);
@@ -73,7 +75,11 @@ export function AlbumScreen({
   }
 
   async function deleteAlbum() {
-    if (!confirm(`למחוק את האלבום "${album.name}"?`)) return;
+    const ok = await confirm({
+      title: "מחיקת אלבום",
+      message: `למחוק את האלבום "${album.name}"?`,
+    });
+    if (!ok) return;
     setBusy("מוחק...");
     setError(null);
     const { error: deleteError } = await createClient()
