@@ -35,7 +35,7 @@ export function TeamCodeForm({ gameCode }: { gameCode: string }) {
   return (
     <form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="game_code" value={gameCode} />
-      <CodeInput name="team_code" length={2} autoFocus />
+      <CodeInput name="team_code" length={2} size="lg" autoFocus />
       <p className="text-center text-sm text-muted">
         קוד הקבוצה הוא ספרה או שתיים — תשאלו את המנהל לאיזו קבוצה שובצתם
       </p>

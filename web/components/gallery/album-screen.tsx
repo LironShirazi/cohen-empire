@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { PhotoLightbox } from "@/components/gallery/photo-lightbox";
 import { createClient } from "@/lib/supabase/client";
@@ -160,7 +161,7 @@ export function AlbumScreen({
           <label className="text-sm font-bold text-muted" htmlFor="album-rename">
             שם האלבום
           </label>
-          <input
+          <Input
             id="album-rename"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -169,7 +170,6 @@ export function AlbumScreen({
             }}
             maxLength={60}
             autoFocus
-            className="min-h-12 w-full rounded-card-sm border-2 border-line bg-surface px-3 text-[17px]"
           />
           <div className="flex gap-2">
             <Button
@@ -195,7 +195,7 @@ export function AlbumScreen({
         </Card>
       ) : (
         <div className="mb-5 flex flex-wrap items-center gap-2">
-          <h1 className="font-display text-2xl">{album.name}</h1>
+          <h1 className="font-display text-h1">{album.name}</h1>
           <button
             onClick={() => setRenaming(true)}
             className="min-h-11 rounded-card-sm px-2 text-sm font-bold text-muted"
@@ -251,12 +251,21 @@ export function AlbumScreen({
           </p>
         </Card>
       ) : (
-        <div className="mt-6 grid grid-cols-3 gap-1.5">
-          {photos.map((photo) => (
+        // רשת masonry (סקיצה 2e): הפריט הראשון תופס 2×2 והרביעי
+        // נמתח לרוחב, כדי שהאלבום ייראה כמו קיר תמונות ולא כמו
+        // גיליון. `grid-auto-rows: 1fr` שומר על השורות שוות גובה.
+        <div className="mt-6 grid auto-rows-[1fr] grid-cols-3 gap-1.5">
+          {photos.map((photo, index) => (
             <button
               key={photo.id}
               onClick={() => setOpenPhotoId(photo.id)}
-              className="relative aspect-square overflow-hidden rounded-card-sm border border-line bg-bg-2"
+              className={`relative overflow-hidden rounded-card-sm border border-line bg-bg-2 ${
+                index === 0
+                  ? "col-span-2 row-span-2 aspect-square"
+                  : index === 3
+                    ? "col-span-2 aspect-[2/1]"
+                    : "aspect-square"
+              }`}
             >
               {isVideoUrl(photo.url) ? (
                 <>

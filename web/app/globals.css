@@ -26,19 +26,21 @@
   --navy-2: #16305f;
   --sky: #2e86de;         /* קישורים, מפה */
   --ok: #1fa363;
+  --ok-soft: #dbf3e6;     /* רקע צ'יפ ההצלחה (.chip-ok ב-DS) */
   --danger: #d64545;
 
-  /* צבעי קבוצות */
-  --t-red: #e23d3d;
-  --t-blue: #2e86de;
-  --t-green: #27ae60;
-  --t-orange: #f39c12;
-  --t-purple: #8e5ac8;
-  --t-yellow: #f1c40f;
-  --t-pink: #e84a8a;
-  --t-teal: #129c9c;
-  --t-brown: #9c6b3c;
-  --t-sky: #5dbbeb;
+  /* נגזרות של הרקע הקוסמי.
+     היו כתובות כ-hex קשיח בכל מסך שמשתמש ב-.cosmic — ‎#c9d3ea לבדו
+     חזר תשע פעמים ב-winners-screen. */
+  --navy-deep: #05102a;   /* הצל התחתון של כפתור navy */
+  --navy-tile: #0d1b3a;   /* בסיס ל-color-mix של אריחי חיה על קוסמי */
+  --on-navy-muted: #c9d3ea; /* טקסט משני על רקע קוסמי */
+
+  --granny: #f6e3f7;      /* רקע עיגול סבתא (.gp.granny ב-DS) */
+
+  /* צבעי הקבוצות אינם כאן — הם ב-lib/team-colors.ts.
+     הצבע נשמר ב-DB כ-hex ונקרא ל-style inline, ולכן טוקן CSS לא
+     משרת אותו. ה-‎--t-* שהיו כאן לא נצרכו באף מקום בריפו. */
 }
 
 @theme inline {
@@ -61,18 +63,12 @@
   --color-navy-2: var(--navy-2);
   --color-sky: var(--sky);
   --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
   --color-danger: var(--danger);
-
-  --color-team-red: var(--t-red);
-  --color-team-blue: var(--t-blue);
-  --color-team-green: var(--t-green);
-  --color-team-orange: var(--t-orange);
-  --color-team-purple: var(--t-purple);
-  --color-team-yellow: var(--t-yellow);
-  --color-team-pink: var(--t-pink);
-  --color-team-teal: var(--t-teal);
-  --color-team-brown: var(--t-brown);
-  --color-team-sky: var(--t-sky);
+  --color-navy-deep: var(--navy-deep);
+  --color-navy-tile: var(--navy-tile);
+  --color-on-navy-muted: var(--on-navy-muted);
+  --color-granny: var(--granny);
 
   /* גיאומטריה — rounded-card / rounded-card-sm / rounded-card-lg */
   --radius-card: 18px;
@@ -85,6 +81,18 @@
 
   --font-sans: var(--font-rubik), "Noto Sans Hebrew", system-ui, sans-serif;
   --font-display: var(--font-secular), var(--font-rubik), sans-serif;
+
+  /* סקאלת הכותרות של design-system/foundations/typography.html.
+     עד עכשיו כל מסך בחר לעצמו גודל (PageHeader 24, שערי הכניסה 30,
+     album-screen 24) — text-h1/text-h2 הם הסקאלה, לא הצעה.
+     גדלי ה"ראווה" (הלוגו 46, מסך הזוכים 40) נשארים פר-מסך: ב-DS
+     ‎.display הוא משפחת הפונט בלבד, בלי גודל. */
+  --text-h1: 28px;
+  --text-h1--line-height: 1.15;
+  --text-h2: 21px;
+  --text-h2--line-height: 1.2;
+  --text-small: 14px;
+  --text-small--line-height: 1.5;
 }
 
 body {
@@ -112,14 +120,90 @@ body {
   color: #fff;
 }
 
-/* דגל העצמאות הצהוב — כותרת מסך המשימה (סקיצה 1h) */
+/* דגל העצמאות הצהוב — כותרת מסך המשימה (סקיצה 1h) ומסך החזרה
+   הביתה (2g).
+
+   ⚠️ **בלי `border-radius` בכוונה — הקורא קובע.** המחלקה הזו לא
+   ב-`@layer`, ובקסקייד כלל לא-משוכב מנצח כל שכבה בלי קשר
+   לספציפיות. כלומר `rounded-none` של Tailwind (שיושב ב-
+   `@layer utilities`) **לא היה מצליח לדרוס אותה**, ומסך "מקצה
+   לקצה" היה נשאר עם פינות מעוגלות מול מסך מרובע. אותה מלכודת
+   חלה על דריסת `color:#fff` של `.cosmic` ב-`text-*`. */
 .flag {
   position: relative;
   background: var(--yellow);
   color: var(--ink);
-  border-radius: var(--radius-card);
   overflow: hidden;
 }
+
+/* הפס השחור של הדגל — עובר מאחורי האמבלם (סקיצות 1h, 2g) */
+.flag-band {
+  background: var(--ink);
+  color: var(--yellow);
+  font-weight: 800;
+}
+
+/* תג השנה המשושה — ‎.badge2026 ב-foundations/brand.html.
+   כאן ולא ב-Tailwind כי ה-clip-path ארוך מכדי להיות קריא כמחלקה שרירותית. */
+.hex-badge {
+  clip-path: polygon(8% 0, 92% 0, 100% 50%, 92% 100%, 8% 100%, 0 50%);
+}
+
+/* הזוג חוצה את המסך — רצועת ההפתעה בדף הבית (סקיצה 1a) ומסך
+   החזרה הביתה (2g).
+
+   ⚠️ **`left` פיזי ובכוונה, לא `inset-inline-start` לוגי.** הכיוון
+   כאן נקבע ע"י **הציור** ולא ע"י כיוון הקריאה: בספרייט סבא וסבתא
+   פונים ימינה, ולכן הם חייבים לצעוד שמאלה←ימינה. עם מאפיין לוגי
+   ב-RTL הם היו נכנסים מימין ונעים שמאלה — כלומר צועדים אחורה.
+   זה המקום הנדיר שבו מאפיין פיזי הוא הנכון. */
+@keyframes cross {
+  from {
+    left: -90px;
+  }
+  to {
+    left: 110%;
+  }
+}
+
+/* המצפן — סימן הניווט של המותג (foundations/brand.html, סקיצה 1b).
+   כאן ולא ב-Tailwind בגלל ה-conic-gradient וטבעת ה-::before. */
+.compass {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex: none;
+  border-radius: 50%;
+  padding: 11px;
+  background: conic-gradient(var(--yellow) 0 50%, var(--brand) 50% 100%);
+  box-shadow: var(--shadow-card);
+}
+
+.compass::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  pointer-events: none;
+}
+
+.compass-core {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: #fff;
+}
+
+/* מה שמ-styles.css **לא** הועתק לכאן, ולמה:
+   ‎.card-tight/.note/.chip-ghost/.gp → רכיבי React ב-components/ui,
+   כי כאן הפרימיטיבים הם רכיבים ולא מחלקות CSS.
+   ‎.ph (מלבן מפוספס) → פיגום של הסקיצות בלבד. באפליקציה יש תמונות
+   אמיתיות, ומלבן "כאן תהיה תמונה" בפרודקשן הוא באג ולא עיצוב. */
 
 /* ספינר סבא וסבתא — ספרייט 8 פריימים */
 @keyframes walkcycle {
@@ -315,9 +399,15 @@ body {
   .cheer-trophy,
   .distpulse,
   .notification-toast,
-  .mention-flash {
+  .mention-flash,
+  .walker-band {
     animation: none !important;
     transition: none !important;
+  }
+
+  /* הרצועה עצמה מיותרת בלי התנועה — הזוג היה נשאר תקוע באמצע */
+  .walker-band-wrap {
+    display: none;
   }
 }
 

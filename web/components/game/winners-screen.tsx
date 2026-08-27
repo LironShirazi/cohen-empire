@@ -68,7 +68,7 @@ function TeamMark({
     <span
       className={`flex flex-none items-center justify-center rounded-card-sm border-2 ${size} ${className ?? ""}`}
       style={{
-        background: `color-mix(in srgb, ${row.team_color} 30%, #0d1b3a)`,
+        background: `color-mix(in srgb, ${row.team_color} 30%, var(--navy-tile))`,
         borderColor: row.team_color,
       }}
     >
@@ -135,7 +135,7 @@ export function WinnersScreen({
           <br />
           של {race.year}!
         </h1>
-        <p className="-mt-1 text-sm text-[#c9d3ea]">{race.name}</p>
+        <p className="-mt-1 text-sm text-on-navy-muted">{race.name}</p>
 
         {/* הזוכים — הכרטיס היחיד שמקבל מסגרת זהב */}
         {/* ⚠️ הזהב השקוף הוא inline ולא `bg-gold/15`: Tailwind v4 ממזג
@@ -152,7 +152,7 @@ export function WinnersScreen({
               {champion.team_name}
             </b>
             {summarize(champion, true) ? (
-              <p className="text-[13.5px] text-[#c9d3ea]">
+              <p className="text-[13.5px] text-on-navy-muted">
                 {summarize(champion, true)}
               </p>
             ) : null}
@@ -174,14 +174,14 @@ export function WinnersScreen({
                 </div>
                 {/* השם ולא רק החיה: `animal` הוא רשות, ובלעדיו כל
                     העמודים היו מציגים את אותו 🏁 */}
-                <div className="truncate text-[11.5px] text-[#c9d3ea]">
+                <div className="truncate text-[11.5px] text-on-navy-muted">
                   {row.team_name}
                 </div>
                 <div
                   className={`flex items-center justify-center rounded-t-[10px] border font-display ${stepHeight[row.rank]} ${
                     row.rank === 1
                       ? "border-gold text-[28px] text-gold-lite"
-                      : "border-white/20 bg-white/10 text-[22px] text-[#c9d3ea]"
+                      : "border-white/20 bg-white/10 text-[22px] text-on-navy-muted"
                   }`}
                   style={
                     row.rank === 1
@@ -208,14 +208,14 @@ export function WinnersScreen({
                 key={row.team_id}
                 className="flex items-center gap-3 rounded-card-sm border border-white/15 bg-white/5 px-3.5 py-2.5"
               >
-                <span className="w-6 text-center font-display text-lg text-[#c9d3ea]">
+                <span className="w-6 text-center font-display text-lg text-on-navy-muted">
                   {row.rank}
                 </span>
                 <TeamMark row={row} size="size-9 text-lg" />
                 <div className="min-w-0 flex-1">
                   <b className="block truncate text-[15px]">{row.team_name}</b>
                   {summarize(row, false) ? (
-                    <span className="text-xs text-[#c9d3ea]">
+                    <span className="text-xs text-on-navy-muted">
                       {summarize(row, false)}
                     </span>
                   ) : null}
@@ -225,7 +225,7 @@ export function WinnersScreen({
           </ul>
         ) : null}
 
-        <p className="mt-1 text-[13.5px] text-[#c9d3ea] opacity-90">
+        <p className="mt-1 text-[13.5px] text-on-navy-muted opacity-90">
           המירוץ נוסף אוטומטית להיכל התהילה 🏛
         </p>
 
@@ -234,7 +234,7 @@ export function WinnersScreen({
             כבר חזר, והרשימה שלמטה עוד תגדל */}
         {stillRunning ? (
           <>
-            <p className="rounded-card-sm border border-white/15 bg-white/5 px-3.5 py-2.5 text-[13.5px] text-[#c9d3ea]">
+            <p className="rounded-card-sm border border-white/15 bg-white/5 px-3.5 py-2.5 text-[13.5px] text-on-navy-muted">
               🚶 שאר הקבוצות עוד בדרך — הן ממשיכות את המסלול, והרשימה
               כאן מתעדכנת לבד.
             </p>
@@ -258,7 +258,7 @@ export function WinnersScreen({
           </Link>
           <Link
             href="/"
-            className="mt-1 text-sm font-bold text-[#c9d3ea] hover:text-yellow"
+            className="mt-1 text-sm font-bold text-on-navy-muted hover:text-yellow"
           >
             לדף הבית
           </Link>

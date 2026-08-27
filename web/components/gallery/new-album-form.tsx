@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 
@@ -51,7 +52,7 @@ export function NewAlbumForm({ myUserId }: { myUserId: string }) {
       <label className="text-sm font-bold text-muted" htmlFor="album-name">
         איך נקרא לאלבום?
       </label>
-      <input
+      <Input
         id="album-name"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -61,7 +62,6 @@ export function NewAlbumForm({ myUserId }: { myUserId: string }) {
         maxLength={60}
         autoFocus
         placeholder="למשל: החתונה של נועה ואיתי"
-        className="min-h-12 w-full rounded-card-sm border-2 border-line bg-surface px-3 text-[17px]"
       />
       <div className="flex gap-2">
         <Button className="flex-1" disabled={busy} onClick={() => void create()}>

@@ -36,7 +36,8 @@ export function PageHeader({
           → {backLabel}
         </Link>
       ) : null}
-      <h1 className="font-display text-2xl">{title}</h1>
+      {/* text-h1 ולא text-2xl — הסקאלה של typography.html היא 28px */}
+      <h1 className="font-display text-h1">{title}</h1>
       {action ? <div className="ms-auto">{action}</div> : null}
     </header>
   );

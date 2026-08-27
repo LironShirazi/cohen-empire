@@ -10,6 +10,12 @@ import { Card } from "@/components/ui/card";
  * ויזואלית ביניהן** — למשפחה 2009 ו-2026 הן אותה מסורת.
  */
 export function HallOfFameList({ rows }: { rows: HallOfFameRow[] }) {
+  // ⚠️ הרכיב מקבל `HallOfFameRow[]` ולא מבטיח כלום על אורכו. הקורא
+  // היחיד היום בודק ריקנות לפניו, אבל הפירוק למטה (`[champion,
+  // ...rest]` ו-`sort(...)[0]`) קורס על מערך ריק — והקורא הבא לא
+  // יידע שהוא חייב לבדוק.
+  if (rows.length === 0) return null;
+
   const [champion, ...rest] = rows;
 
   return (
@@ -40,7 +46,7 @@ function ChampionCard({ row }: { row: HallOfFameRow }) {
         </p>
         <p className="truncate text-xl font-extrabold">{row.team_name}</p>
         {row.members.length > 0 ? (
-          <p className="mt-0.5 text-sm text-[#c9d3ea]">
+          <p className="mt-0.5 text-sm text-on-navy-muted">
             {row.members.join(", ")}
           </p>
         ) : null}

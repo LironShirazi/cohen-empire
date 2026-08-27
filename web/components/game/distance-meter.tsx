@@ -89,6 +89,13 @@ export function DistanceMeter({
         current.lng,
         current.accuracy
       );
+      // ⚠️ כישלון RPC חוזר כ-`{arrived:false, distance_m:0, error}`.
+      // בלי ההפרדה הזו "המירוץ לא פעיל" הוצג כ-"השרת מדד 0 מ׳".
+      if (result.error) {
+        setGeoError(result.error);
+        asked.current = false;
+        return;
+      }
       // המסך מתרענן לבד כשהשרת מאשר; אחרת מראים כמה חסר
       if (!result.arrived) {
         setTooFar(result.distance_m);

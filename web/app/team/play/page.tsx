@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { LocationReporter } from "@/components/game/location-reporter";
+import { FinishScreen } from "@/components/game/finish-screen";
 import { PlayScreen } from "@/components/game/play-screen";
 import { WinnerWatcher } from "@/components/game/winner-watcher";
 import { Card } from "@/components/ui/card";
@@ -25,6 +26,33 @@ export default async function PlayPage() {
   // שסיימו הכל ולא לפני שיש תחנות
   const tracking =
     state !== null && state.state !== "finished" && state.state !== "no_stations";
+
+  const raceOpen =
+    membership.race.status !== "finished" && membership.race.status !== "archived";
+
+  // ⚠️ מסך הסיום הוא **מסך מלא** ולא כרטיס בתוך PageShell (סקיצה 2g):
+  // הוא צהוב מקצה לקצה. לכן הוא יוצא כאן מהמעטפת ולא בתוך PlayScreen.
+  if (state?.state === "finished" && raceOpen) {
+    return (
+      <>
+        <FinishScreen
+          announced={state.race.winner_declared}
+          home={
+            membership.race.start_lat !== null &&
+            membership.race.start_lng !== null
+              ? {
+                  lat: membership.race.start_lat,
+                  lng: membership.race.start_lng,
+                }
+              : null
+          }
+        />
+        {membership.race.status === "live" ? (
+          <WinnerWatcher raceId={membership.race.id} teamDone />
+        ) : null}
+      </>
+    );
+  }
 
   return (
     <PageShell>

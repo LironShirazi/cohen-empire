@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LeaderboardList } from "@/components/leaderboard-list";
 import { Card } from "@/components/ui/card";
@@ -26,21 +27,34 @@ export default async function LeaderboardPage() {
   }
 
   const rows = await getLeaderboard(race.id);
+  const back = membership ? "/team" : "/";
 
   return (
-    <PageShell className="flex flex-col gap-4">
-      <PageHeader
-        title="🏅 לוח מובילים"
-        back={membership ? "/team" : "/"}
-        backLabel={membership ? "לקבוצה" : "לדף הבית"}
-      />
+    // מסך קוסמי מלא ולא PageShell על נייר (סקיצה 2b): הלידרבורד הוא
+    // רגע דרמטי ולא מסך שירות, והוא אחד משלושת המסכים שה-DS מייעד
+    // לרקע הכהה יחד עם פתיחת הרמז ומסך הזוכים.
+    <main className="cosmic flex flex-1 flex-col gap-3 px-5 pt-12 pb-10 text-center">
+      <h1 className="goldtext font-display text-[34px] leading-tight">
+        לוח מובילים
+      </h1>
+      <p className="-mt-1.5 text-[13.5px] text-on-navy-muted">
+        לפי סדר השלמת משימות · מתעדכן בזמן אמת
+      </p>
 
-      <LeaderboardList rows={rows} />
+      <div className="mt-2">
+        <LeaderboardList rows={rows} myTeamId={membership?.team.id} />
+      </div>
 
-      <Card className="text-sm text-muted">
-        ⚠️ דירוג בלבד — בלי לחשוף באיזו משימה כל קבוצה נמצאת ומתוך כמה.
-        שומרים על המתח עד הסוף.
-      </Card>
-    </PageShell>
+      <p className="mt-auto pt-6 text-[13px] text-on-navy-muted opacity-80">
+        🤫 לא מגלים באיזו תחנה כל קבוצה — כדי לשמור על המתח
+      </p>
+
+      <Link
+        href={back}
+        className="text-sm font-bold text-on-navy-muted hover:text-yellow"
+      >
+        → {membership ? "לקבוצה" : "לדף הבית"}
+      </Link>
+    </main>
   );
 }

@@ -32,7 +32,7 @@ export function QuoteCard({
   if (variant === "feature") {
     return (
       <figure className={`w-full rounded-card bg-yellow text-ink ${className}`}>
-        <div className="flex items-center gap-3 p-5">
+        <div className="flex items-center gap-3 px-4.5 pt-4.5 pb-3.5">
           {/* הפורטרט המצויר של שניהם — הנכס האמיתי היחיד שיש בריפו.
               מי אמר את המשפט כתוב בשורת הייחוס ממילא (סקיצה 1a).
 
@@ -48,17 +48,17 @@ export function QuoteCard({
             priority
             className="h-[84px] w-[57px] flex-none object-contain"
           />
+          {/* ⚠️ **שתי סקיצות חלוקות כאן, וסקיצה 1a גוברת.**
+              ‎quote-card.html מראה ‎.feature בלי פורטרט, עם גרש־ענק
+              בשקיפות 25% וטקסט 23px. סקיצה 1a — שהיא **מסך הבית עצמו**,
+              המקום היחיד שבו הווריאנט הזה מרונדר — מראה פורטרט + 19px
+              **בלי** הגרש. רכיב בודד לא יכול לקיים את שניהם, והמסך
+              שבו הוא חי הוא שקובע. */}
           <div className="min-w-0 flex-1 text-start">
-            <span
-              aria-hidden
-              className="block font-display text-[44px] leading-[0.5] opacity-25"
-            >
-              ״
-            </span>
-            <blockquote className="mt-1.5 font-display text-xl leading-snug">
-              {quote.text}
+            <blockquote className="font-display text-[19px] leading-snug">
+              ״{quote.text}״
             </blockquote>
-            <figcaption className="mt-2 text-sm font-bold">
+            <figcaption className="mt-1.5 text-small font-bold opacity-75">
               — {quote.who}
             </figcaption>
           </div>
@@ -113,8 +113,8 @@ function QuoteFace({ quote, isGranny }: { quote: Quote; isGranny: boolean }) {
       aria-hidden
       className={`flex size-14 flex-none items-center justify-center rounded-full border-2 text-[30px] ${
         isGranny
-          ? "border-[#e9c7ec] bg-[#f6e3f7]"
-          : "border-yellow-deep bg-yellow-soft"
+          ? "border-line bg-granny"
+          : "border-line bg-yellow-soft"
       }`}
     >
       {isGranny ? "👵" : "👴"}

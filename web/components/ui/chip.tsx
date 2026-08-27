@@ -1,14 +1,17 @@
 import type { HTMLAttributes } from "react";
 
 // מקביל ל-.chip ב-design-system/styles.css
-type Tone = "brand" | "yellow" | "navy" | "ok" | "muted";
+type Tone = "brand" | "yellow" | "navy" | "ok" | "muted" | "ghost";
 
 const tones: Record<Tone, string> = {
   brand: "bg-brand-soft text-brand",
   yellow: "bg-yellow text-ink",
   navy: "bg-navy text-gold-lite",
-  ok: "bg-[#DBF3E6] text-ok",
+  ok: "bg-ok-soft text-ok",
   muted: "bg-bg-2 text-muted",
+  // ‎.chip-ghost — הצ'יפ היחיד שנועד לשבת **על** רקע קוסמי.
+  // הצ'יפים האחרים נשענים על משטח בהיר ונעלמים שם.
+  ghost: "border border-white/25 bg-white/15 text-white",
 };
 
 export function Chip({

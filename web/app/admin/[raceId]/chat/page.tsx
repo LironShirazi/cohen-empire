@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
-import { PageHeader, PageShell } from "@/components/ui/page";
+import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
 import { UnreadBadge } from "@/components/notifications/unread-badge";
 import {
   getRace,
@@ -12,7 +12,7 @@ import {
 } from "@/lib/data";
 
 export default async function AdminChatIndexPage(
-  props: PageProps<"/admin/[raceId]/chat">
+  props: PageProps<"/admin/[raceId]/chat">,
 ) {
   const user = await getUser();
   if (!user) redirect("/");
@@ -31,58 +31,57 @@ export default async function AdminChatIndexPage(
   const unreadByTeam = Map.groupBy(unread, (row) => row.team_id);
 
   return (
-    <PageShell className="flex flex-col gap-4">
-      <PageHeader
+    <main className="flex flex-1 flex-col">
+      <AdminHeader
         title="💬 צ'אט עם הקבוצות"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
       />
-
-      <Card className="text-sm text-muted">
-        המנהל התורן חבר אוטומטית בצ׳אט של כל קבוצה במירוץ שלו — ההודעות
-        שלכם מסומנות שם 📣.
-      </Card>
-
-      {teams.length === 0 ? (
+      <AdminBody className="flex flex-col gap-4">
         <Card className="text-sm text-muted">
-          עוד אין קבוצות במירוץ הזה.
+          המנהל התורן חבר אוטומטית בצ׳אט של כל קבוצה במירוץ שלו — ההודעות שלכם
+          מסומנות שם 📣.
         </Card>
-      ) : null}
 
-      {teams.map((team) => (
-        <Link key={team.id} href={`/admin/${raceId}/chat/${team.id}`}>
-          <div
-            className="flex items-center gap-3 rounded-card border border-line bg-surface p-4 shadow-card"
-            style={{
-              borderInlineStartWidth: 8,
-              borderInlineStartColor: team.color,
-            }}
-          >
-            <span
-              className="flex size-12 flex-none items-center justify-center rounded-2xl text-2xl"
+        {teams.length === 0 ? (
+          <Card className="text-sm text-muted">עוד אין קבוצות במירוץ הזה.</Card>
+        ) : null}
+
+        {teams.map((team) => (
+          <Link key={team.id} href={`/admin/${raceId}/chat/${team.id}`}>
+            <Card
+              className="flex items-center gap-3 p-4"
               style={{
-                background: `color-mix(in srgb, ${team.color} 15%, #fff)`,
+                borderInlineStartWidth: 8,
+                borderInlineStartColor: team.color,
               }}
             >
-              {team.animal?.split(" ")[0] ?? "🏁"}
-            </span>
-            <div>
-              <p className="font-display text-lg">{team.name}</p>
-              <p className="text-sm text-muted">
-                {team.members.length} משתתפים
-              </p>
-            </div>
-            {unreadByTeam.has(team.id) ? (
-              <UnreadBadge
-                unread={unreadByTeam.get(team.id) ?? []}
-                className="ms-auto"
-              />
-            ) : (
-              <span className="ms-auto text-xl">💬</span>
-            )}
-          </div>
-        </Link>
-      ))}
-    </PageShell>
+              <span
+                className="flex size-12 flex-none items-center justify-center rounded-2xl text-2xl"
+                style={{
+                  background: `color-mix(in srgb, ${team.color} 15%, #fff)`,
+                }}
+              >
+                {team.animal?.split(" ")[0] ?? "🏁"}
+              </span>
+              <div>
+                <p className="font-display text-lg">{team.name}</p>
+                <p className="text-sm text-muted">
+                  {team.members.length} משתתפים
+                </p>
+              </div>
+              {unreadByTeam.has(team.id) ? (
+                <UnreadBadge
+                  unread={unreadByTeam.get(team.id) ?? []}
+                  className="ms-auto"
+                />
+              ) : (
+                <span className="ms-auto text-xl">💬</span>
+              )}
+            </Card>
+          </Link>
+        ))}
+      </AdminBody>
+    </main>
   );
 }

@@ -56,7 +56,7 @@ export function RaceControls({
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">מצב המירוץ</h2>
+      <h2 className="font-display text-h2">מצב המירוץ</h2>
 
       {step ? (
         <Button
@@ -111,7 +111,10 @@ export function RaceControls({
           >
             🏁 סיום המירוץ לכולם
           </Button>
-          <p className="text-sm text-muted">
+          {/* פאנל האזהרה האדום מסקיצה 3i. הפעולה הזו נועלת את המשחק
+              לכולם, והיא נלחצת באמצע ארוחה רועשת — היא צריכה להיראות
+              אחרת מכל שאר הכפתורים במסך. */}
+          <p className="rounded-card-sm border border-brand bg-brand/14 px-3.5 py-3 text-sm">
             רק כשכל הקבוצות חזרו. הסגירה <b>נועלת את המשחק</b> — מרגע זה אי
             אפשר להגיע לתחנה או להשלים משימה.
           </p>

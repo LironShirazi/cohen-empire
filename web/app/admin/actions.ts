@@ -52,6 +52,24 @@ export async function setRaceStatusAction(raceId: string, status: RaceStatus) {
   return {};
 }
 
+/**
+ * מד המרחק — דלוק/כבוי לכל המירוץ (0016).
+ *
+ * ⚠️ עובר ב-RPC ולא ב-UPDATE ישיר, כמו כל שינוי מצב משחק (CLAUDE.md
+ * §5): כשהמתג כבוי `get_team_state` מפסיקה להחזיר את קואורדינטות
+ * התחנה, ולכן מי שיכול לשנות אותו יכול לחשוף אותן.
+ */
+export async function setShowDistanceAction(raceId: string, value: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_race_show_distance", {
+    p_race_id: raceId,
+    p_value: value,
+  });
+  if (error) return { error: error.message };
+  refresh();
+  return {};
+}
+
 /** מינוי מנהל תורן נוסף למירוץ (docs/01-requirements.md §2) */
 export async function addRaceAdminAction(raceId: string, userId: string) {
   const supabase = await createClient();

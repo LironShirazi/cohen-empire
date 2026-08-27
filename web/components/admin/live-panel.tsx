@@ -40,7 +40,7 @@ export function LivePanel({
   return (
     <div className="flex flex-col gap-4">
       <Card className="flex flex-col gap-3">
-        <h2 className="font-display text-xl">
+        <h2 className="font-display text-h2">
           תור אישורי משימות
           {approvals.length > 0 ? (
             <span className="ms-2 rounded-full bg-brand px-2.5 py-0.5 text-sm text-white">
@@ -81,8 +81,9 @@ export function LivePanel({
             ) : null}
 
             <div className="flex gap-2">
+              {/* אותה אי-סימטריה כמו בתור ההצטרפות (סקיצה 3h) */}
               <Button
-                className="min-h-10 flex-1 text-base"
+                className="min-h-11 flex-[2] text-base"
                 disabled={pending}
                 onClick={() =>
                   run(() =>
@@ -93,8 +94,8 @@ export function LivePanel({
                 אישור ✓
               </Button>
               <Button
-                variant="quiet"
-                className="min-h-10 px-3 text-base"
+                variant="secondary"
+                className="min-h-11 flex-1 px-3 text-base"
                 disabled={pending}
                 onClick={() =>
                   run(() =>
@@ -110,7 +111,7 @@ export function LivePanel({
       </Card>
 
       <Card className="flex flex-col gap-3">
-        <h2 className="font-display text-xl">איפה כל קבוצה</h2>
+        <h2 className="font-display text-h2">איפה כל קבוצה</h2>
         <p className="text-sm text-muted">
           למנהל מותר לראות הכל — למשתתפים הלידרבורד מראה דירוג בלבד.
         </p>

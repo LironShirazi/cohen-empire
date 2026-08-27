@@ -30,7 +30,7 @@ export function RaceAdmins({
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-xl">מנהלים תורנים</h2>
+      <h2 className="font-display text-h2">מנהלים תורנים</h2>
 
       <div className="flex flex-wrap gap-1.5">
         {admins.map((admin) => (

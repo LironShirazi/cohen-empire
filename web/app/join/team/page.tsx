@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TeamCodeForm } from "@/components/join/join-forms";
-import { Card } from "@/components/ui/card";
-import { PageHeader, PageShell } from "@/components/ui/page";
+import { Chip } from "@/components/ui/chip";
+import { PageShell } from "@/components/ui/page";
 import { getMyMembership, getUser } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 
@@ -25,13 +26,22 @@ export default async function JoinTeamPage(props: PageProps<"/join/team">) {
   if (!race) redirect("/join");
 
   return (
-    <PageShell>
-      <PageHeader title="👥 קוד הקבוצה" back="/join" backLabel="לקוד המשחק" />
+    <PageShell className="flex flex-col items-center gap-4 pt-10 text-center">
+      <Chip>שלב 2 מתוך 3</Chip>
+      <h1 className="mt-1.5 font-display text-h1">מה קוד הקבוצה שלכם?</h1>
+      <p className="-mt-2 text-small text-muted">
+        ספרה אחת או שתיים — קיבלתם מהמנהל התורן
+      </p>
+      <p className="text-lg font-semibold">{race.name}</p>
 
-      <Card className="flex flex-col gap-5">
-        <p className="text-center text-lg font-semibold">{race.name}</p>
-        <TeamCodeForm gameCode={gameCode} />
-      </Card>
+      <TeamCodeForm gameCode={gameCode} />
+
+      <Link
+        href="/join"
+        className="mt-auto text-small font-bold text-muted hover:text-brand"
+      >
+        → לקוד המשחק
+      </Link>
     </PageShell>
   );
 }

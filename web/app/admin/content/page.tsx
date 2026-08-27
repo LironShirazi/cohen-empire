@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { HallOfFameEditor } from "@/components/admin/hall-of-fame-editor";
 import { QuotesEditor } from "@/components/admin/quotes-editor";
-import { PageHeader, PageShell } from "@/components/ui/page";
+import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
 import { getHallOfFame, getProfile, getQuotes, getUser } from "@/lib/data";
 
 export const metadata = {
@@ -31,11 +31,12 @@ export default async function AdminContentPage() {
   const [quotes, rows] = await Promise.all([getQuotes(), getHallOfFame()]);
 
   return (
-    <PageShell className="flex flex-col gap-8">
-      <PageHeader title="🏛️ תוכן משפחתי" back="/admin" backLabel="לניהול" />
-
-      <QuotesEditor quotes={quotes} />
-      <HallOfFameEditor rows={rows} />
-    </PageShell>
+    <main className="flex flex-1 flex-col">
+      <AdminHeader title="🏛️ תוכן משפחתי" back="/admin" backLabel="לניהול" />
+      <AdminBody className="flex flex-col gap-8">
+        <QuotesEditor quotes={quotes} />
+        <HallOfFameEditor rows={rows} />
+      </AdminBody>
+    </main>
   );
 }

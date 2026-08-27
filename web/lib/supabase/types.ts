@@ -29,6 +29,8 @@ export type Race = {
   status: RaceStatus;
   start_lat: number | null;
   start_lng: number | null;
+  /** מד מרחק חי לקבוצות. כבוי = יש רמז, אין חץ (0016) */
+  show_distance: boolean;
   /**
    * האלופים, מרגע `declare_winner` (0015). **נשמר ולא מחושב מחדש**:
    * אחרי ההכרזה קבוצות אחרות ממשיכות להשלים משימות, ומי שיחשב "מקום 1"
@@ -329,15 +331,22 @@ export type GameState = {
      * שההכרעה נפלה (0015).
      */
     winner_declared: boolean;
+    /**
+     * ⚠️ כשהוא `false` השרת מחזיר `station.lat/lng/radius_m` כ-`null`
+     * (0016) — המתג הזה **לא** הסתרה בקליינט. אין לגזור ממנו תצוגה
+     * בלי לבדוק שהקואורדינטות בכלל הגיעו.
+     */
+    show_distance: boolean;
   };
   state: GameStateName;
   station: {
     id: string;
     position: number;
     clue: string | null;
-    lat: number;
-    lng: number;
-    radius_m: number;
+    /** ⚠️ `null` כשמד המרחק כבוי ועוד לא הגעתם (0016) */
+    lat: number | null;
+    lng: number | null;
+    radius_m: number | null;
     completion_type: CompletionType;
     name: string | null;
     backstory: string | null;
