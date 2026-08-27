@@ -27,7 +27,7 @@ export function HomeHero({
   return (
     <header className="cosmic rounded-b-[30px] px-5 pt-14 pb-7 text-center shadow-navy md:pt-20 md:pb-11">
       <div className="mx-auto w-full max-w-lg md:max-w-2xl">
-        <Chip tone="yellow">🏁 יום העצמאות · בית סבא וסבתא</Chip>
+        <Chip tone="yellow">🏁 יום העצמאות · בית הגדי</Chip>
 
         <p className="goldtext mt-3.5 font-display text-[46px] leading-none md:text-[68px]">
           המירוץ
