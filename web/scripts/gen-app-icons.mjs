@@ -37,14 +37,63 @@ await sharp({ create: { width: APPLE, height: APPLE, channels: 3, background: NA
   .png()
   .toFile("app/apple-icon.png");
 
-// תצוגה מקדימה לקישור משותף — 1200×630, היחס שכל הפלטפורמות מציגות בלי לחתוך
+// תצוגה מקדימה לקישור משותף — 1200×630, היחס שכל הפלטפורמות מציגות בלי לחתוך.
+//
+// ⚠️ **הדגל נכנס שלם (`contain`) ולא ממולא (`cover`).** הוא 1600×1066
+// (יחס 1.50) מול 1.905 של ה-OG, ומילוי היה חותך 226px מהגובה —
+// כלומר בדיוק את "האימפריה" למעלה ואת "מירוץ עצמאות" למטה, שתי
+// המילים שבשבילן שולחים את הקישור. לכן הוא מוקטן לגובה ומרופד
+// בצהוב הדגל לרוחב.
+//
+// ⚠️ **הפס השחור מוארך ידנית אל שני הקצוות.** בדגל המקורי הוא רץ
+// מקצה לקצה; בתוך ריפוד ה-`contain` הוא היה נעצר באמצע ומשאיר שתי
+// רצועות צהובות בצדדים — מה שנראה כמו תמונה חתוכה ולא כמו דגל.
+// שורות הפס נמדדו מהנכס עצמו (`x=1` בעמודה השמאלית, אחרי ההקטנה).
 const OG_W = 1200;
 const OG_H = 630;
-const ogPhoto = await sharp(`${BRAND}/profile-image.png`)
-  .resize(Math.round(OG_H * 0.82), Math.round(OG_H * 0.82))
+
+const flagMeta = await sharp(`${BRAND}/yellow-flag.jpg`).metadata();
+const flagW = Math.round((flagMeta.width / flagMeta.height) * OG_H);
+const flag = await sharp(`${BRAND}/yellow-flag.jpg`)
+  .resize(flagW, OG_H, { fit: "fill" })
   .toBuffer();
-await sharp({ create: { width: OG_W, height: OG_H, channels: 3, background: NAVY } })
-  .composite([{ input: ogPhoto, gravity: "center" }])
+const gutter = Math.round((OG_W - flagW) / 2);
+
+// איתור הפס: העמודה השמאלית ביותר של הדגל שחורה רק בגובה הפס
+const { data, info } = await sharp(flag).raw().toBuffer({ resolveWithObject: true });
+const darkRows = [];
+for (let y = 0; y < info.height; y++) {
+  const i = (y * info.width + 1) * info.channels;
+  if (data[i] < 90 && data[i + 1] < 90) darkRows.push(y);
+}
+const bandTop = darkRows[0];
+const bandH = darkRows[darkRows.length - 1] - bandTop + 1;
+
+// הצהוב נדגם מהדגל עצמו ולא מ-`--yellow`: הצהוב שבקובץ חם במעט
+// מהטוקן, ובריפוד היה נראה כתפר אנכי לאורך כל התמונה
+const px = (x, y) => {
+  const i = (y * info.width + x) * info.channels;
+  return { r: data[i], g: data[i + 1], b: data[i + 2] };
+};
+const YELLOW = { ...px(4, 4), alpha: 1 };
+const BAND = px(4, bandTop + Math.round(bandH / 2));
+const bandStrip = await sharp({
+  create: {
+    width: gutter + 2, // ‎+2 כדי שלא תישאר תפר של פיקסל בין הריפוד לדגל
+    height: bandH,
+    channels: 3,
+    background: BAND, // השחור של הדגל עצמו, נדגם מתוכו
+  },
+})
+  .png()
+  .toBuffer();
+
+await sharp({ create: { width: OG_W, height: OG_H, channels: 3, background: YELLOW } })
+  .composite([
+    { input: flag, left: gutter, top: 0 },
+    { input: bandStrip, left: 0, top: bandTop },
+    { input: bandStrip, left: OG_W - gutter - 2, top: bandTop },
+  ])
   .removeAlpha()
   .png({ compressionLevel: 9 })
   .toFile("app/opengraph-image.png");

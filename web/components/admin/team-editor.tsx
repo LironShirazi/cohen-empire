@@ -12,6 +12,7 @@ import { Field } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { teamColors } from "@/lib/team-colors";
 import type { Team } from "@/lib/supabase/types";
+import { useConfirm } from "@/components/ui/confirm";
 
 const animals = [
   "🐬 דולפינים",
@@ -40,6 +41,7 @@ export function TeamEditor({
   const [color, setColor] = useState(team?.color ?? teamColors[1]);
   const [animal, setAnimal] = useState(team?.animal ?? animals[0]);
   const [deleting, startDelete] = useTransition();
+  const confirm = useConfirm();
 
   return (
     <Card
@@ -129,8 +131,12 @@ export function TeamEditor({
         <Button
           variant="quiet"
           disabled={deleting}
-          onClick={() => {
-            if (!confirm(`למחוק את ${team.name}? זה ימחק גם את חברי הקבוצה.`)) return;
+          onClick={async () => {
+            const ok = await confirm({
+              title: "מחיקת קבוצה",
+              message: `למחוק את ${team.name}? זה ימחק גם את חברי הקבוצה.`,
+            });
+            if (!ok) return;
             startDelete(async () => {
               await deleteTeamAction(team.id);
             });

@@ -189,17 +189,22 @@
 .search-item-name mark { background: var(--yellow-soft); color: inherit; border-radius: 4px; }
 .search-item-meta { font-size: 12px; color: var(--muted); }
 .search-empty { padding: 12px; font-size: 15px; color: var(--muted); text-align: center; }
-.menu-wrap { position: relative; flex: 0 0 auto; }
+.menu-wrap { flex: 0 0 auto; }
+
+/* ⚠️ `fixed` ולא `absolute` — **מאותה סיבה בדיוק כמו `.search-results`
+   שלמעלה.** ל-`.toolbar` יש `overflow-x: auto` לגלילה, וב-CSS
+   `overflow-y: visible` לצד `overflow-x: auto` מחושב מחדש ל-`auto`.
+   כלומר התפריט לא רק נחתך בגובה הסרגל — הוא **מותח אותו** ומוסיף
+   לו אזור גלילה, וזה מה שנראה כמו ריפוד/דחיפה מתחת לשדה החיפוש.
+   המיקום נקבע ב-`placeExportMenu()` ב-ui.js מול כפתור הייצוא. */
 .menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  inset-inline-start: 0;
+  position: fixed;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--ft-radius);
   box-shadow: var(--ft-shadow-lg);
   padding: 6px;
-  z-index: 40;
+  z-index: 60;
   min-width: 210px;
 }
 .menu button {
@@ -504,6 +509,9 @@
 .full-box .sheet-actions { justify-content: center; }
 
 /* מודאל */
+/* טקסט דיאלוג האישור הפנימי (confirmBox ב-ui.js) */
+.confirm-text { font-size: 16px; line-height: 1.55; }
+
 .modal-box {
   background: var(--surface);
   border-radius: var(--ft-radius);

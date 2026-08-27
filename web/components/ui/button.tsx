@@ -10,8 +10,10 @@ const variants: Record<Variant, string> = {
   accent:
     "bg-yellow text-ink shadow-[0_6px_0_var(--yellow-deep)] active:translate-y-0.5 active:shadow-[0_3px_0_var(--yellow-deep)]",
   navy: "bg-navy text-gold-lite shadow-[0_6px_0_var(--navy-deep)] active:translate-y-0.5 active:shadow-[0_3px_0_var(--navy-deep)]",
-  secondary: "border-[2.5px] border-brand bg-surface text-brand",
-  quiet: "bg-transparent text-muted",
+  // גם למשניים יש משוב לחיצה — בלי זה הלחיצה בנייד "לא קורית"
+  secondary:
+    "border-[2.5px] border-brand bg-surface text-brand active:translate-y-0.5 active:bg-brand-soft",
+  quiet: "bg-transparent text-muted active:translate-y-0.5 active:bg-bg-2",
 };
 
 /**
@@ -47,7 +49,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         // `border-radius:999px` — גלולה, לא מלבן מעוגל.
         // ה-disabled מוריד גם את הצל (buttons.html מדגים בדיוק את זה):
         // כפתור כבוי עם צל תחתון עדיין נראה לחיץ.
-        className={`inline-flex items-center justify-center gap-2 rounded-full font-extrabold transition-all disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none ${
+        // ⚠️ `cursor-pointer` הוא לא קישוט: ב-Safari בנייד `:active`
+        // בכלל לא מופעל על אלמנט שאינו "לחיץ" מבחינת הדפדפן, ובלעדיו
+        // כל ה-active שלמעלה לא נראה באייפון. `touch-manipulation`
+        // מבטל את השהיית ה-300ms של זיהוי לחיצה כפולה.
+        className={`inline-flex cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-full font-extrabold transition-all select-none disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none ${
           variants[variant]
         } ${variant === "quiet" ? quietSize : sizes[size]} ${className}`}
         {...props}

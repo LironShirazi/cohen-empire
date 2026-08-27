@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { isVideoUrl } from "@/lib/media";
 import type { GalleryPhotoRow } from "@/lib/data";
+import { useConfirm } from "@/components/ui/confirm";
 
 /**
  * תצוגה מוגדלת של תמונה מהגלריה, עם ניהול למי שרשאי.
@@ -35,6 +36,7 @@ export function PhotoLightbox({
   onChanged: () => void;
 }) {
   const photo = photos[index];
+  const confirm = useConfirm();
   const [caption, setCaption] = useState(photo?.caption ?? "");
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -71,7 +73,11 @@ export function PhotoLightbox({
   }
 
   async function remove() {
-    if (!confirm("למחוק את התמונה מהגלריה? פעולה זו אינה הפיכה.")) return;
+    const ok = await confirm({
+      title: "מחיקה מהגלריה",
+      message: "למחוק את התמונה מהגלריה? פעולה זו אינה הפיכה.",
+    });
+    if (!ok) return;
     setBusy(true);
     setError(null);
     const supabase = createClient();

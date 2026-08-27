@@ -10,6 +10,7 @@ import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
 import type { Quote } from "@/lib/supabase/types";
+import { useConfirm } from "@/components/ui/confirm";
 
 const MAX_LEN = 280; // תואם ל-`quotes_text_len` ב-0014
 const WHO = ["סבא", "סבתא"] as const;
@@ -27,6 +28,7 @@ const WHO = ["סבא", "סבתא"] as const;
  */
 export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [open, setOpen] = useState(false);
@@ -77,7 +79,11 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
   }
 
   async function remove(quote: Quote) {
-    if (!confirm(`למחוק את המשפט "${quote.text.slice(0, 40)}…"?`)) return;
+    const ok = await confirm({
+      title: "מחיקת משפט",
+      message: `למחוק את המשפט "${quote.text.slice(0, 40)}…"?`,
+    });
+    if (!ok) return;
 
     setBusy("מוחק...");
     setError(null);
@@ -176,10 +182,13 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
         quotes.map((quote) => (
           <div key={quote.id} className="flex flex-col gap-1.5">
             <QuoteCard quote={quote} />
+            {/* יעד מגע מלא (44px) ומסגרת נראית — כטקסט קטן וחשוף
+                הוא נראה ונלחץ כמו כיתוב ולא ככפתור */}
             <button
+              type="button"
               onClick={() => void remove(quote)}
               disabled={!!busy}
-              className="self-start px-1 text-sm font-bold text-muted"
+              className="flex min-h-11 items-center gap-1.5 self-start rounded-full border-2 border-line px-4 text-sm font-bold text-muted active:bg-brand-soft active:text-brand disabled:opacity-50"
             >
               🗑️ מחיקה
             </button>

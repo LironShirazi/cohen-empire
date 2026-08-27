@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import type { Team, TeamMember } from "@/lib/supabase/types";
+import { useConfirm } from "@/components/ui/confirm";
 
 /**
  * הרכב הקבוצה (docs/01 §3.4, docs/04 §4).
@@ -33,6 +34,7 @@ export function TeamMembersEditor({
     {} as AdminFormState
   );
   const [removing, startRemove] = useTransition();
+  const confirm = useConfirm();
 
   const registered = members.filter((member) => member.user_id);
   const manual = members.filter((member) => !member.user_id);
@@ -84,13 +86,18 @@ export function TeamMembersEditor({
               <button
                 type="button"
                 disabled={removing}
-                onClick={() => {
-                  if (!confirm(`להסיר את ${member.display_name} מהקבוצה?`)) return;
+                onClick={async () => {
+                  const ok = await confirm({
+                    title: "הסרה מהקבוצה",
+                    message: `להסיר את ${member.display_name} מהקבוצה?`,
+                    confirmLabel: "כן, להסיר",
+                  });
+                  if (!ok) return;
                   startRemove(async () => {
                     await removeManualMemberAction(member.id);
                   });
                 }}
-                className="text-sm font-bold text-muted hover:text-brand disabled:opacity-50"
+                className="flex min-h-11 shrink-0 items-center rounded-full border-2 border-line px-4 text-sm font-bold text-muted hover:text-brand active:bg-brand-soft active:text-brand disabled:opacity-50"
               >
                 הסרה
               </button>

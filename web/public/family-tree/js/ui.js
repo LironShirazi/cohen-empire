@@ -330,6 +330,32 @@
   }
   function closeModal() { $('#modal').classList.add('hidden'); }
 
+  /**
+   * אישור פנימי במקום `window.confirm`.
+   *
+   * ⚠️ ספארי בנייד רשאי להשתיק את `confirm()` לגמרי — די בכך
+   * שהמשתמש סימן פעם אחת "אל תציג התראות נוספות מהעמוד הזה" כדי
+   * שהוא **יחזיר false מיד ובלי להציג כלום**. מחיקת עלה נראתה שם
+   * כמו כפתור מת: לוחצים, ושום דבר לא קורה. הדיאלוג שלנו לא תלוי
+   * בהגדרות הדפדפן.
+   *
+   * אסינכרוני מטבעו (הוא לא חוסם כמו `confirm`), ולכן מקבל callback
+   * ולא מחזיר ערך — הקוראים חייבים להמשיך בתוכו.
+   */
+  function confirmBox(message, onYes, opts) {
+    const o = opts || {};
+    const box = openModal(o.title || 'רגע לפני שממשיכים', `
+      <p class="confirm-text">${esc(message)}</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-danger" id="confirm-yes">${esc(o.yes || 'כן, למחוק')}</button>
+        <button type="button" class="btn btn-cancel" data-close>ביטול</button>
+      </div>`);
+    box.querySelector('#confirm-yes').addEventListener('click', () => {
+      closeModal();
+      onYes();
+    });
+  }
+
   /* ---------- כרטיס עלה (Bottom Sheet) ---------- */
   function openCard(id) {
     const p = NS.store.get(id);
@@ -578,10 +604,11 @@
     const p = NS.store.get(id);
     if (!p) return;
     if (!NS.store.canDelete(id)) return toast('אי אפשר למחוק עלה שיש לו ילדים בעץ');
-    if (!confirm('למחוק את ' + p.name + ' מהעץ? פעולה זו אינה הפיכה.')) return;
-    NS.store.deletePerson(id);
-    closeCard();
-    toast('נמחק מהעץ');
+    confirmBox('למחוק את ' + p.name + ' מהעץ? פעולה זו אינה הפיכה.', () => {
+      NS.store.deletePerson(id);
+      closeCard();
+      toast('נמחק מהעץ');
+    }, { title: 'מחיקת עלה' });
   }
 
   /* ---------- "אני בעץ" — הוספה/איתור עצמי אחרי הרשמה ---------- */
@@ -844,12 +871,41 @@
 
     // תפריט ייצוא
     const menu = $('#export-menu');
+
+    // התפריט הוא position:fixed (ראו ההערה ב-family-tree.css) —
+    // ל-.toolbar יש overflow-x לגלילה, ותפריט absolute בתוכו לא רק
+    // נחתך אלא מוסיף לסרגל אזור גלילה ודוחף את שדה החיפוש.
+    function placeExportMenu() {
+      const r = $('#btn-export').getBoundingClientRect();
+      menu.style.visibility = 'hidden';
+      menu.classList.remove('hidden');
+      const width = menu.offsetWidth;
+      menu.classList.add('hidden');
+      menu.style.visibility = '';
+      // נדחף פנימה כדי לא לחרוג מהמסך — בנייד הכפתור קרוב לקצה
+      const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
+      menu.style.top = r.bottom + 6 + 'px';
+      menu.style.left = left + 'px';
+    }
+
     $('#btn-export').addEventListener('click', (e) => {
       e.stopPropagation();
-      menu.classList.toggle('hidden');
+      if (menu.classList.contains('hidden')) {
+        placeExportMenu();
+        menu.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+      }
     });
     document.addEventListener('click', (e) => {
       if (!menu.contains(e.target)) menu.classList.add('hidden');
+    });
+    // המיקום מחושב מול הכפתור, ולכן חייב להתעדכן כשהכפתור זז
+    $('.toolbar').addEventListener('scroll', () => {
+      if (!menu.classList.contains('hidden')) placeExportMenu();
+    });
+    window.addEventListener('resize', () => {
+      if (!menu.classList.contains('hidden')) placeExportMenu();
     });
     menu.addEventListener('click', (e) => {
       const act = e.target.getAttribute && e.target.getAttribute('data-act');
@@ -860,11 +916,11 @@
       if (act === 'json') NS.exporter.exportData();
       if (act === 'import') $('#import-file').click();
       if (act === 'reset') {
-        if (confirm('לאפס את העץ לגרסה ההתחלתית? כל השינויים שנעשו יימחקו.')) {
+        confirmBox('לאפס את העץ לגרסה ההתחלתית? כל השינויים שנעשו יימחקו.', () => {
           NS.store.resetToSeed();
           toast('העץ אופס לגרסה ההתחלתית');
           NS.render.fit();
-        }
+        }, { title: 'איפוס העץ', yes: 'כן, לאפס' });
       }
     });
 

@@ -73,7 +73,7 @@ export function TreeCanvas({
         </Link>
         <div className="titles">
           <h1>🌳 העץ המשפחתי</h1>
-          <p>אימפריית כהן — ב״ה משפחה גדולה</p>
+          <p>כהן אימפרייה</p>
         </div>
       </header>
 
