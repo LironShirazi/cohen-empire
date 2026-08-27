@@ -31,7 +31,7 @@ export default async function FamilyTreePage() {
             העץ שייך לכל המשפחה — צריך להתחבר כדי לראות אותו ולהוסיף את
             עצמכם אליו.
           </p>
-          <GoogleSignInButton />
+          <GoogleSignInButton next="/family-tree" />
         </Card>
       </PageShell>
     );

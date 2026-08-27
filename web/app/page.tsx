@@ -73,7 +73,7 @@ export default async function Home() {
               </Button>
             </Link>
           ) : isSupabaseConfigured ? (
-            <GoogleSignInButton variant="accent" next="/join" />
+            <GoogleSignInButton variant="accent" />
           ) : (
             <Button variant="accent" size="lg" className="w-full" disabled>
               התחברות עם Google — בקרוב
