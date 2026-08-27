@@ -1,5 +1,6 @@
 import type { HallOfFameRow } from "@/lib/supabase/types";
 import { Card } from "@/components/ui/card";
+import { HallOfFamePhoto } from "@/components/family/hall-of-fame-photo";
 
 /**
  * היכל התהילה (docs/04 §1) — מקביל ל-
@@ -51,7 +52,7 @@ function ChampionCard({ row }: { row: HallOfFameRow }) {
           </p>
         ) : null}
       </div>
-      <Photo row={row} className="ms-auto size-16" />
+      <HallOfFamePhoto row={row} className="ms-auto size-16" />
     </div>
   );
 }
@@ -66,7 +67,7 @@ function YearRow({ row }: { row: HallOfFameRow }) {
       <span className="min-w-[52px] flex-none font-display text-[22px] text-brand">
         {row.year}
       </span>
-      <Photo row={row} className="size-13" />
+      <HallOfFamePhoto row={row} className="size-13" />
       <div className="min-w-0 flex-1">
         <p className="truncate font-bold">{row.team_name}</p>
         {row.members.length > 0 ? (
@@ -76,27 +77,6 @@ function YearRow({ row }: { row: HallOfFameRow }) {
         ) : null}
       </div>
     </div>
-  );
-}
-
-function Photo({ row, className }: { row: HallOfFameRow; className: string }) {
-  if (!row.photo_url) {
-    return (
-      <span
-        aria-hidden
-        className={`flex flex-none items-center justify-center rounded-card-sm bg-bg-2 text-xl opacity-40 ${className}`}
-      >
-        📷
-      </span>
-    );
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={row.photo_url}
-      alt={`הקבוצה הזוכה ${row.year}`}
-      className={`flex-none rounded-card-sm border border-line object-cover ${className}`}
-    />
   );
 }
 

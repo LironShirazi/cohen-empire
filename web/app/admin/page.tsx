@@ -21,9 +21,14 @@ export default async function AdminHomePage() {
     <main className="flex flex-1 flex-col">
       <AdminHeader title="🛠️ ניהול" back="/" backLabel="לדף הבית" />
       <AdminBody className="flex flex-col gap-4">
+        {/* מנהל-על רואה כאן את **כל** המירוצים (0018) ולא רק את אלה
+            שמונה אליהם, ולכן גם המצב הריק שלו אחר: אצלו זה אומר
+            שעוד לא נוצר מירוץ, ולא שלא מינו אותו */}
         {races.length === 0 ? (
           <Card className="text-center text-muted">
-            אתם עוד לא מנהלים תורנים של אף מירוץ.
+            {profile?.is_owner
+              ? "עוד לא נוצר אף מירוץ. פותחים את הראשון למטה 👇"
+              : "אתם עוד לא מנהלים תורנים של אף מירוץ."}
           </Card>
         ) : null}
 

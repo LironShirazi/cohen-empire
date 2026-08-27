@@ -25,14 +25,19 @@ export default async function AdminTeamsPage(
         title="👥 קבוצות"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
+        size="wide"
       />
-      <AdminBody className="flex flex-col gap-4">
-        {teams.map((team) => (
-          <div key={team.id} className="flex flex-col gap-2">
-            <TeamEditor raceId={raceId} team={team} />
-            <TeamMembersEditor team={team} members={team.members} />
-          </div>
-        ))}
+      <AdminBody size="wide" className="flex flex-col gap-4">
+        {/* הרכבת הקבוצות היא עבודת שולחן: במחשב שתי קבוצות זו לצד זו
+            חוסכות את הגלילה הארוכה בין ההרכבים */}
+        <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:items-start">
+          {teams.map((team) => (
+            <div key={team.id} className="flex flex-col gap-2">
+              <TeamEditor raceId={raceId} team={team} />
+              <TeamMembersEditor team={team} members={team.members} />
+            </div>
+          ))}
+        </div>
 
         <Card className="text-sm text-muted">
           קוד הקבוצה הוא מה שהמשתתפים מזינים אחרי קוד המשחק. את ההרכב מרכיב
@@ -40,8 +45,10 @@ export default async function AdminTeamsPage(
           קטנים) מתווסף ידנית להרכב.
         </Card>
 
-        <h2 className="font-display text-h2">קבוצה חדשה</h2>
-        <TeamEditor raceId={raceId} />
+        <div className="flex flex-col gap-4 md:max-w-xl">
+          <h2 className="font-display text-h2">קבוצה חדשה</h2>
+          <TeamEditor raceId={raceId} />
+        </div>
       </AdminBody>
     </main>
   );
