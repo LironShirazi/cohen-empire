@@ -4,6 +4,7 @@ import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
 import { DistanceToggle } from "@/components/admin/distance-toggle";
 import { JoinRequests } from "@/components/admin/join-requests";
 import { RaceAdmins } from "@/components/admin/race-admins";
+import { OwnerRaceTools } from "@/components/admin/owner-race-tools";
 import { RaceControls } from "@/components/admin/race-controls";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import {
   getPendingRequests,
   getRace,
   getRaceAdminProfiles,
+  getProfile,
   getRaceStations,
   getRaceTeams,
   getUser,
@@ -31,12 +33,13 @@ export default async function RaceDashboardPage(
   const race = await getRace(raceId);
   if (!race) notFound();
 
-  const [requests, teams, stations, admins, profiles] = await Promise.all([
+  const [requests, teams, stations, admins, profiles, me] = await Promise.all([
     getPendingRequests(raceId),
     getRaceTeams(raceId),
     getRaceStations(raceId),
     getRaceAdminProfiles(raceId),
     getAllProfiles(),
+    getProfile(),
   ]);
 
   const participants = teams.reduce(
@@ -51,73 +54,92 @@ export default async function RaceDashboardPage(
         back="/admin"
         meta={raceStatusLabel[race.status]}
         status={race.status}
+        size="wide"
       />
 
-      <AdminBody>
-        {/* קוד המשחק על הדגל הצהוב (סקיצה 3a) — הוא מוכתב בקול
+      {/* במחשב נייד (וכך המנהל התורן מכין את המירוץ) הלוח נפרס לשתי
+          עמודות: מימין מה שמסתכלים עליו — הקוד, המספרים והניווט;
+          משמאל מה שעושים — אישורים, מינויים והכפתורים הגדולים.
+          בנייד זו נשארת עמודה אחת באותו סדר. */}
+      <AdminBody size="wide" className="md:grid md:grid-cols-2 md:items-start">
+        <div className="flex flex-col gap-3.5">
+          {/* קוד המשחק על הדגל הצהוב (סקיצה 3a) — הוא מוכתב בקול
             לחדר מלא אנשים, ולכן הוא האלמנט הכי גדול במסך */}
-        <div className="flag rounded-card px-4.5 py-4 text-center">
-          <p className="text-[13px] font-extrabold text-ink opacity-70">
-            קוד המשחק לשיתוף
-          </p>
-          <p
-            dir="ltr"
-            className="font-display text-[50px] leading-[1.1] tracking-[7px] text-ink"
-          >
-            {race.game_code}
-          </p>
-          <p className="mt-1 text-[13px] text-ink opacity-70">
-            המשתתפים מזינים אותו במסך הכניסה
-          </p>
+          <div className="flag rounded-card px-4.5 py-4 text-center">
+            <p className="text-[13px] font-extrabold text-ink opacity-70">
+              קוד המשחק לשיתוף
+            </p>
+            <p
+              dir="ltr"
+              className="font-display text-[50px] leading-[1.1] tracking-[7px] text-ink"
+            >
+              {race.game_code}
+            </p>
+            <p className="mt-1 text-[13px] text-ink opacity-70">
+              המשתתפים מזינים אותו במסך הכניסה
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <Stat value={teams.length} label="קבוצות" />
+            <Stat value={participants} label="משתתפים" />
+            <Stat value={stations.length} label="תחנות" />
+            <Stat
+              value={requests.length}
+              label="ממתינים לאישור"
+              highlight={requests.length > 0}
+            />
+          </div>
+
+          <Link href={`/admin/${raceId}/live`}>
+            <Button size="lg" className="w-full">
+              🔴 מהלך המירוץ (Live)
+            </Button>
+          </Link>
+
+          <div className="flex gap-2.5">
+            <Link href={`/admin/${raceId}/stations`} className="flex-1">
+              <Button variant="navy" className="w-full">
+                📍 תחנות
+              </Button>
+            </Link>
+            <Link href={`/admin/${raceId}/teams`} className="flex-1">
+              <Button variant="navy" className="w-full">
+                👥 קבוצות
+              </Button>
+            </Link>
+          </div>
+
+          <Link href={`/admin/${raceId}/chat`}>
+            <Button variant="secondary" className="w-full">
+              💬 צ׳אט עם הקבוצות
+            </Button>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          <Stat value={teams.length} label="קבוצות" />
-          <Stat value={participants} label="משתתפים" />
-          <Stat value={stations.length} label="תחנות" />
-          <Stat
-            value={requests.length}
-            label="ממתינים לאישור"
-            highlight={requests.length > 0}
+        <div className="flex flex-col gap-3.5">
+          <JoinRequests requests={requests} />
+
+          <DistanceToggle raceId={raceId} showDistance={race.show_distance} />
+
+          <RaceAdmins raceId={raceId} admins={admins} candidates={profiles} />
+
+          <RaceControls
+            raceId={raceId}
+            status={race.status}
+            winnerDeclared={race.winner_declared_at !== null}
           />
+
+          {/* חריגות מהזרימה — הוצאה מארכיון ומחיקה (0019). למנהל-על
+              בלבד, ולכן גם המסך לא מרנדר אותן לאחרים */}
+          {me?.is_owner ? (
+            <OwnerRaceTools
+              raceId={raceId}
+              raceName={race.name}
+              status={race.status}
+            />
+          ) : null}
         </div>
-
-        <Link href={`/admin/${raceId}/live`}>
-          <Button size="lg" className="w-full">
-            🔴 מהלך המירוץ (Live)
-          </Button>
-        </Link>
-
-        <div className="flex gap-2.5">
-          <Link href={`/admin/${raceId}/stations`} className="flex-1">
-            <Button variant="navy" className="w-full">
-              📍 תחנות
-            </Button>
-          </Link>
-          <Link href={`/admin/${raceId}/teams`} className="flex-1">
-            <Button variant="navy" className="w-full">
-              👥 קבוצות
-            </Button>
-          </Link>
-        </div>
-
-        <Link href={`/admin/${raceId}/chat`}>
-          <Button variant="secondary" className="w-full">
-            💬 צ׳אט עם הקבוצות
-          </Button>
-        </Link>
-
-        <JoinRequests requests={requests} />
-
-        <DistanceToggle raceId={raceId} showDistance={race.show_distance} />
-
-        <RaceAdmins raceId={raceId} admins={admins} candidates={profiles} />
-
-        <RaceControls
-          raceId={raceId}
-          status={race.status}
-          winnerDeclared={race.winner_declared_at !== null}
-        />
       </AdminBody>
     </main>
   );

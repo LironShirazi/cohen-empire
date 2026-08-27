@@ -13,7 +13,6 @@ import type {
   Quote,
   Race,
   RaceResultRow,
-  RaceStatus,
   Station,
   Team,
   TeamLocation,
@@ -157,12 +156,46 @@ export async function getMyJoinRequest(): Promise<
   return data as (JoinRequest & { team: Team; race: Race }) | null;
 }
 
-/** המירוצים שאני מנהל תורן שלהם */
+/**
+ * האם המשתמש הנוכחי הוא מנהל-על.
+ *
+ * ⚠️ **תשובה למסך בלבד.** האכיפה היא `public.is_owner()` בשרת (0002),
+ * ומאז 0018 היא גם מה שהופך מנהל-על למנהל תורן של כל מירוץ. כאן זה
+ * רק כדי לצייר את המסך הנכון — מי שיעקוף ייתקל ב-RLS.
+ */
+async function amOwner(): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) return false;
+  const { data } = await supabase
+    .from("profiles")
+    .select("is_owner")
+    .eq("id", auth.user.id)
+    .maybeSingle();
+  return (data as { is_owner: boolean } | null)?.is_owner === true;
+}
+
+/**
+ * המירוצים שאני מנהל: מה שמוניתי אליו כתורן — **ולמנהל-על, הכל**.
+ *
+ * מאז 0018 מנהל-על הוא מנהל תורן של כל מירוץ בשרת (`is_race_admin`),
+ * ולכן רשימה שמסתמכת על `race_admins` בלבד הייתה מסתירה ממנו מירוצים
+ * שהוא בפועל רשאי לנהל — ומראה לו "אתם לא מנהלים של אף מירוץ".
+ */
 export async function getMyAdminRaces(): Promise<Race[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return [];
+
+  if (await amOwner()) {
+    const { data } = await supabase
+      .from("races")
+      .select("*")
+      .order("year", { ascending: false });
+    return (data ?? []) as Race[];
+  }
 
   const { data } = await supabase
     .from("race_admins")
@@ -199,18 +232,28 @@ export async function getAllProfiles(): Promise<Profile[]> {
   return (data ?? []) as Profile[];
 }
 
+/**
+ * האם מותר לי לנהל את המירוץ הזה — השער של כל מסכי `/admin/[raceId]`.
+ *
+ * שני מקורות, כמו ב-`public.is_race_admin` (0018): מינוי כמנהל תורן,
+ * או היותי מנהל-על. השאילתות רצות במקביל כי רובן חוזרות ריקות.
+ */
 export async function isRaceAdmin(raceId: string): Promise<boolean> {
   if (!isSupabaseConfigured) return false;
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return false;
-  const { data } = await supabase
-    .from("race_admins")
-    .select("race_id")
-    .eq("race_id", raceId)
-    .eq("user_id", auth.user.id)
-    .maybeSingle();
-  return Boolean(data);
+
+  const [duty, owner] = await Promise.all([
+    supabase
+      .from("race_admins")
+      .select("race_id")
+      .eq("race_id", raceId)
+      .eq("user_id", auth.user.id)
+      .maybeSingle(),
+    amOwner(),
+  ]);
+  return Boolean(duty.data) || owner;
 }
 
 export type TeamWithMembers = Team & { members: TeamMember[] };
@@ -512,15 +555,25 @@ export async function getTeamMessages(teamId: string): Promise<ChatMessage[]> {
   return ((data ?? []) as unknown as ChatMessage[]).reverse();
 }
 
-/** מזהי המנהלים התורנים של המירוץ — הצ'אט מסמן את ההודעות שלהם 📣 */
+/**
+ * מזהי מי שההודעות שלו מסומנות 📣 בצ'אט: המנהלים התורנים של המירוץ
+ * **וגם מנהלי-העל**, שמאז 0018 רשאים לשלוח הודעת רוחב בכל מירוץ.
+ * בלעדיהם הודעת רוחב של מנהל-על הייתה נראית כהודעה של משתתף מזדמן.
+ */
 export async function getRaceAdminIds(raceId: string): Promise<string[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("race_admins")
-    .select("user_id")
-    .eq("race_id", raceId);
-  return ((data ?? []) as { user_id: string }[]).map((row) => row.user_id);
+
+  const [duty, owners] = await Promise.all([
+    supabase.from("race_admins").select("user_id").eq("race_id", raceId),
+    supabase.from("profiles").select("id").eq("is_owner", true),
+  ]);
+
+  const ids = new Set(
+    ((duty.data ?? []) as { user_id: string }[]).map((row) => row.user_id)
+  );
+  for (const row of (owners.data ?? []) as { id: string }[]) ids.add(row.id);
+  return [...ids];
 }
 
 /**
@@ -538,7 +591,7 @@ export async function getMentionables(
   if (!isSupabaseConfigured) return [];
   const supabase = await createClient();
 
-  const [members, admins] = await Promise.all([
+  const [members, admins, owners] = await Promise.all([
     supabase
       .from("team_members")
       .select("user_id, profile:profiles(id, full_name, avatar_url)")
@@ -548,6 +601,12 @@ export async function getMentionables(
       .from("race_admins")
       .select("user_id, profile:profiles(id, full_name, avatar_url)")
       .eq("race_id", raceId),
+    // מנהל-על הוא מנהל תורן של כל מירוץ (0018), ולכן גם נמען אזכור
+    // חוקי בכל צ'אט — הטריגר מוכן ליצור לו התראה
+    supabase
+      .from("profiles")
+      .select("id, full_name, avatar_url")
+      .eq("is_owner", true),
   ]);
 
   type Row = {
@@ -577,6 +636,13 @@ export async function getMentionables(
 
   add(members.data as unknown as Row[] | null, false);
   add(admins.data as unknown as Row[] | null, true);
+  // כאן השורה **היא** הפרופיל (בשתי הקודמות הוא embed), ולכן עטיפה
+  add(
+    ((owners.data ?? []) as unknown as Row["profile"][]).map((profile) => ({
+      profile,
+    })),
+    true
+  );
 
   return [...byId.values()].sort((a, b) => {
     if (a.is_admin !== b.is_admin) return a.is_admin ? 1 : -1;
@@ -727,13 +793,9 @@ export async function getAlbumPhotos(
   }));
 }
 
-export const raceStatusLabel: Record<RaceStatus, string> = {
-  draft: "טיוטה",
-  open: "פתוח להצטרפות",
-  live: "רץ עכשיו",
-  finished: "הסתיים",
-  archived: "בארכיון",
-};
+// עבר ל-`lib/race-status.ts` (רכיבי לקוח לא יכולים לייבא מכאן),
+// ומיוצא מחדש כדי שהקוראים בצד השרת לא ישתנו
+export { raceStatusLabel } from "@/lib/race-status";
 
 /**
  * משפט אקראי של סבא או סבתא, או `null` כשעוד לא הוזנו משפטים.

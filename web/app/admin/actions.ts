@@ -15,7 +15,7 @@ export type AdminFormState = { error?: string };
 
 export async function createRaceAction(
   _prev: AdminFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AdminFormState> {
   const year = Number(formData.get("year"));
   const name = String(formData.get("name") ?? "").trim();
@@ -84,7 +84,7 @@ export async function addRaceAdminAction(raceId: string, userId: string) {
 
 export async function decideJoinRequestAction(
   requestId: string,
-  approve: boolean
+  approve: boolean,
 ) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("decide_join_request", {
@@ -101,7 +101,7 @@ export async function decideJoinRequestAction(
 export async function saveTeamAction(
   raceId: string,
   _prev: AdminFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AdminFormState> {
   const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
@@ -110,14 +110,21 @@ export async function saveTeamAction(
   const joinCode = String(formData.get("join_code") ?? "").trim();
 
   if (!name) return { error: "צריך שם לקבוצה" };
-  if (!/^\d{1,2}$/.test(joinCode)) return { error: "קוד קבוצה הוא ספרה או שתיים" };
+  if (!/^\d{1,2}$/.test(joinCode))
+    return { error: "קוד קבוצה הוא ספרה או שתיים" };
   // הבורר ב-TeamEditor שולח hidden input, ולכן זו לא הגבלה על המשתמש
   // אלא על מה שנשמר: הצבע מגיע משדה טקסט חופשי שכל מנהל תורן יכול
   // לכתוב אליו ישירות, והוא נצרך אחר כך במפה החיה
   if (!/^#[0-9a-fA-F]{6}$/.test(color)) return { error: "צבע הקבוצה לא תקין" };
 
   const supabase = await createClient();
-  const values = { race_id: raceId, name, color, animal: animal || null, join_code: joinCode };
+  const values = {
+    race_id: raceId,
+    name,
+    color,
+    animal: animal || null,
+    join_code: joinCode,
+  };
 
   const { error } = id
     ? await supabase.from("teams").update(values).eq("id", id)
@@ -125,7 +132,10 @@ export async function saveTeamAction(
 
   if (error) {
     return {
-      error: error.code === "23505" ? "קוד הקבוצה כבר תפוס במירוץ הזה" : error.message,
+      error:
+        error.code === "23505"
+          ? "קוד הקבוצה כבר תפוס במירוץ הזה"
+          : error.message,
     };
   }
 
@@ -149,7 +159,7 @@ export async function deleteTeamAction(teamId: string) {
 export async function addManualMemberAction(
   teamId: string,
   _prev: AdminFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AdminFormState> {
   const displayName = String(formData.get("display_name") ?? "").trim();
   const birthYearRaw = String(formData.get("birth_year") ?? "").trim();
@@ -197,7 +207,7 @@ export async function removeManualMemberAction(memberId: string) {
 export async function saveStationAction(
   raceId: string,
   _prev: AdminFormState,
-  formData: FormData
+  formData: FormData,
 ): Promise<AdminFormState> {
   const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
@@ -208,7 +218,9 @@ export async function saveStationAction(
   const lat = Number(formData.get("lat"));
   const lng = Number(formData.get("lng"));
   const radius = Number(formData.get("radius_m"));
-  const completionType = String(formData.get("completion_type") ?? "admin_approve");
+  const completionType = String(
+    formData.get("completion_type") ?? "admin_approve",
+  );
   const secretCode = String(formData.get("secret_code") ?? "").trim();
 
   if (!name) return { error: "צריך שם לתחנה" };
@@ -252,14 +264,20 @@ export async function saveStationAction(
 
 export async function deleteStationAction(stationId: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from("stations").delete().eq("id", stationId);
+  const { error } = await supabase
+    .from("stations")
+    .delete()
+    .eq("id", stationId);
   if (error) return { error: error.message };
   refresh();
   return {};
 }
 
 /** סדר תחנות: זהה לכולם או אקראי לכל קבוצה (docs/01 §4) */
-export async function assignStationOrderAction(raceId: string, mode: "same" | "random") {
+export async function assignStationOrderAction(
+  raceId: string,
+  mode: "same" | "random",
+) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("assign_station_order", {
     p_race_id: raceId,
@@ -272,7 +290,7 @@ export async function assignStationOrderAction(raceId: string, mode: "same" | "r
 
 export async function setTeamStationOrderAction(
   teamId: string,
-  stationIds: string[]
+  stationIds: string[],
 ) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("set_team_station_order", {
@@ -286,7 +304,10 @@ export async function setTeamStationOrderAction(
 
 // ── ניהול חי ─────────────────────────────────────────────────
 
-export async function adminOpenStationAction(teamId: string, stationId: string) {
+export async function adminOpenStationAction(
+  teamId: string,
+  stationId: string,
+) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("admin_open_station", {
     p_team_id: teamId,
@@ -300,7 +321,7 @@ export async function adminOpenStationAction(teamId: string, stationId: string) 
 export async function adminDecideStationAction(
   teamId: string,
   stationId: string,
-  approve: boolean
+  approve: boolean,
 ) {
   const supabase = await createClient();
   const { error } = await supabase.rpc("admin_decide_station", {
@@ -321,7 +342,7 @@ export async function adminDecideStationAction(
 export async function broadcastAction(
   raceId: string,
   body: string,
-  teamId: string | null
+  teamId: string | null,
 ): Promise<{ error?: string; teams?: number }> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("admin_broadcast", {
@@ -342,7 +363,7 @@ export async function broadcastAction(
  * נפלה — `get_race_results` ו-`get_team_state` מסננים לפי מי ששואל.
  */
 export async function declareWinnerAction(
-  raceId: string
+  raceId: string,
 ): Promise<{ error?: string; winner?: FinishResult["winner"] }> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("declare_winner", {
@@ -360,10 +381,12 @@ export async function declareWinnerAction(
  * מי שלא הכריז קודם — הפונקציה מכריזה בשבילו.
  */
 export async function finishRaceAction(
-  raceId: string
+  raceId: string,
 ): Promise<{ error?: string; winner?: FinishResult["winner"] }> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("finish_race", { p_race_id: raceId });
+  const { data, error } = await supabase.rpc("finish_race", {
+    p_race_id: raceId,
+  });
   if (error) return { error: error.message };
   refresh();
   return { winner: (data as FinishResult).winner };
@@ -375,4 +398,44 @@ export async function archiveRaceAction(raceId: string) {
   if (error) return { error: error.message };
   refresh();
   return {};
+}
+
+// ── כלים של מנהל-על (0019) ───────────────────────────────────
+
+/**
+ * שינוי סטטוס בכל כיוון — **כולל הוצאה מארכיון**.
+ *
+ * ⚠️ לא כפילות של `setRaceStatusAction`: זו עוברת ב-`set_race_status`
+ * (0002) שמסרבת לארכב ומסתמכת על `is_race_admin`, כלומר היא לא יכולה
+ * לגעת במירוץ מארכב בכלל. ה-RPC כאן הוא `is_owner()` בלבד, וזו הדרך
+ * היחידה לתקן ארכוב בטעות (docs/02 §3.14).
+ */
+export async function ownerSetRaceStatusAction(
+  raceId: string,
+  status: RaceStatus,
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("owner_set_race_status", {
+    p_race_id: raceId,
+    p_status: status,
+  });
+  if (error) return { error: error.message };
+  refresh();
+  return {};
+}
+
+/**
+ * מחיקת מירוץ — למירוץ שנוצר בטעות או לבדיקה.
+ *
+ * כל מה שתלוי בו נמחק ב-cascade, ושורת היכל התהילה של אותה שנה
+ * דווקא **שורדת** (`on delete set null`) — ראו 0019. אחרי המחיקה
+ * אין לאן לחזור במסך הזה, ולכן ניווט לרשימת המירוצים.
+ */
+export async function ownerDeleteRaceAction(raceId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("owner_delete_race", {
+    p_race_id: raceId,
+  });
+  if (error) return { error: error.message };
+  redirect("/admin");
 }

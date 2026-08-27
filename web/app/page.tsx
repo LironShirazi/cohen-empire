@@ -82,13 +82,16 @@ export default async function Home() {
         }
       />
 
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-3.5 px-5 pt-4.5 pb-2">
+      {/* דף הבית הוא המסך שגם נפתח ממחשב (בן משפחה שמחפש את הגלריה
+          או את העץ), ולכן העמודה מתרחבת — אבל הכפתורים הגדולים
+          נשארים ברוחב כף יד גם שם */}
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-3.5 px-5 pt-4.5 pb-2 md:max-w-3xl">
         <QuoteCard quote={quote} variant="feature" />
 
         {/* מירוץ שהסתיים — ההכרזה היא הדבר הראשון שרוצים לראות,
             גם כמה ימים אחרי (מסך הזוכים הוא ראוט קבוע, לא רגע) */}
         {user && race?.status === "finished" ? (
-          <Link href="/winners">
+          <Link href="/winners" className="w-full self-center md:max-w-sm">
             <Button variant="accent" size="lg" className="w-full">
               🏆 מסך הזוכים
             </Button>
@@ -98,21 +101,33 @@ export default async function Home() {
         {/* קבועים בדף הבית ללא קשר למהלך המשחק (docs/04 §1).
             הסקיצה מראה שלושה אריחים ומשמיטה את העץ; docs/04 §1 מונה
             אותו במפורש, והוא מאוחר יותר — ולכן הוא כאן. */}
-        <div className="flex gap-2.5">
-          <Tile href="/hall-of-fame" icon="🏆" label="היכל התהילה" />
-          <Tile href="/gallery" icon="📸" label="גלריה" />
-          <Tile href="/family-tree" icon="🌳" label="העץ המשפחתי" />
+        {/* ⚠️ `md:contents` ולא עוד עטיפה: בנייד אלה שתי שורות (שלושה
+            אריחים ואז שניים), ובמחשב שתי השורות **נעלמות** והאריחים
+            הופכים לפריטים של אותו grid — שורה אחת. בלי זה השורה
+            השנייה הייתה נמתחת לשני אריחי ענק.
+            מספר העמודות נגזר מהמשתמש ולא קבוע: למי שלא מחובר יש
+            שלושה אריחים, ו-grid של חמישה היה משאיר לו חור */}
+        <div
+          className={`flex flex-col gap-2.5 md:grid ${
+            user ? "md:grid-cols-5" : "md:grid-cols-3"
+          }`}
+        >
+          <div className="flex gap-2.5 md:contents">
+            <Tile href="/hall-of-fame" icon="🏆" label="היכל התהילה" />
+            <Tile href="/gallery" icon="📸" label="גלריה" />
+            <Tile href="/family-tree" icon="🌳" label="העץ המשפחתי" />
+          </div>
+
+          {user ? (
+            <div className="flex gap-2.5 md:contents">
+              <Tile href="/leaderboard" icon="🏅" label="לוח מובילים" />
+              <Tile href="/teams" icon="👥" label="הקבוצות" />
+            </div>
+          ) : null}
         </div>
 
-        {user ? (
-          <div className="flex gap-2.5">
-            <Tile href="/leaderboard" icon="🏅" label="לוח מובילים" />
-            <Tile href="/teams" icon="👥" label="הקבוצות" />
-          </div>
-        ) : null}
-
         {showAdminLink ? (
-          <Link href="/admin">
+          <Link href="/admin" className="w-full self-center md:max-w-sm">
             <Button variant="quiet" className="w-full">
               🛠️ ניהול המירוץ
             </Button>
