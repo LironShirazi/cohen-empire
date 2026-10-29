@@ -401,4 +401,13 @@ export type AppStats = {
     last_seen: string;
   }[];
   anonymous_visitors: number;
+  /** 50 המכשירים האחרונים שלא התחברו (0021). `pages` לפי סדר הביקור */
+  anonymous?: {
+    device: string;
+    views: number;
+    days_active: number;
+    first_seen: string;
+    last_seen: string;
+    pages: string[];
+  }[];
 };
