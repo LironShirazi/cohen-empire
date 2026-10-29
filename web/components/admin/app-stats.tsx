@@ -49,6 +49,8 @@ function seenLabel(ts: string, today: string) {
 export function AppStatsView({ stats }: { stats: AppStats }) {
   const { summary } = stats;
   const today = stats.daily.at(-1)?.day ?? "";
+  // חסר עד שמריצים את 0021 — אסור שהמסך ייפול בפער בין דיפלוי למיגרציה
+  const anonymous = stats.anonymous ?? [];
 
   return (
     <>
@@ -153,6 +155,40 @@ export function AppStatsView({ stats }: { stats: AppStats }) {
           )}
         </Card>
       </div>
+
+      <Card className="flex flex-col gap-3">
+        <h2 className="font-display text-h2">ביקורים בלי התחברות</h2>
+        {anonymous.length === 0 ? (
+          <p className="text-small text-muted">
+            כל מי שנכנס בטווח הזה גם התחבר.
+          </p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-line">
+            {anonymous.map((visit) => (
+              <li key={visit.device} className="flex gap-3 py-2.5">
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold">
+                    מכשיר <span dir="ltr">#{visit.device}</span>
+                  </p>
+                  <p className="text-small text-muted">
+                    {visit.views} כניסות ·{" "}
+                    {visit.pages.map((path) => pageNames[path] ?? path).join(" ← ")}
+                  </p>
+                </div>
+                <span className="shrink-0 text-small text-muted">
+                  {seenLabel(visit.last_seen, today)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {stats.anonymous_visitors > anonymous.length ? (
+          <p className="text-small text-muted">
+            מוצגים {anonymous.length} האחרונים מתוך{" "}
+            {stats.anonymous_visitors}
+          </p>
+        ) : null}
+      </Card>
     </>
   );
 }
