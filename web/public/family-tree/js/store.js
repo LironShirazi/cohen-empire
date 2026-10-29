@@ -403,19 +403,44 @@
     return p;
   }
 
-  // הוספת אבא ו/או אמא לעלה. fatherData/motherData: אובייקט פרטים או null.
+  // צאצאים של עלה (דם בלבד, בלי בני זוג). הורה שנבחר מהעץ לא יכול
+  // להיות אחד מאלה: לולאה בהורות שוברת את שיוך הדורות ב-layout.js
+  function descendantsOf(id) {
+    const out = new Set();
+    const stack = [id];
+    while (stack.length) {
+      const cur = stack.pop();
+      for (const c of childrenOf(cur)) {
+        if (!out.has(c.id)) { out.add(c.id); stack.push(c.id); }
+      }
+    }
+    return out;
+  }
+
+  // הוספת אבא ו/או אמא לעלה. fatherData/motherData: אובייקט פרטים, { id }
+  // של עלה קיים, או null.
+  //
+  // ⚠️ האפשרות לבחור הורה **קיים** היא מה שמונע עץ מקביל: עד שהייתה,
+  // הטופס תמיד יצר אדם חדש, ומי שהוסיף את עצמו בלי הורים ואז "הוסיף"
+  // את אמא שלו — קיבל עותק שני שלה בלי קשר לשאר המשפחה (docs/06 §4).
   function addParents(childId, fatherData, motherData) {
     const child = get(childId);
     if (!child) return;
     let father = get(child.fatherId);
     let mother = get(child.motherId);
+    const blocked = descendantsOf(childId);
+    blocked.add(childId);
+    const pick = (data) => {
+      const p = data && data.id ? get(data.id) : null;
+      return p && !blocked.has(p.id) ? p : null;
+    };
     if (!father && fatherData) {
-      father = createPerson({ ...fatherData, gender: 'm' });
-      child.fatherId = father.id;
+      father = fatherData.id ? pick(fatherData) : createPerson({ ...fatherData, gender: 'm' });
+      if (father) child.fatherId = father.id;
     }
     if (!mother && motherData) {
-      mother = createPerson({ ...motherData, gender: 'f' });
-      child.motherId = mother.id;
+      mother = motherData.id ? pick(motherData) : createPerson({ ...motherData, gender: 'f' });
+      if (mother) child.motherId = mother.id;
     }
     // קישור זוגיות בין ההורים אם שניהם קיימים ופנויים
     if (father && mother) {
@@ -571,7 +596,7 @@
   };
 
   NS.store = {
-    load, get, all, childrenOf, parentsOf, partnersOf,
+    load, get, all, childrenOf, parentsOf, partnersOf, descendantsOf,
     createPerson: (d) => { const p = createPerson(d); save(); return p; },
     updatePerson, addParents, addChild, addPartner,
     canDelete, deletePerson, resetToSeed,

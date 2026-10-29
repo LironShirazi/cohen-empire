@@ -613,6 +613,19 @@ form > .hint { display: block; margin-top: 4px; }
   margin-bottom: 12px;
 }
 
+/* אזהרת כפילות (ui.js dupGuard) — צהוב ולא אדום: זו שאלה, לא שגיאה */
+.dup-warn {
+  background: var(--yellow-soft);
+  border: 1px solid var(--yellow-deep);
+  border-radius: var(--ft-radius-sm);
+  padding: 12px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.dup-warn ul { margin: 6px 0; padding-inline-start: 18px; list-style: disc; }
+.dup-warn p { margin-top: 6px; font-weight: 600; }
+
 .self-tabs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
 .radio { display: flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
 .radio input { accent-color: var(--brand); width: 20px; height: 20px; }
