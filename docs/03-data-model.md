@@ -177,6 +177,19 @@ erDiagram
   `photo_url`, `father_id`, `mother_id`, `partner_id`, `profile_id?` (קישור "זה אני"),
   `is_root`, `sort_order` — פירוט מלא ב-[06 — העץ המשפחתי](06-family-tree.md)
 
+### `page_views` — אנליטיקה (0020)
+
+| שדה | סוג | הערות |
+|---|---|---|
+| id | bigint identity | |
+| user_id | uuid FK nullable | נקבע מ-`auth.uid()` בשרת; null = מבקר לא מחובר |
+| visitor_id | uuid | מזהה מכשיר אנונימי מ-localStorage |
+| path | text | מנורמל בקליינט — מזהי uuid הופכים ל-`[id]` |
+| created_at | timestamptz | |
+
+**אין שום מדיניות RLS ושום grant** — הכתיבה דרך `log_page_view` (גם anon),
+והקריאה דרך `get_app_stats`, שהיא **מנהל-על בלבד** ומחזירה סיכום ולא שורות.
+
 ## 3. מדיניות RLS — עקרונות
 
 ```sql

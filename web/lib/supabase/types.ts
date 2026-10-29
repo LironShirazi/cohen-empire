@@ -371,3 +371,34 @@ export type FinishResult = {
     members: string[];
   } | null;
 };
+
+/**
+ * מה שמחזירה get_app_stats (0020) — למנהל-על בלבד.
+ *
+ * ⚠️ `day`, `first_seen` ו-`last_seen` הם **זמן ירושלים בלי אזור זמן**
+ * (`2026-10-29T15:45:09`). השרת כבר המיר — לא להעביר ב-`new Date()`
+ * שיפרש אותם כזמן מקומי של מי שמריץ.
+ */
+export type AppStats = {
+  days: number;
+  summary: {
+    views: number;
+    visitors: number;
+    users: number;
+    today_views: number;
+    today_visitors: number;
+  };
+  daily: { day: string; views: number; visitors: number }[];
+  hourly: { hour: number; views: number }[];
+  pages: { path: string; views: number; visitors: number }[];
+  people: {
+    user_id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    views: number;
+    days_active: number;
+    first_seen: string;
+    last_seen: string;
+  }[];
+  anonymous_visitors: number;
+};

@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Rubik, Secular_One } from "next/font/google";
+import Script from "next/script";
+import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 import { ConfirmProvider } from "@/components/ui/confirm";
 import "./globals.css";
@@ -74,6 +76,14 @@ export default function RootLayout({
         <ConfirmProvider>
           <NotificationCenter>{children}</NotificationCenter>
         </ConfirmProvider>
+
+        {/* אנליטיקה בשתי שכבות (CLAUDE.md §17): מי נכנס — בטבלה שלנו;
+            כמה, מאיזה מכשיר ומאיזו מדינה — ב-Vercel Web Analytics.
+            הסקריפט של Vercel מוגש רק מהדיפלוי ולכן לא נטען מקומית */}
+        <PageViewTracker />
+        {process.env.VERCEL ? (
+          <Script src="/_vercel/insights/script.js" strategy="afterInteractive" />
+        ) : null}
       </body>
     </html>
   );
