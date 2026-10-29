@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Mentionable } from "@/lib/mentions";
 import type {
+  AppStats,
   ChatMessage,
   GalleryAlbum,
   GalleryPhoto,
@@ -848,4 +849,25 @@ export async function getHallOfFame(): Promise<HallOfFameRow[]> {
     .select("*")
     .order("year", { ascending: false });
   return (data ?? []) as HallOfFameRow[];
+}
+
+/**
+ * הסטטיסטיקה של `/admin/stats` (0020). ה-RPC עצמה זורקת למי שאינו
+ * מנהל-על — כאן זה הופך ל-null והמסך מציג הודעת שגיאה.
+ */
+export async function getAppStats(
+  days: number,
+  includeOwners: boolean
+): Promise<AppStats | null> {
+  if (!isSupabaseConfigured) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("get_app_stats", {
+    p_days: days,
+    p_include_owners: includeOwners,
+  });
+  if (error) {
+    console.error("get_app_stats", error.message);
+    return null;
+  }
+  return data as AppStats;
 }

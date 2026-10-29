@@ -63,6 +63,16 @@ export default async function AdminHomePage() {
               </Card>
             </Link>
 
+            <Link href="/admin/stats">
+              <Card className="flex items-center gap-3">
+                <span className="text-2xl">📊</span>
+                <div>
+                  <p className="font-display text-xl">סטטיסטיקות</p>
+                  <p className="text-sm text-muted">מי נכנס, מתי ולאן</p>
+                </div>
+              </Card>
+            </Link>
+
             <Card className="flex flex-col gap-4">
               <h2 className="font-display text-h2">מירוץ חדש</h2>
               <CreateRaceForm />
