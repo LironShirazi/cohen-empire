@@ -317,6 +317,68 @@
     };
   }
 
+  /* ---------- אזהרת כפילות ----------
+     העץ משותף, ומי שלא מוצא את עצמו (או את אמא שלו) מוסיף עלה חדש —
+     וכך נוצר עץ מקביל: עותק שני של אדם שכבר קיים, בלי קשר למשפחה.
+     זו אזהרה ולא חסימה, כי שני בני דודים בשם "יעל" זה מצב אמיתי.
+     ההשוואה לפי השם הפרטי (בלי "סבא"/"סבתא" ובלי גרשיים), כי
+     "יעל" ו"יעל חדד" הם בדיוק המקרה שצריך לתפוס. */
+  function nameKey(name) {
+    const words = String(name || '')
+      .replace(/[׳'"״`]/g, '')
+      .trim()
+      .split(/\s+/)
+      .filter((w) => w && w !== 'סבא' && w !== 'סבתא');
+    return words[0] || '';
+  }
+
+  function findSimilar(names) {
+    const keys = new Set(names.map(nameKey).filter(Boolean));
+    if (!keys.size) return [];
+    return NS.store.all().filter((q) => keys.has(nameKey(q.name)));
+  }
+
+  // "יעל (1959) — בת של סבא אורגני ראובן וסבתא טראקי": מספיק כדי
+  // להבחין בין שתי יעל בלי לפתוח את הכרטיס
+  function describe(q) {
+    const parents = NS.store.parentsOf(q.id).map((x) => x.name);
+    const partner = NS.store.partnersOf(q.id)[0];
+    const child = q.gender === 'f' ? 'בת' : q.gender === 'm' ? 'בן' : 'ילד/ה';
+    let rel = '';
+    if (parents.length) rel = ` — ${child} של ${parents.join(' ו')}`;
+    else if (partner) rel = ` — בן/בת הזוג של ${partner.name}`;
+    const full = q.lastName ? `${q.name} ${q.lastName}` : q.name;
+    return `${full}${q.birthYear ? ' (' + q.birthYear + ')' : ''}${rel}`;
+  }
+
+  /**
+   * בדיקה לפני שליחה. מחזירה true אם אפשר להמשיך. בהקשה הראשונה עם
+   * התאמות — מציגה את האזהרה **בתוך הטופס** (כדי שמה שהוקלד לא יאבד)
+   * ומחזירה false; הקשה שנייה על אותן התאמות עוברת.
+   */
+  function dupGuard(form, hint) {
+    let acked = '';
+    return function (names) {
+      const hits = findSimilar(names);
+      const key = hits.map((q) => q.id).sort().join(',');
+      if (!hits.length || key === acked) return true;
+      acked = key;
+      let box = form.querySelector('.dup-warn');
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'dup-warn';
+        form.querySelector('.form-actions').before(box);
+      }
+      box.innerHTML = `
+        <strong>⚠️ כבר יש בעץ:</strong>
+        <ul>${hits.map((q) => `<li>${esc(describe(q))}</li>`).join('')}</ul>
+        <p>${esc(hint)}</p>`;
+      form.querySelector('[type=submit]').textContent = 'זה מישהו אחר — להוסיף בכל זאת';
+      box.scrollIntoView({ block: 'nearest' });
+      return false;
+    };
+  }
+
   /* ---------- מודאל כללי ---------- */
   function openModal(title, bodyHTML) {
     const modal = $('#modal');
@@ -494,37 +556,64 @@
     if (!p) return;
     const father = NS.store.get(p.fatherId);
     const mother = NS.store.get(p.motherId);
-    const section = (role, existing, prefix) =>
+    // מי שיכול להיות הורה: לא העלה עצמו ולא צאצא שלו (לולאה בהורות),
+    // ולא מהמגדר ההפוך. ממוין לפי שם — ברשימה של מאות, סדר ההוספה
+    // לא אומר כלום למי שמחפש את אמא שלו
+    const blocked = NS.store.descendantsOf(id);
+    blocked.add(id);
+    const candidates = (notGender) =>
+      NS.store.all()
+        .filter((q) => !blocked.has(q.id) && q.gender !== notGender)
+        .sort((a, b) => a.name.localeCompare(b.name, 'he'))
+        .map((q) => `<option value="${esc(q.id)}">${esc(describe(q))}</option>`)
+        .join('');
+    const section = (role, existing, prefix, notGender) =>
       existing
         ? `<div class="parent-col"><h4>${role}</h4><div class="exists">${chip(existing)}<span class="hint">כבר קיים בעץ</span></div></div>`
         : `<div class="parent-col"><h4>${role}</h4>
-             <div class="field"><label>שם</label><input type="text" id="${prefix}-name" maxlength="60" placeholder="השאירו ריק כדי לדלג"></div>
-             <div class="field"><label>שנת לידה</label><input type="number" id="${prefix}-year" min="1800" max="2200"></div>
+             <div class="field"><label>כבר בעץ?</label>
+               <select id="${prefix}-pick"><option value="">לא — להוסיף חדש</option>${candidates(notGender)}</select></div>
+             <div id="${prefix}-new">
+               <div class="field"><label>שם</label><input type="text" id="${prefix}-name" maxlength="60" placeholder="השאירו ריק כדי לדלג"></div>
+               <div class="field"><label>שנת לידה</label><input type="number" id="${prefix}-year" min="1800" max="2200"></div>
+             </div>
            </div>`;
     const box = openModal('הוספת הורים ל' + p.name, `
       <form novalidate id="f-parents">
         <div class="parents-grid">
-          ${section('אבא', father, 'fa')}
-          ${section('אמא', mother, 'mo')}
+          ${section('אבא', father, 'fa', 'f')}
+          ${section('אמא', mother, 'mo', 'm')}
         </div>
-        <p class="hint">אפשר להוסיף רק אחד מההורים — פרטים נוספים ותמונה אפשר להשלים אחר-כך בעריכת העלה.</p>
+        <p class="hint">אם ההורה כבר מופיע בעץ — בחרו אותו מהרשימה, אחרת ייווצר עותק שני שלו בלי קשר לשאר המשפחה. אפשר להוסיף רק אחד מההורים.</p>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">הוספה</button>
           <button type="button" class="btn btn-cancel" data-close>ביטול</button>
         </div>
       </form>`);
     wireChips(box);
-    box.querySelector('#f-parents').addEventListener('submit', (e) => {
+    ['fa', 'mo'].forEach((prefix) => {
+      const sel = box.querySelector(`#${prefix}-pick`);
+      if (sel) sel.addEventListener('change', () => {
+        box.querySelector(`#${prefix}-new`).hidden = !!sel.value;
+      });
+    });
+    const form = box.querySelector('#f-parents');
+    const guard = dupGuard(form, 'אם זה אותו אדם — בחרו אותו ברשימה "כבר בעץ?" למעלה.');
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const val = (sel) => { const el = box.querySelector(sel); return el ? el.value.trim() : ''; };
-      const fName = val('#fa-name'), mName = val('#mo-name');
-      if (!father && !mother && !fName && !mName) return toast('הזינו שם של לפחות הורה אחד');
-      if (father && !mName) return toast('הזינו את שם האמא');
-      if (mother && !fName) return toast('הזינו את שם האבא');
+      const fPick = val('#fa-pick'), mPick = val('#mo-pick');
+      const fName = fPick ? '' : val('#fa-name');
+      const mName = mPick ? '' : val('#mo-name');
+      const hasF = !!(fPick || fName), hasM = !!(mPick || mName);
+      if (!father && !mother && !hasF && !hasM) return toast('הזינו שם של לפחות הורה אחד');
+      if (father && !hasM) return toast('הזינו את שם האמא');
+      if (mother && !hasF) return toast('הזינו את שם האבא');
+      if (!guard([fName, mName].filter(Boolean))) return;
       NS.store.addParents(
         id,
-        fName ? { name: fName, birthYear: val('#fa-year') } : null,
-        mName ? { name: mName, birthYear: val('#mo-year') } : null
+        fPick ? { id: fPick } : fName ? { name: fName, birthYear: val('#fa-year') } : null,
+        mPick ? { id: mPick } : mName ? { name: mName, birthYear: val('#mo-year') } : null
       );
       closeModal();
       toast('ההורים נוספו לעץ 🌳');
@@ -558,7 +647,9 @@
     const otherSel = box.querySelector('#ch-other');
     const newBox = box.querySelector('#new-other');
     otherSel.addEventListener('change', () => { newBox.hidden = otherSel.value !== '__new__'; });
-    box.querySelector('#f-child').addEventListener('submit', (e) => {
+    const form = box.querySelector('#f-child');
+    const guard = dupGuard(form, 'אם זה אותו אדם — אל תוסיפו אותו שוב. אפשר לפתוח את העלה הקיים ולהוסיף לו הורים.');
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const data = readPersonFields(box, 'ch', photo);
       if (!data.name) return toast('חובה להזין שם');
@@ -570,6 +661,7 @@
       } else if (otherSel.value) {
         other = { id: otherSel.value };
       }
+      if (!guard([data.name, other && other.create ? other.create.name : ''].filter(Boolean))) return;
       const child = NS.store.addChild(id, data, other);
       closeModal();
       toast(data.name + ' נוסף/ה לעץ 🌱');
@@ -589,10 +681,13 @@
         </div>
       </form>`);
     const photo = wirePhotoField(box, 'pa-photo', null);
-    box.querySelector('#f-partner').addEventListener('submit', (e) => {
+    const form = box.querySelector('#f-partner');
+    const guard = dupGuard(form, 'אם זה אותו אדם — אל תוסיפו אותו שוב, כדי שלא יופיע בעץ פעמיים.');
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const data = readPersonFields(box, 'pa', photo);
       if (!data.name) return toast('חובה להזין שם');
+      if (!guard([data.name])) return;
       const partner = NS.store.addPartner(id, data);
       closeModal();
       toast('נוסף/ה לעץ ♥');
@@ -651,7 +746,9 @@
       box.querySelector('#self-new').hidden = mode !== 'new';
     };
     radios.forEach((r) => r.addEventListener('change', upd));
-    box.querySelector('#f-self').addEventListener('submit', (e) => {
+    const form = box.querySelector('#f-self');
+    const guard = dupGuard(form, 'אם זה את/ה — סמנו "אני כבר מופיע/ה בעץ" ובחרו את עצמכם מהרשימה.');
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const mode = box.querySelector('input[name=self-mode]:checked').value;
       if (mode === 'exists') {
@@ -665,6 +762,7 @@
       } else {
         const data = readPersonFields(box, 'se', photo);
         if (!data.name) return toast('חובה להזין שם');
+        if (!guard([data.name])) return;
         const person = NS.store.createPerson(data);
         const faId = box.querySelector('#se-father').value;
         const moId = box.querySelector('#se-mother').value;
