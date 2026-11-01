@@ -327,6 +327,7 @@
   padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
   z-index: 50;
   max-height: 62vh;
+  max-height: 62dvh;
   overflow-y: auto;
   animation: sheet-up 0.22s ease-out;
 }
@@ -334,7 +335,7 @@
 
 .sheet-grab { width: 44px; height: 4px; border-radius: 4px; background: var(--line); margin: 4px auto 10px; }
 .sheet-head { display: flex; align-items: center; gap: 12px; }
-.sheet-title { flex: 1; }
+.sheet-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .sheet-title h3 { font-size: 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .sheet-title p { font-size: 14px; color: var(--muted); }
 .me-tag {
@@ -490,7 +491,10 @@
   padding: 28px 22px;
   width: 100%;
   max-width: 420px;
+  /* `dvh` ולא רק `vh`: בנייד `100vh` הוא גובה המסך בלי סרגלי הדפדפן,
+     ולכן החלון יצא גבוה מהשטח הנראה וכפתורי התחתית נחתכו מחוץ למסך */
   max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
   overflow-y: auto;
   text-align: center;
   display: flex;
@@ -499,7 +503,7 @@
   gap: 8px;
 }
 .full-box .btn-close { position: absolute; top: 12px; inset-inline-start: 12px; }
-.full-box h2 { font-size: 26px; color: var(--brand); }
+.full-box h2 { font-size: 26px; color: var(--brand); max-width: 100%; overflow-wrap: anywhere; }
 .full-year { color: var(--muted); font-size: 15px; }
 .full-phone { font-size: 16px; }
 .full-phone a { color: var(--brand); font-weight: 700; text-decoration: none; }
@@ -518,7 +522,9 @@
   box-shadow: var(--ft-shadow-lg);
   width: 100%;
   max-width: 440px;
+  /* `dvh` — ראו ההערה ב-.full-box */
   max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
   overflow-y: auto;
 }
 .modal-head {
@@ -533,7 +539,7 @@
   background: var(--surface);
   z-index: 2;
 }
-.modal-head h3 { font-size: 19px; color: var(--ink); }
+.modal-head h3 { font-size: 19px; color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
 .modal-body { padding: 16px 18px 20px; }
 
 /* שדות — מקבילים ל-`components/ui/field.tsx` בגודל מוקטן */
@@ -597,7 +603,7 @@
 .photo-hint { display: block; margin-top: 8px; }
 
 .form-actions { display: flex; gap: 10px; margin-top: 16px; }
-.form-actions .btn { flex: 1; }
+.form-actions .btn { flex: 1; min-width: 0; }
 
 .parents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .parent-col h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
