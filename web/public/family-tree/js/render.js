@@ -95,24 +95,18 @@
     let nodes = '';
 
     for (const link of model.childLinks) {
-      const busY = C.TOP + 0; // מחושב לפי שורת הילדים בפועל
-      const childYs = link.children.map((c) => model.positions[c.id].y);
-      const rowY = Math.min(...childYs);
-      const by = rowY - R - 26;
+      const by = link.busY;
       const startY = link.fromCouple ? link.anchorY : link.anchorY + R;
       const xs = link.children.map((c) => model.positions[c.id].x);
-      const minX = Math.min(...xs, link.anchorX);
-      const maxX = Math.max(...xs, link.anchorX);
       let d = `M ${link.anchorX} ${startY} V ${by}`;
       if (xs.length > 1 || Math.abs(xs[0] - link.anchorX) > 1) {
-        d += ` M ${minX} ${by} H ${maxX}`;
+        d += ` M ${link.minX} ${by} H ${link.maxX}`;
       }
       for (const c of link.children) {
         const pos = model.positions[c.id];
         d += ` M ${pos.x} ${by} V ${pos.y - R}`;
       }
       links += `<path class="link" d="${d}"/>`;
-      void busY;
     }
 
     for (const [a, b] of model.coupleLines) {
