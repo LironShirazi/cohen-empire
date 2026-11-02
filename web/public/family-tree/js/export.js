@@ -24,17 +24,62 @@
     return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
   }
 
+  /* ---------- תמונות העלים ----------
+     ה-SVG המיוצא נטען כ-<img> כדי לצייר אותו על Canvas, ו-<img> של SVG
+     **לא טוען שום משאב חיצוני** — תמונה שמצביעה על ה-bucket פשוט לא
+     מצוירת, והעלה יוצא עיגול ריק. לכן כל תמונה מוטמעת מראש כ-dataURL.
+     ה-bucket ציבורי עם CORS פתוח, אז fetch מחזיר תשובה קריאה וה-Canvas
+     לא "מתלכלך" (toBlob לא נחסם). */
+  const photoCache = new Map(); // url → dataURL | null
+
+  function blobToDataURL(blob) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(blob);
+    });
+  }
+
+  async function inlinePhoto(url) {
+    if (url.startsWith('data:')) return url; // עוד לא הועלה — כבר מוטמע
+    if (photoCache.has(url)) return photoCache.get(url);
+    let data = null;
+    try {
+      const res = await fetch(url, { mode: 'cors', cache: 'force-cache' });
+      if (res.ok) data = await blobToDataURL(await res.blob());
+    } catch (err) {
+      console.warn('[family-tree] תמונה לא נטענה לייצוא', url, err);
+    }
+    photoCache.set(url, data);
+    return data;
+  }
+
+  /* עותק של העלים שבו כל תמונה היא dataURL. תמונה שלא נטענה הופכת
+     ל-null, ואז העלה מצויר עם האות הראשונה — כמו עלה בלי תמונה —
+     במקום עיגול ריק. העלים ב-store עצמו לא משתנים. */
+  async function personsForExport() {
+    const people = NS.store.all();
+    const urls = [...new Set(people.map((p) => p.photo).filter(Boolean))];
+    const inlined = new Map();
+    await Promise.all(urls.map(async (u) => inlined.set(u, await inlinePhoto(u))));
+    return people.map((p) => (p.photo ? { ...p, photo: inlined.get(p.photo) } : p));
+  }
+
   /* בונה SVG עצמאי מלא של העץ, עם רקע וכותרת */
-  function buildExportSVG() {
+  function buildExportSVG(people) {
     const map = {};
-    for (const p of NS.store.all()) map[p.id] = p;
+    for (const p of people) map[p.id] = p;
     const model = NS.layout.build(map);
     const content = NS.render.buildContent(model, { interactive: false, myId: null });
     const b = model.bbox;
     const PAD = 60, HEADER = 90;
-    const w = Math.ceil(b.width + PAD * 2);
+    // רוחב מינימלי בשביל הכותרת — בעץ צר (זוג אחד, ענף קטן) היא
+    // רחבה מהעץ ונחתכה משני הצדדים. העץ ממורכז בתוך הרוחב הזה
+    const MIN_W = 640;
+    const w = Math.ceil(Math.max(b.width + PAD * 2, MIN_W));
     const h = Math.ceil(b.height + PAD * 2 + HEADER);
-    const ox = PAD - b.minX;
+    const ox = (w - b.width) / 2 - b.minX;
     const oy = PAD + HEADER - b.minY;
     const midX = w / 2;
     const svg =
@@ -74,8 +119,15 @@
   }
 
   /* SVG → Canvas (עם הגבלת גודל בטוחה לדפדפני מובייל) */
-  function svgToCanvas(cb) {
-    const { svg, w, h } = buildExportSVG();
+  async function svgToCanvas(cb) {
+    let built;
+    try {
+      built = buildExportSVG(await personsForExport());
+    } catch (err) {
+      console.error('[family-tree]', err);
+      return cb(new Error('הכנת העץ לייצוא נכשלה'));
+    }
+    const { svg, w, h } = built;
     let scale = 2;
     const MAX_PIXELS = 14e6;
     if (w * h * scale * scale > MAX_PIXELS) scale = Math.sqrt(MAX_PIXELS / (w * h));
