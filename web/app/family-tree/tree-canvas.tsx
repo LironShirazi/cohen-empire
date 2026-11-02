@@ -84,17 +84,9 @@ export function TreeCanvas({
         <button id="btn-me" className="tb-btn">
           🙋 אני בעץ
         </button>
-        <div className="menu-wrap">
-          <button id="btn-export" className="tb-btn">
-            ⬇️ ייצוא
-          </button>
-          <div id="export-menu" className="menu hidden">
-            <button data-act="png">🖼️ תמונה (PNG)</button>
-            <button data-act="pdf">📄 קובץ PDF</button>
-            <hr />
-            <button data-act="json">💾 גיבוי נתונים (JSON)</button>
-          </div>
-        </div>
+        <button id="btn-export" className="tb-btn">
+          ⬇️ ייצוא
+        </button>
         {/* השלמה אוטומטית משלנו ולא datalist: הרשימה המלאה של המשפחה
             ארוכה מדי, ו-ui.js מציג רק את ההתאמות לטקסט שהוקלד */}
         <div className="search-wrap">
@@ -114,6 +106,17 @@ export function TreeCanvas({
       {/* מחוץ לסרגל בכוונה: ל-.toolbar יש overflow-x לגלילה, והרשימה
           נפתחת מתחתיו ולא בתוכו */}
       <div id="search-results" className="search-results hidden" role="listbox"></div>
+
+      {/* גם תפריט הייצוא מחוץ לסרגל, מאותה סיבה. `fixed` לא מספיק
+          באייפון: Safari חותך גם ילד `fixed` של מכל גלילה
+          (`-webkit-overflow-scrolling: touch`), והתפריט נפתח בגובה
+          הסרגל — בלתי נראה ובלתי לחיץ. בכרום במחשב זה לא משתחזר */}
+      <div id="export-menu" className="menu hidden">
+        <button data-act="png">🖼️ תמונה (PNG)</button>
+        <button data-act="pdf">📄 קובץ PDF</button>
+        <hr />
+        <button data-act="json">💾 גיבוי נתונים (JSON)</button>
+      </div>
 
       <main id="tree-wrap">
         <svg id="tree-svg" xmlns="http://www.w3.org/2000/svg"></svg>

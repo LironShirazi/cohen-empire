@@ -189,13 +189,14 @@
 .search-item-name mark { background: var(--yellow-soft); color: inherit; border-radius: 4px; }
 .search-item-meta { font-size: 12px; color: var(--muted); }
 .search-empty { padding: 12px; font-size: 15px; color: var(--muted); text-align: center; }
-.menu-wrap { flex: 0 0 auto; }
 
 /* ⚠️ `fixed` ולא `absolute` — **מאותה סיבה בדיוק כמו `.search-results`
    שלמעלה.** ל-`.toolbar` יש `overflow-x: auto` לגלילה, וב-CSS
    `overflow-y: visible` לצד `overflow-x: auto` מחושב מחדש ל-`auto`.
    כלומר התפריט לא רק נחתך בגובה הסרגל — הוא **מותח אותו** ומוסיף
    לו אזור גלילה, וזה מה שנראה כמו ריפוד/דחיפה מתחת לשדה החיפוש.
+   ובאייפון גם `fixed` לא מספיק: Safari חותך ילד `fixed` של מכל גלילה,
+   ולכן התפריט יושב **מחוץ** לסרגל ב-tree-canvas.tsx, כמו הרשימה.
    המיקום נקבע ב-`placeExportMenu()` ב-ui.js מול כפתור הייצוא. */
 .menu {
   position: fixed;
