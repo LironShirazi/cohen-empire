@@ -619,3 +619,25 @@ web/components/admin/app-stats.tsx              אריחים, גרפי עמוד�
 50 המכשירים האחרונים שלא התחברו, כל אחד עם המסכים שלו לפי סדר. המכשיר
 מוצג כ-4 התווים הראשונים של `visitor_id`, יציבים בין טווחים. מכשיר
 שהתחבר אפילו פעם אחת בטווח לא מופיע כאן — הוא כבר ב"מי נכנס".
+
+## 18. התחברות עם Google — בלי `supabase.co` במסך ההסכמה
+
+```
+web/app/auth/google/route.ts                GET: הפניה ל-Google · POST: id_token ← סשן
+web/components/auth/google-sign-in-button.tsx  בוחר זרימה לפי NEXT_PUBLIC_GOOGLE_CLIENT_ID
+```
+
+Google מציג במסך ההסכמה את הדומיין של כתובת החזרה. ב-`signInWithOAuth`
+זו כתובת ה-callback של Supabase, ולכן המשתמש ראה `<project-ref>.supabase.co`.
+עכשיו Google מחזיר אלינו (`response_type=id_token`, `response_mode=form_post`)
+והטוקן מוחלף לסשן ב-`signInWithIdToken`. אין client secret באפליקציה —
+Supabase מאמת חתימה, audience ו-nonce.
+
+⚠️ **העוגייה היא `SameSite=None; Secure`.** ה-POST מגיע מ-`accounts.google.com`
+(cross-site), ועם `Lax` הדפדפן לא מצרף אותה ואין איך לאמת את ה-`state`.
+ב-`localhost` ב-http ספארי לא שומר עוגייה `Secure` — לבדוק בכרום.
+
+⚠️ **ההפניה אחרי ה-POST היא 303**, לא ברירת המחדל 307 — אחרת הדפדפן
+שולח POST גם לעמוד היעד.
+
+בלי `NEXT_PUBLIC_GOOGLE_CLIENT_ID` הכפתור חוזר לזרימה הישנה (`/auth/callback`).
