@@ -21,13 +21,22 @@ import { Icon, LiveDot } from "@/components/ui/icon";
 export function HomeHero({
   race,
   action,
+  stories,
 }: {
   race: Pick<Race, "year" | "name" | "starts_at" | "status"> | null;
   action: ReactNode;
+  /**
+   * פס הסטוריז (סבב 6) — בראש הכחול, מעל הלוגו, כמו באינסטגרם. הוא
+   * מושך את עצמו למעלה לתוך הריפוד העליון במקום להוסיף גובה, כדי
+   * שהספירה לאחור לא תידחף מתחת לקו המסך.
+   */
+  stories?: ReactNode;
 }) {
   return (
     <header className="cosmic rounded-b-[30px] px-5 pt-14 pb-7 text-center shadow-navy md:pt-20 md:pb-11">
       <div className="mx-auto w-full max-w-lg md:max-w-2xl">
+        {stories}
+
         <Chip tone="yellow">
           <Icon name="flag" size={18} />
           יום העצמאות · בית הגדי

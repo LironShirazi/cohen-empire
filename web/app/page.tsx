@@ -16,6 +16,9 @@ import {
   getUser,
 } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { countActiveStoryUsers, getStoryFeed } from "@/lib/stories-data";
+import { StoriesBar } from "@/components/stories/stories-bar";
+import { LockedStoriesBar } from "@/components/stories/locked-stories-bar";
 import { Icon, type IconName } from "@/components/ui/icon";
 
 /** אריח ניווט — ‎.card.card-tight בסקיצה 1a */
@@ -41,7 +44,7 @@ function Tile({
 export default async function Home() {
   const user = await getUser();
 
-  const [race, membership, request, adminRaces, profile, quote] =
+  const [race, membership, request, adminRaces, profile, quote, storyFeed, lockedStories] =
     await Promise.all([
       getFeaturedRace(),
       user ? getMyMembership() : null,
@@ -51,6 +54,9 @@ export default async function Home() {
       // `quotes` היא `to authenticated` מאז 0001 — למי שלא מחובר
       // השאילתה תמיד תחזור ריקה, ואין טעם לשלוח אותה
       user ? getRandomQuote() : null,
+      user ? getStoryFeed() : null,
+      // מי שלא מחובר מקבל מספר בלבד — לא מי ולא מה (0024)
+      user ? 0 : countActiveStoryUsers(),
     ]);
 
   const showAdminLink = adminRaces.length > 0 || profile?.is_owner;
@@ -66,6 +72,13 @@ export default async function Home() {
     <main className="flex flex-1 flex-col">
       <HomeHero
         race={race}
+        stories={
+          storyFeed ? (
+            <StoriesBar feed={storyFeed} />
+          ) : lockedStories > 0 ? (
+            <LockedStoriesBar count={lockedStories} />
+          ) : null
+        }
         action={
           user ? (
             <Link href={primary.href}>
@@ -104,29 +117,44 @@ export default async function Home() {
         {/* קבועים בדף הבית ללא קשר למהלך המשחק (docs/04 §1).
             הסקיצה מראה שלושה אריחים ומשמיטה את העץ; docs/04 §1 מונה
             אותו במפורש, והוא מאוחר יותר — ולכן הוא כאן. */}
-        {/* ⚠️ `md:contents` ולא עוד עטיפה: בנייד אלה שתי שורות (שלושה
-            אריחים ואז שניים), ובמחשב שתי השורות **נעלמות** והאריחים
+        {/* ⚠️ `md:contents` ולא עוד עטיפה: בנייד אלה שתי שורות (3+3
+            למחובר, 2+2 למי שלא), ובמחשב שתי השורות **נעלמות** והאריחים
             הופכים לפריטים של אותו grid — שורה אחת. בלי זה השורה
-            השנייה הייתה נמתחת לשני אריחי ענק.
+            השנייה הייתה נמתחת לאריחי ענק.
             מספר העמודות נגזר מהמשתמש ולא קבוע: למי שלא מחובר יש
-            שלושה אריחים, ו-grid של חמישה היה משאיר לו חור */}
+            ארבעה אריחים, ו-grid של שישה היה משאיר לו חור */}
         <div
           className={`flex flex-col gap-2.5 md:grid ${
-            user ? "md:grid-cols-5" : "md:grid-cols-3"
+            user ? "md:grid-cols-6" : "md:grid-cols-4"
           }`}
         >
-          <div className="flex gap-2.5 md:contents">
-            <Tile href="/hall-of-fame" icon="hall" label="היכל התהילה" />
-            <Tile href="/gallery" icon="camera" label="גלריה" />
-            <Tile href="/family-tree" icon="tree" label="העץ המשפחתי" />
-          </div>
-
+          {/* ספר המתכונים נכנס ליד העץ (סבב 7). למי שלא מחובר אלה שתי
+              שורות של שניים — שורה של ארבעה בנייד חותכת את "ספר המתכונים" */}
           {user ? (
-            <div className="flex gap-2.5 md:contents">
-              <Tile href="/leaderboard" icon="trophy" label="לוח מובילים" />
-              <Tile href="/teams" icon="users" label="הקבוצות" />
-            </div>
-          ) : null}
+            <>
+              <div className="flex gap-2.5 md:contents">
+                <Tile href="/hall-of-fame" icon="hall" label="היכל התהילה" />
+                <Tile href="/gallery" icon="camera" label="גלריה" />
+                <Tile href="/family-tree" icon="tree" label="העץ המשפחתי" />
+              </div>
+              <div className="flex gap-2.5 md:contents">
+                <Tile href="/recipes" icon="book" label="ספר המתכונים" />
+                <Tile href="/leaderboard" icon="trophy" label="לוח מובילים" />
+                <Tile href="/teams" icon="users" label="הקבוצות" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex gap-2.5 md:contents">
+                <Tile href="/hall-of-fame" icon="hall" label="היכל התהילה" />
+                <Tile href="/gallery" icon="camera" label="גלריה" />
+              </div>
+              <div className="flex gap-2.5 md:contents">
+                <Tile href="/family-tree" icon="tree" label="העץ המשפחתי" />
+                <Tile href="/recipes" icon="book" label="ספר המתכונים" />
+              </div>
+            </>
+          )}
         </div>
 
         {showAdminLink ? (

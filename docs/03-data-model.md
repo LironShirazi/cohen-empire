@@ -177,6 +177,28 @@ erDiagram
   `photo_url`, `father_id`, `mother_id`, `partner_id`, `profile_id?` (קישור "זה אני"),
   `is_root`, `sort_order` — פירוט מלא ב-[06 — העץ המשפחתי](06-family-tree.md)
 
+### ספר המתכונים (0023)
+- **`recipes`** — `name`, `owner_name` (טקסט חופשי: "של מי המתכון" — לא
+  הפניה לעץ, כי לסבתא ז"ל אין חשבון), `servings`, `ingredients` (jsonb,
+  מערך מחרוזות), `steps` (jsonb, `[{text, image_url}]`), `photo_url`,
+  `thumb_url`, `created_by`. כל מחובר קורא ומוסיף; עריכה ומחיקה — מי
+  שהוסיף ומנהל-על. `grant update` לעמודות התוכן בלבד, לא ל-`created_by`
+- **`recipe_questions`** — `recipe_id` (cascade), `asked_by`, `text` (עד 200),
+  `answer`, `answered_by`, `answered_at`. התשובה רק דרך
+  `answer_recipe_question()` — של מי שהוסיף את המתכון או מנהל-על
+- bucket **`recipes`** (10MB, תמונות): תיקייה לפי מזהה המעלה
+
+### סטוריז (0024)
+- **`stories`** — `user_id`, `kind` (`photo`/`text`), `storage_path` (לתמונה),
+  `caption` (עד 80), `color` (אינדקס ל-`STORY_COLORS` בקליינט — לטקסט).
+  שם ותמונה **לא** נשמרים בשורה: מהעץ, ואם אין — מ-Google
+- **`story_views`** — `(story_id, viewer_id)` מפתח ראשי, `viewed_at`. צפייה
+  חוזרת לא מוסיפה שורה; הטבעת האפורה נגזרת מכאן. הרשימה חוזרת רק למעלה
+- **24 השעות במדיניות ה-SELECT**, לא רק בשאילתה. ניקוי: `take_my_expired_stories()`
+  מוחקת את השורות של הקורא ומחזירה נתיבים, והקליינט מוחק את הקבצים
+- `count_active_story_users()` — מספר בלבד, גם ל-anon (העיגולים המטושטשים)
+- bucket **`stories`** (5MB): תיקייה לפי מזהה המעלה
+
 ### `page_views` — אנליטיקה (0020)
 
 | שדה | סוג | הערות |

@@ -411,3 +411,42 @@ export type AppStats = {
     pages: string[];
   }[];
 };
+
+/** שלב בהכנה — מ-0023. תמונה לשלב היא רשות */
+export type RecipeStep = { text: string; image_url: string | null };
+
+/** ספר המתכונים (0023). `owner_name` הוא טקסט חופשי — "של מי המתכון" */
+export type Recipe = {
+  id: string;
+  name: string;
+  owner_name: string;
+  servings: number;
+  ingredients: string[];
+  steps: RecipeStep[];
+  photo_url: string;
+  thumb_url: string | null;
+  created_by: string | null;
+  created_at: string;
+};
+
+export type RecipeQuestion = {
+  id: string;
+  recipe_id: string;
+  asked_by: string | null;
+  text: string;
+  answer: string | null;
+  answered_by: string | null;
+  answered_at: string | null;
+  created_at: string;
+};
+
+/** סטוריז (0024). שורה חיה 24 שעות — המדיניות מסננת את מה שפג */
+export type Story = {
+  id: string;
+  user_id: string;
+  kind: "photo" | "text";
+  storage_path: string | null;
+  caption: string | null;
+  color: number | null;
+  created_at: string;
+};
