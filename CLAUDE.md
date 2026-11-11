@@ -328,9 +328,10 @@ web/components/family/quote-card.tsx                הציטוט (שני ורי�
 web/components/family/hall-of-fame-list.tsx         רשימת הזוכים + סטטיסטיקות
 web/components/family/hall-of-fame-photo.tsx        תמונת הזוכים — ממוזערת, ובלחיצה במסך מלא
 web/app/hall-of-fame/page.tsx                       הראוט הציבורי
-web/app/admin/content/page.tsx                      מסך הניהול של מנהל-על
+web/app/admin/content/page.tsx                      מסך הניהול של מנהל-על (משפטים בלבד)
 web/components/admin/quotes-editor.tsx              הזנת משפטים
-web/components/admin/hall-of-fame-editor.tsx        הזנת שנים היסטוריות
+web/components/family/hall-of-fame-editor.tsx       הוספת שנים — בתחתית /hall-of-fame, למנהל-על בלבד
+web/components/family/hall-of-fame-delete.tsx       כפתור המחיקה על שורות הרשימה (מנהל-על)
 web/lib/family-content.ts                           העלאה/מחיקה ב-bucket המשותף
 ```
 
@@ -346,9 +347,11 @@ web/lib/family-content.ts                           העלאה/מחיקה ב-buc
 (`quote-card.html`, `characters.html`) מיוחסים ל"סבא אלי" ו"סבתא רחל" —
 **שמות בדויים**; השורש האמיתי בעץ הוא סבא אורגני ראובן וסבתא טראקי
 (docs/06). מילים מומצאות בפיהם של סבא וסבתא ז"ל הן הפלייסהולדר שאסור
-שידלוף. הטבלאות מתמלאות מהמשפחה בהדרגה דרך `/admin/content`.
+שידלוף. הטבלאות מתמלאות מהמשפחה בהדרגה — המשפטים דרך `/admin/content`,
+והיכל התהילה מתוך `/hall-of-fame` עצמו (מנהל-על רואה שם את טופס ההזנה).
 
-⚠️ **תמונת הזוכים לחיצה, והיא הרכיב הלקוח היחיד בהיכל התהילה.**
+⚠️ **תמונת הזוכים לחיצה, והיא הרכיב הלקוח היחיד שכל המשפחה מקבלת
+בהיכל התהילה** (מנהל-על מקבל גם את ההוספה ואת 🗑️ על השורות).
 בשורה היא 52–64px — בגודל הזה תמונת קבוצה לא מזהה אף אחד, והלחיצה
 היא הדרך היחידה לראות מי עומד שם. הרשימה עצמה נשארת רכיב שרת, ושורה
 בלי תמונה מרנדרת `span` ולא כפתור: כפתור שלא עושה כלום גרוע

@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { HallOfFameEditor } from "@/components/family/hall-of-fame-editor";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { HallOfFameList } from "@/components/family/hall-of-fame-list";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageShell } from "@/components/ui/page";
 import { getHallOfFame, getProfile, getUser } from "@/lib/data";
@@ -14,7 +14,7 @@ export const metadata = {
  * היכל התהילה (docs/01 §7, docs/04 §1) — זוכי כל השנים.
  *
  * הטבלה מתמלאת משני מקורות: `finish_race` (0002) מוסיף שורה בסיום כל
- * מירוץ באפליקציה, ומנהל-על מזין ידנית ב-`/admin/content` את השנים
+ * מירוץ באפליקציה, ומנהל-על מזין ידנית — כאן, בתחתית המסך — את השנים
  * שקדמו לה. ההיסטוריה נאספת מהמשפחה ולכן המסך הזה יתחיל ריק.
  *
  * מחוברים בלבד: מדיניות הקריאה היא `to authenticated` מאז 0001.
@@ -49,9 +49,7 @@ export default async function HallOfFamePage() {
           היכל התהילה
         </h1>
         <p className="mt-1.5 text-small text-on-navy-muted">
-          {rows.length > 0
-            ? `${rows.length} שנות מירוץ בבית סבא וסבתא`
-            : "כל שנות המירוץ בבית סבא וסבתא"}
+          הזוכים במירוץ משנים עברו
         </p>
       </header>
 
@@ -66,15 +64,17 @@ export default async function HallOfFamePage() {
               עשרים שנות מירוץ נאספות עכשיו מהמשפחה. כל מירוץ חדש שמסתיים
               באפליקציה נכנס לכאן לבד 🏁
             </p>
-            {profile?.is_owner ? (
-              <Link href="/admin/content" className="mt-4 inline-block">
-                <Button variant="secondary">הזנת שנים מההיסטוריה</Button>
-              </Link>
-            ) : null}
           </Card>
         ) : (
-          <HallOfFameList rows={rows} />
+          <HallOfFameList rows={rows} canEdit={profile?.is_owner === true} />
         )}
+
+        {/* ההזנה כאן ולא ב-/admin/content — מנהל-על רואה מיד את התוצאה */}
+        {profile?.is_owner ? (
+          <div className="mt-6 border-t-2 border-line pt-6">
+            <HallOfFameEditor />
+          </div>
+        ) : null}
 
         <Link
           href="/"
