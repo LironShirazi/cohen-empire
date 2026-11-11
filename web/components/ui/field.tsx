@@ -1,8 +1,11 @@
 import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 // מקביל ל-.field ב-design-system/styles.css
+// ⚠️ `min-w-0`: ל-<input> יש רוחב מובנה (size=20 תווים), וספארי באייפון
+// מכבד אותו כרוחב המינימלי של התא גם כשיש `w-full`. בתוך grid/flex זה
+// דוחף את השורה אל מחוץ לכרטיס — שם הקבוצה נחתך והשדה השכן בורח.
 const control =
-  "w-full rounded-card-sm border-2 border-line bg-white px-3.5 font-[inherit] text-lg " +
+  "w-full min-w-0 rounded-card-sm border-2 border-line bg-white px-3.5 font-[inherit] text-lg " +
   "focus:border-brand focus:ring-4 focus:ring-brand-soft focus:outline-none";
 
 /**
@@ -36,7 +39,7 @@ export function Field({
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-1.5 block text-[15px] font-bold">{label}</span>
       <input className={`${control} h-14 ${className}`} {...props} />
       {hint ? <span className="mt-1 block text-sm text-muted">{hint}</span> : null}
@@ -54,7 +57,7 @@ export function TextareaField({
   hint?: string;
 }) {
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-1.5 block text-[15px] font-bold">{label}</span>
       <textarea className={`${control} min-h-24 py-3 ${className}`} {...props} />
       {hint ? <span className="mt-1 block text-sm text-muted">{hint}</span> : null}
@@ -70,7 +73,7 @@ export function SelectField({
   ...props
 }: SelectHTMLAttributes<HTMLSelectElement> & { label: string; hint?: string }) {
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span className="mb-1.5 block text-[15px] font-bold">{label}</span>
       <select className={`${control} h-14 ${className}`} {...props}>
         {children}

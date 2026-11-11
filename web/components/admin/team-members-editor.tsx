@@ -46,7 +46,7 @@ export function TeamMembersEditor({
     >
       <h3 className="font-display text-lg">
         הרכב {team.name}
-        <span className="ms-2 text-sm font-normal text-muted">
+        <span className="ms-2 whitespace-nowrap text-sm font-normal text-muted">
           {members.length} משתתפים
         </span>
       </h3>
@@ -65,8 +65,8 @@ export function TeamMembersEditor({
               key={member.id}
               className="flex items-center gap-2 rounded-card-sm border border-line px-3 py-2"
             >
-              <span className="me-auto font-bold">{member.display_name}</span>
-              <span className="text-sm text-muted">📱 עם חשבון</span>
+              <span className="me-auto min-w-0 break-words font-bold">{member.display_name}</span>
+              <span className="shrink-0 text-sm text-muted">📱 עם חשבון</span>
             </li>
           ))}
 
@@ -75,7 +75,7 @@ export function TeamMembersEditor({
               key={member.id}
               className="flex items-center gap-2 rounded-card-sm border border-line bg-bg-2 px-3 py-2"
             >
-              <span className="me-auto font-bold">
+              <span className="me-auto min-w-0 break-words font-bold">
                 {member.display_name}
                 {member.birth_year ? (
                   <span className="ms-1.5 text-sm font-normal text-muted">
@@ -107,9 +107,12 @@ export function TeamMembersEditor({
       ) : null}
 
       <form action={action} className="flex flex-col gap-3">
-        <div className="grid grid-cols-[1fr_auto] gap-3">
+        {/* התווית הארוכה יושבת מעל השורה ולא בתוך התא הצר: בנייד היא
+            נשברה לשתי שורות והשדה שלה ירד מתחת לשדה שנת הלידה */}
+        <p className="text-[15px] font-bold">הוספת משתתף בלי טלפון</p>
+        <div className="grid grid-cols-[minmax(0,1fr)_6rem] items-end gap-3">
           <Field
-            label="הוספת משתתף בלי טלפון"
+            label="שם"
             name="display_name"
             placeholder="יובל (בת 6)"
             required
@@ -120,7 +123,7 @@ export function TeamMembersEditor({
             inputMode="numeric"
             pattern="[0-9]{4}"
             maxLength={4}
-            className="w-28 text-center"
+            className="text-center"
           />
         </div>
 
