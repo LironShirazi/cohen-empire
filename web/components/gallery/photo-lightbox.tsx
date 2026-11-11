@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { removeGalleryFile } from "@/lib/gallery-storage";
 import { isVideoUrl } from "@/lib/media";
 import type { GalleryPhotoRow } from "@/lib/data";
 import { useConfirm } from "@/components/ui/confirm";
@@ -91,7 +92,7 @@ export function PhotoLightbox({
       return setError(deleteError.message);
     }
     if (photo.storage_path) {
-      await supabase.storage.from("gallery").remove([photo.storage_path]);
+      await removeGalleryFile(photo.storage_provider, photo.storage_path);
     }
     setBusy(false);
     onChanged();

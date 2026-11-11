@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { PhotoLightbox } from "@/components/gallery/photo-lightbox";
 import { createClient } from "@/lib/supabase/client";
+import { removeGalleryFile, uploadGalleryFile } from "@/lib/gallery-storage";
 import {
   isVideoFile,
   isVideoUrl,
@@ -22,13 +23,14 @@ import {
 import type { GalleryAlbum } from "@/lib/supabase/types";
 import type { GalleryPhotoRow } from "@/lib/data";
 import { useConfirm } from "@/components/ui/confirm";
-
 import { startNavProgress } from "@/components/ui/navigation-progress";
+
 /**
  * אלבום בגלריה: שם שאפשר לתקן, מדיה שכל בן משפחה מוסיף, ותצוגה מוגדלת.
  *
- * ההעלאה כותבת ישירות מול RLS ולא דרך RPC — כמו הצ'אט, ומאותה סיבה:
+ * השורה נכתבת ישירות מול RLS ולא דרך RPC — כמו הצ'אט, ומאותה סיבה:
  * אין מה לאמת מעבר לזהות המעלה, והיא נאכפת ב-`gallery_insert` (0012).
+ * הקובץ עצמו עולה ל-R2 בכתובת חתומה מ-`/api/gallery/upload` (0022).
  *
  * ⚠️ שם האלבום פתוח לעריכה **לכל בן משפחה** ולא רק לפותח אותו — האלבום
  * שייך למשפחה, כמו עלה בעץ (docs/06 §4). מה ששמור לפותח ולמנהל-על הוא
@@ -98,9 +100,9 @@ export function AlbumScreen({
           : deleteError.message
       );
     }
+    startNavProgress("/gallery");
     router.push("/gallery");
   }
-    startNavProgress("/gallery");
 
   async function uploadFiles(files: File[]) {
     if (files.length === 0) return;
@@ -127,28 +129,20 @@ export function AlbumScreen({
           throw new Error(`${file.name} גדול מדי (מעל ${maxMb}MB)`);
         }
 
-        const path = `${album.id}/${crypto.randomUUID()}.${extension}`;
-        const { error: uploadError } = await supabase.storage
-          .from("gallery")
-          .upload(path, blob, {
-            upsert: false,
-            contentType: blob.type || "application/octet-stream",
-          });
-        if (uploadError) throw uploadError;
-
-        const { data } = supabase.storage.from("gallery").getPublicUrl(path);
+        const uploaded = await uploadGalleryFile(album.id, blob, extension);
         const { error: insertError } = await supabase
           .from("gallery_photos")
           .insert({
             album_id: album.id,
-            url: data.publicUrl,
-            storage_path: path,
+            url: uploaded.url,
+            storage_path: uploaded.path,
+            storage_provider: uploaded.provider,
             uploaded_by: myUserId,
           });
         // השורה היא מה שנחשב. אם היא נכשלה — הקובץ שכבר עלה מיותר, וזו
-        // ההזדמנות היחידה לנקות אותו (למעלה יש הרשאת מחיקה על הקובץ שלו)
+        // ההזדמנות היחידה לנקות אותו (קובץ בלי שורה מותר למחיקה)
         if (insertError) {
-          await supabase.storage.from("gallery").remove([path]);
+          await removeGalleryFile(uploaded.provider, uploaded.path);
           throw insertError;
         }
         done++;

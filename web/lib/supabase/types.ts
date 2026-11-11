@@ -217,6 +217,8 @@ export type GalleryPhoto = {
   race_id: string | null;
   url: string;
   storage_path: string | null;
+  /** מ-0022 — איפה הקובץ יושב. העלאות חדשות הולכות ל-R2 */
+  storage_provider: "supabase" | "r2";
   caption: string | null;
   uploaded_by: string | null;
   created_at: string;
