@@ -166,7 +166,9 @@ erDiagram
 - **`gallery_photos`** — מדיה בגלריה: `album_id`, `url`, `storage_path`,
   `caption`, `uploaded_by`. `album_id` הוא `on delete restrict` — אלבום לא
   נמחק עם המדיה של כולם בתוכו. `storage_path` נשמר כדי שמחיקת שורה תוכל
-  למחוק גם את הקובץ מה-bucket. `race_id` נשאר מ-0001 ואינו בשימוש
+  למחוק גם את הקובץ מה-bucket. `storage_provider` (0022) — `supabase` או
+  `r2`: איפה הקובץ יושב, ולאן פונה המחיקה. מחוץ ל-`grant update`.
+  `race_id` נשאר מ-0001 ואינו בשימוש
 - **`hall_of_fame`** — היכל התהילה: `year`, `race_id?`, `team_name`, `team_color`,
   `members` (jsonb), `photo_url` — כולל הזנה ידנית של 20 שנות היסטוריה שקדמו לאפליקציה.
   נכתבת משני מקורות: `finish_race` עושה upsert לפי `year` בסיום מירוץ, ומנהל-על
