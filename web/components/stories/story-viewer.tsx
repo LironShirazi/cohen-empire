@@ -125,11 +125,26 @@ export function StoryViewer({
                 className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
+              // ⚠️ בסטורי שלי גיליון "מי צפה" מכסה את 60% התחתונים —
+              // הטקסט מתמרכז ב-40% העליונים ולא באמצע המסך, אחרת הוא
+              // נעלם מאחורי הגיליון ונשאר רק רקע חלק
               <div
-                className="absolute inset-0 flex items-center justify-center px-8 text-center"
+                className="absolute inset-0"
                 style={{ background: storyBackground(item.color) }}
               >
-                <p className="font-display text-[34px] leading-snug">{item.caption}</p>
+                <div
+                  className={`absolute inset-x-0 top-0 flex items-center justify-center px-8 text-center ${
+                    isMine ? "bottom-[60%] pt-16" : "bottom-0"
+                  }`}
+                >
+                  <p
+                    className={`font-display leading-snug ${
+                      isMine ? "line-clamp-4 text-[26px]" : "text-[34px]"
+                    }`}
+                  >
+                    {item.caption}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -199,7 +214,7 @@ export function StoryViewer({
             />
 
             {item.kind === "photo" && item.caption ? (
-              <div className={`absolute inset-x-0 z-[1] text-center ${isMine ? "top-[38%]" : "bottom-[150px]"}`}>
+              <div className={`absolute inset-x-0 z-[1] text-center ${isMine ? "top-[22%]" : "bottom-[150px]"}`}>
                 <span className="inline-block max-w-[84%] rounded-card-sm bg-black/60 px-4.5 py-2 font-display text-[22px]">
                   {item.caption}
                 </span>
