@@ -23,6 +23,7 @@
 (מיגרציה `0010`, §4), הגלריה עלתה (מיגרציה `0012`, §10), התוכן המשפחתי
 הקבוע — משפטי סבא וסבתא והיכל התהילה — קיבל מְכָלים (מיגרציה `0014`, §11),
 ומסך הזוכים נדלק (מיגרציה `0015`, §12).
+נוספו גם ספר המתכונים (`0023`, §21) והסטוריז (`0024`, §22).
 מה שנשאר בשלב: **ליטוש ואנימציות**. ה-PWA הוצא מהשלב — טרם הוחלט אם
 בכלל ייבנה, והוא אחרון בתור (docs/02 §3.10). אל תתחיל אותו מיוזמתך.
 
@@ -693,3 +694,74 @@ web/public/family-tree/js/icons.js   עותק vanilla לעץ (NS.icon) — רק 
 ⚠️ **שלושה עותקים של אותם paths:** `icon.tsx`, `iconMarkup` (שם, לסמני
 Leaflet שמקבלים HTML) ו-`icons.js` של העץ. הלב והתג "אני" בתוך ה-SVG
 של העץ מצוירים ב-`render.js` וה-CSS שלהם משוכפל ב-`export.js` (§4).
+
+## 21. ספר המתכונים (סבב 7)
+
+```
+supabase/migrations/0023_recipes.sql      recipes + recipe_questions + answer_recipe_question + bucket
+web/app/recipes/page.tsx                  הספר (שער התחברות)
+web/app/recipes/[recipeId]/page.tsx       דף מתכון
+web/app/recipes/new/page.tsx              הוספה בארבעה שלבים
+web/app/recipes/[recipeId]/edit/page.tsx  עריכה — אותו אשף, מתחיל מהמתכון השמור
+web/components/recipes/rb.tsx             השפה של הספר — מחלקות ו-RecipeShell
+web/components/recipes/recipe-book.tsx    רשימה + חיפוש חי + "מתכונים של"
+web/components/recipes/recipe-view.tsx    המתכון, כתב גדול, שאלות ותשובות, מחיקה
+web/components/recipes/recipe-wizard.tsx  ארבעת השלבים + טיוטה ב-localStorage
+web/lib/recipes.ts                        חיפוש והדגשה — לוגיקה טהורה
+web/lib/recipes-data.ts                   שאילתות צד-שרת
+web/lib/recipe-actions.ts                 העלאה/מחיקה ב-bucket `recipes`
+```
+
+⚠️ **השפה העיצובית נפרדת בכוונה** — רקע בהיר, ירוק בלבד, 18px ומעלה.
+זו החלטה מהסקיצה ("כדי שגם סבא וסבתא יקראו ויוסיפו בלי עזרה"), לא
+סטייה מה-DS. הצבעים הם `--rb-*` ב-globals.css ולא hex במסכים.
+
+⚠️ **`owner_name` הוא טקסט חופשי** ו-`created_by` נפרד ממנו: "המתכון של
+סבתא טראקי" שהוזן ע"י יעל. מי שעונה על שאלות ומוחק הוא `created_by`
+(ומנהל-על), דרך `answer_recipe_question` — RLS לא מבחין בין העמודה של
+השואל לעמודה של העונה באותה שורה. אותו `created_by` (ומנהל-על) גם עורך,
+עם `grant update` לעמודות התוכן בלבד — לא ל-`created_by`.
+
+**עריכה = אותו אשף** עם `recipe`, בלי טיוטה ב-localStorage, ו"שמירה"
+זמינה בכל שלב. קבצים שהוחלפו או הוסרו נמחקים **אחרי** עדכון השורה.
+
+⚠️ **הטיוטה היא טקסט בלבד, והאשף מרונדר רק בדפדפן.** תמונות עולות רק
+בשמירה, כדי שטיוטה נטושה לא תשאיר קבצים. ה-state ההתחלתי נקרא
+מ-localStorage, ולכן `RecipeWizard` מחזיר `null` בשרת
+(`useSyncExternalStore`) — אחרת hydration mismatch.
+
+החיפוש בקליינט על כל הרשימה (מאות שורות קצרות). הניקוד מוסר לפני
+ההשוואה, וההדגשה ממפה את האינדקסים חזרה לטקסט המקורי (`splitMatch`).
+
+## 22. סטוריז משפחתיים (סבב 6)
+
+```
+supabase/migrations/0024_stories.sql            stories + story_views + ניקוי + bucket
+web/components/stories/stories-bar.tsx          הפס בראש ההיירו (מחובר)
+web/components/stories/locked-stories-bar.tsx   העיגולים המטושטשים (לא מחובר)
+web/components/stories/story-viewer.tsx         צפייה + "מי צפה" בסטורי שלי
+web/components/stories/story-composer.tsx       בחירה (צילום/גלריה/טקסט) ושיתוף
+web/components/ui/sheet.tsx                     גיליון תחתון — portal ל-body
+web/lib/stories.ts · stories-data.ts · story-actions.ts
+```
+
+⚠️ **24 השעות במדיניות `stories_read`, לא רק בשאילתה.** סטורי שפג לא
+חוזר לאף אחד גם לפני שנמחק בפועל.
+
+⚠️ **אין pg_cron, בניגוד לסקיצה.** מחיקת שורה מ-`storage.objects` ב-SQL
+לא מוחקת את הקובץ — רק ה-Storage API. לכן `take_my_expired_stories()`
+מוחקת את השורות **של הקורא** ומחזירה את הנתיבים, והקליינט מוחק את
+הקבצים (פעם בסשן, מהפס בדף הבית). חוב ידוע: מי שהעלה ולא חזר לאפליקציה
+משאיר שורות (מוסתרות) וקבצים — אותו סוג חוב כמו §9.
+
+⚠️ **מי שלא מחובר מקבל מספר בלבד** (`count_active_story_users`). העיגולים
+המטושטשים ריקים בכוונה: אין שמות לטשטש, כי הם לא הגיעו לדפדפן.
+
+⚠️ **`color` הוא אינדקס ל-`STORY_COLORS`** — הסדר שם חוזה. מוסיפים
+בסוף בלבד.
+
+⚠️ **צפייה בסטורי של עצמך לא נרשמת** (המדיניות דוחה), וצפייה חוזרת
+נדחית על המפתח הראשי (23505) — לא `upsert`, שדורש גם הרשאת UPDATE.
+
+הקשה בצד **שמאל** = הבא — פיזי ובכוונה, כמו באינסטגרם: זה הצד של היד,
+לא של כיוון הקריאה.

@@ -38,6 +38,30 @@
 
   --granny: #f6e3f7;      /* רקע עיגול סבתא (.gp.granny ב-DS) */
 
+  /* ספר המתכונים (סבב 7) — שפה נפרדת בכוונה: רקע בהיר, צבע אחד
+     (ירוק), אותיות גדולות — כדי שסבא וסבתא יקראו ויוסיפו בלי עזרה.
+     הערכים מהסקיצה (‎.rb ב-"סקיצות UI"), לא מה-DS הכללי. */
+  --rb-bg: #fbfaf7;
+  --rb-ink: #1f2a24;
+  --rb-muted: #5c6660;
+  --rb-faint: #6b7069;     /* placeholder וחצים — עדיין 4.5:1 על הרקע */
+  --rb-line: #e4e2da;
+  --rb-field: #8c897c;     /* מסגרת שדה */
+  --rb-chip-line: #c9c6ba;
+  --rb-green: #1f6b4a;
+  --rb-green-deep: #17573b;
+  --rb-green-soft: #eaf3ee;
+  --rb-focus: #9ccbb3;
+  --rb-soft: #eef1ec;      /* כפתור עגול משני */
+  --rb-track: #d9dcd4;     /* פס השלבים שעוד לא הגיעו אליהם */
+  --rb-mark: #ffe27a;      /* הדגשת התאמה בחיפוש */
+
+  /* הטבעת של סטורי שעוד לא נצפה — צבעי המצפן של המירוץ (סבב 6) */
+  --story-ring: conic-gradient(from 200deg, #ffd400, #f5b300, #e4002b, #b60022, #ffd400);
+  /* עיגול בלי תמונה — האות הראשונה (‎.st-av בסקיצה) */
+  --story-avatar: #dbe9f6;
+  --story-avatar-ink: #2e5e8c;
+
   /* צבעי הקבוצות אינם כאן — הם ב-lib/team-colors.ts.
      הצבע נשמר ב-DB כ-hex ונקרא ל-style inline, ולכן טוקן CSS לא
      משרת אותו. ה-‎--t-* שהיו כאן לא נצרכו באף מקום בריפו. */
@@ -69,6 +93,22 @@
   --color-navy-tile: var(--navy-tile);
   --color-on-navy-muted: var(--on-navy-muted);
   --color-granny: var(--granny);
+  --color-rb-bg: var(--rb-bg);
+  --color-rb-ink: var(--rb-ink);
+  --color-rb-muted: var(--rb-muted);
+  --color-rb-faint: var(--rb-faint);
+  --color-rb-line: var(--rb-line);
+  --color-rb-field: var(--rb-field);
+  --color-rb-chip-line: var(--rb-chip-line);
+  --color-rb-green: var(--rb-green);
+  --color-rb-green-deep: var(--rb-green-deep);
+  --color-rb-green-soft: var(--rb-green-soft);
+  --color-rb-focus: var(--rb-focus);
+  --color-rb-soft: var(--rb-soft);
+  --color-rb-track: var(--rb-track);
+  --color-rb-mark: var(--rb-mark);
+  --color-story-avatar: var(--story-avatar);
+  --color-story-avatar-ink: var(--story-avatar-ink);
 
   /* גיאומטריה — rounded-card / rounded-card-sm / rounded-card-lg */
   --radius-card: 18px;
@@ -517,4 +557,31 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 @media (prefers-reduced-motion: reduce) {
   .nav-progress.is-loading { width: 100%; transition: none; }
+}
+
+/* פס ההתקדמות של סטורי (סבב 6) — מתמלא ב-5 שניות, ו-`animationend`
+   הוא מה שמעביר לסטורי הבא. השהיה = `animation-play-state: paused`,
+   כך שהזמן שנותר נשמר בלי טיימר מקביל ב-JS. */
+@keyframes story-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-anim {
+    animation: none !important;
+  }
 }

@@ -68,6 +68,13 @@ const paths = {
   megaphone: <><path d="M4 10.5 15 6v12L4 13.5z" /><path d="M15 9.5a3 3 0 0 1 0 5" /><path d="M7 13.2v5.3h3V14.4" /></>,
   phone: <path d="M7 3.5 9.5 8 7.5 10a12 12 0 0 0 6 6l2-2 4.5 2.5-1 3c-6.5 1-15-7.5-14-14z" />,
   camera: <><path d="M3.5 8.5h3.2L8.2 6h7.6l1.5 2.5h3.2V19h-17z" /><circle cx="12" cy="13.5" r="3.4" /></>,
+  // תמונה מהגלריה של הטלפון (בחירה בסטורי) — לא "צילום עכשיו"
+  image: <><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" /><circle cx="9" cy="9.5" r="1.8" /><path d="M4 17.5 9.5 12.5l3.5 3 2.5-2.2 5 4.2" /></>,
+  // ספר פתוח — ספר המתכונים
+  book: <><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z" /><path d="M12 6.5V20" /></>,
+  eye: <><path d="M3 12s3.6-6 9-6 9 6 9 6-3.6 6-9 6-9-6-9-6z" /><circle cx="12" cy="12" r="2.6" /></>,
+  pause: <path d="M9 5.5v13M15 5.5v13" />,
+  text: <><path d="M5 6.5V5h14v1.5" /><path d="M12 5v14" /><path d="M9 19h6" /></>,
   video: <><rect x="3" y="7" width="12" height="10" rx="2.5" /><path d="M15 11.5 21 8v8l-6-3.5z" /></>,
   mic: <><rect x="9.5" y="3" width="5" height="10" rx="2.5" /><path d="M6 11.5a6 6 0 0 0 12 0" /><path d="M12 17.5V21" /></>,
   attach: <path d="M17 8.6 9.6 16a3.2 3.2 0 0 0 4.5 4.5l6.4-6.4a5.4 5.4 0 0 0-7.6-7.6L6.2 13.2" />,
@@ -98,7 +105,7 @@ export function iconMarkup(
 }
 
 // אייקונים שהקו שלהם עבה יותר בהצעה — סימני אישור/סגירה קצרים
-const heavier: Partial<Record<IconName, number>> = { check: 2.3, close: 2.2 };
+const heavier: Partial<Record<IconName, number>> = { check: 2.3, close: 2.2, pause: 2.6 };
 
 export function Icon({
   name,
