@@ -58,7 +58,7 @@ export function Countdown({ target }: { target: string }) {
 
   if (total === 0) {
     return (
-      <p className="goldtext font-display text-3xl">המירוץ יצא לדרך! 🏁</p>
+      <p className="goldtext font-display text-3xl">המירוץ יצא לדרך!</p>
     );
   }
 

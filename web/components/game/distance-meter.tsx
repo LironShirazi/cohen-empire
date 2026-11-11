@@ -10,6 +10,7 @@ import {
 import { arriveAction } from "@/app/team/actions";
 import { Button } from "@/components/ui/button";
 import { allowedRadius, distanceMeters, formatDistance } from "@/lib/geo";
+import { Icon } from "@/components/ui/icon";
 
 type Fix = { lat: number; lng: number; accuracy: number | null };
 
@@ -114,10 +115,15 @@ export function DistanceMeter({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="distpulse rounded-full bg-ink px-4 py-3 text-center text-[22px] font-extrabold text-white">
+      <div className="distpulse flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-3 text-center text-[22px] font-extrabold text-white">
+        <Icon name="pin" size={24} />
         {distance === null
-          ? "📍 מאתרים אתכם…"
-          : `📍 עוד ${formatDistance(distance)} ${distance < 300 ? "🔥" : ""}`}
+          ? "מאתרים אתכם…"
+          : `עוד ${formatDistance(distance)}`}
+        {/* ⚡ במקום 🔥 — "חם" כשמתקרבים */}
+        {distance !== null && distance < 300 ? (
+          <Icon name="bolt" size={22} className="text-yellow" />
+        ) : null}
       </div>
 
       {message ? (
@@ -137,7 +143,8 @@ export function DistanceMeter({
         onClick={() => fix && checkArrival(fix)}
         disabled={!fix || pending}
       >
-        {pending ? "בודקים…" : "הגענו! בדקו אותנו 📍"}
+        {pending ? null : <Icon name="pin" size={22} />}
+        {pending ? "בודקים…" : "הגענו! בדקו אותנו"}
       </Button>
 
       <p className="text-center text-xs text-muted">

@@ -11,6 +11,7 @@ import { SelectField } from "@/components/ui/field";
 import { useConfirm } from "@/components/ui/confirm";
 import { raceStatusLabel } from "@/lib/race-status";
 import type { RaceStatus } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 const statuses: RaceStatus[] = [
   "draft",
@@ -47,7 +48,10 @@ export function OwnerRaceTools({
   return (
     <Card className="flex flex-col gap-3 border-2 border-dashed border-gold">
       <div>
-        <h2 className="font-display text-h2">🗝️ כלים של מנהל-על</h2>
+        <h2 className="flex items-center gap-2 font-display text-h2">
+          <Icon name="key" size={22} className="text-brand" />
+          כלים של מנהל-על
+        </h2>
         <p className="text-sm text-muted">
           פעולות שמנהל תורן לא יכול לעשות. לא חלק ממהלך המירוץ הרגיל.
         </p>
@@ -106,7 +110,8 @@ export function OwnerRaceTools({
           });
         }}
       >
-        🗑️ מחיקת המירוץ
+        <Icon name="trash" size={20} />
+        מחיקת המירוץ
       </Button>
 
       {error ? (

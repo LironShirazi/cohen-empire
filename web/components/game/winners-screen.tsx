@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ResultsRefresher } from "@/components/game/results-refresher";
 import { Button } from "@/components/ui/button";
 import type { Race, RaceResultRow } from "@/lib/supabase/types";
+import { Icon, RankBadge, TeamGlyph } from "@/components/ui/icon";
 
 /** גובה עמוד הפודיום לפי מקום — הזוכה הכי גבוה (סקיצה 2h) */
 const stepHeight: Record<number, string> = {
@@ -72,7 +73,10 @@ function TeamMark({
         borderColor: row.team_color,
       }}
     >
-      {row.team_animal?.split(" ")[0] ?? "🏁"}
+      <TeamGlyph
+        team={{ animal: row.team_animal, name: row.team_name, color: row.team_color }}
+        onDark
+      />
     </span>
   );
 }
@@ -128,7 +132,9 @@ export function WinnersScreen({
       </div>
 
       <div className="relative mx-auto flex w-full max-w-lg flex-col gap-3">
-        <span className="cheer-trophy text-5xl">🏆</span>
+        <span className="cheer-trophy flex justify-center text-gold-lite">
+          <Icon name="trophy" size={56} />
+        </span>
 
         <h1 className="goldtext font-display text-[40px] leading-none">
           האלופים
@@ -162,18 +168,16 @@ export function WinnersScreen({
               </p>
             ) : null}
           </div>
-          <span className="text-3xl">🥇</span>
+          <RankBadge rank={1} size={40} />
         </div>
 
         {podium.length > 1 ? (
           <div dir="ltr" className="mt-1.5 flex items-end justify-center gap-2">
             {podium.map((row) => (
               <div key={row.team_id} className="w-[88px]">
-                <div className="text-[26px]">
-                  {row.team_animal?.split(" ")[0] ?? "🏁"}
-                </div>
+                <TeamMark row={row} size="mx-auto mb-1 size-9 text-lg" />
                 {/* השם ולא רק החיה: `animal` הוא רשות, ובלעדיו כל
-                    העמודים היו מציגים את אותו 🏁 */}
+                    העמודים היו מציגים את אותו דגל */}
                 <div className="truncate text-[11.5px] text-on-navy-muted">
                   {row.team_name}
                 </div>
@@ -226,7 +230,8 @@ export function WinnersScreen({
         ) : null}
 
         <p className="mt-1 text-[13.5px] text-on-navy-muted opacity-90">
-          המירוץ נוסף אוטומטית להיכל התהילה 🏛
+          <Icon name="hall" size={16} className="me-1 inline align-[-3px]" />
+          המירוץ נוסף אוטומטית להיכל התהילה
         </p>
 
         {/* המסך הזה נדלק כשהאלופים מוכרזים — ואז שאר הקבוצות עדיין
@@ -235,7 +240,7 @@ export function WinnersScreen({
         {stillRunning ? (
           <>
             <p className="rounded-card-sm border border-white/15 bg-white/5 px-3.5 py-2.5 text-[13.5px] text-on-navy-muted">
-              🚶 שאר הקבוצות עוד בדרך — הן ממשיכות את המסלול, והרשימה
+              שאר הקבוצות עוד בדרך — הן ממשיכות את המסלול, והרשימה
               כאן מתעדכנת לבד.
             </p>
             <ResultsRefresher />
@@ -248,12 +253,14 @@ export function WinnersScreen({
               אליה ולא העלאה מיוחדת שתיצור אלבום סמוי */}
           <Link href="/gallery">
             <Button variant="accent" size="lg" className="w-full">
-              📸 תמונת הזוכים לגלריה
+              <Icon name="camera" size={24} />
+              תמונת הזוכים לגלריה
             </Button>
           </Link>
           <Link href="/hall-of-fame">
             <Button variant="secondary" className="w-full">
-              🏆 היכל התהילה
+              <Icon name="hall" size={22} />
+              היכל התהילה
             </Button>
           </Link>
           <Link

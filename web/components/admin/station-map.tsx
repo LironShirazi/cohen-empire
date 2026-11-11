@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, Circle, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { iconMarkup } from "@/components/ui/icon";
 
 export type MapPoint = { lat: number; lng: number; label?: string };
 
@@ -50,7 +51,8 @@ export function StationMap({
       }).addTo(instance);
 
       const pin = L.divIcon({
-        html: '<span style="font-size:28px;line-height:1">📍</span>',
+        // הסיכה המלאה באדום המירוץ — היא מה שגוררים, ולכן בולטת
+        html: iconMarkup("pin", 28, { color: "#fff", fill: "#e4002b" }),
         className: "",
         iconSize: [28, 28],
         iconAnchor: [14, 26],
@@ -71,7 +73,7 @@ export function StationMap({
       for (const point of others) {
         L.marker([point.lat, point.lng], {
           icon: L.divIcon({
-            html: '<span style="font-size:20px;line-height:1;opacity:.55">🏁</span>',
+            html: `<span style="display:block;opacity:.55">${iconMarkup("flag", 20, { color: "#1a1206" })}</span>`,
             className: "",
             iconSize: [20, 20],
             iconAnchor: [10, 18],

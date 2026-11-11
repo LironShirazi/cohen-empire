@@ -13,7 +13,11 @@ import { FormError } from "@/components/ui/page";
 import { teamColors } from "@/lib/team-colors";
 import type { Team } from "@/lib/supabase/types";
 import { useConfirm } from "@/components/ui/confirm";
+import { animalName } from "@/components/ui/icon";
 
+// ⚠️ הערך שנשמר ב-DB נשאר עם האימוג׳י — קבוצות קיימות שמורות כך,
+// והבחירה מסומנת לפי השוואה מדויקת. התצוגה בכל האפליקציה מורידה
+// אותו (`animalName`/`TeamGlyph` ב-components/ui/icon.tsx).
 const animals = [
   "🐬 דולפינים",
   "🦁 אריות",
@@ -111,7 +115,7 @@ export function TeamEditor({
                     : "border-line bg-white"
                 }`}
               >
-                {option}
+                {animalName(option)}
               </button>
             ))}
           </div>

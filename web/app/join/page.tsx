@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { PageShell } from "@/components/ui/page";
 import { getMyJoinRequest, getMyMembership, getUser } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 export default async function JoinPage() {
   const user = await getUser();
@@ -22,7 +23,7 @@ export default async function JoinPage() {
 
       {/* המצפן — סימן הניווט של המותג (foundations/brand.html) */}
       <div className="compass size-24 p-[9px]">
-        <span className="compass-core text-4xl">🌍</span>
+        <span className="compass-core text-4xl"><Icon name="navigate" size={38} /></span>
       </div>
 
       {user ? (
@@ -38,7 +39,7 @@ export default async function JoinPage() {
           <h1 className="font-display text-h1">כניסה למשחק</h1>
           <Card className="flex w-full flex-col gap-4">
             <p className="text-lg">
-              קודם מתחברים עם Google, ואז מזינים את קוד המשחק 🏁
+              קודם מתחברים עם Google, ואז מזינים את קוד המשחק.
             </p>
             <GoogleSignInButton next="/join" />
           </Card>
@@ -47,9 +48,10 @@ export default async function JoinPage() {
 
       <Link
         href="/"
-        className="mt-auto text-small font-bold text-muted hover:text-brand"
+        className="inline-flex items-center gap-1 mt-auto text-small font-bold text-muted hover:text-brand"
       >
-        → לדף הבית
+        <Icon name="back" size={16} />
+        לדף הבית
       </Link>
     </PageShell>
   );

@@ -4,7 +4,7 @@ import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
 import { getProfile, getQuotes, getUser } from "@/lib/data";
 
 export const metadata = {
-  title: "🏛️ תוכן משפחתי — אימפריית כהן",
+  title: "תוכן משפחתי — אימפריית כהן",
 };
 
 /**
@@ -33,7 +33,7 @@ export default async function AdminContentPage() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <AdminHeader title="🏛️ תוכן משפחתי" back="/admin" backLabel="לניהול" />
+      <AdminHeader title="תוכן משפחתי" icon="hall" back="/admin" backLabel="לניהול" />
       <AdminBody className="flex flex-col gap-8">
         <QuotesEditor quotes={quotes} />
       </AdminBody>

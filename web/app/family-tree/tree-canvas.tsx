@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import "./family-tree.css";
+import { Icon } from "@/components/ui/icon";
 
 // הסדר קובע: store לפני main, ו-main אחרון כי הוא מגדיר את boot
-const SCRIPTS = ["store", "layout", "render", "export", "ui", "main"];
+const SCRIPTS = ["icons", "store", "layout", "render", "export", "ui", "main"];
 
 function loadScript(src: string): Promise<void> {
   const existing = document.querySelector(`script[src="${src}"]`);
@@ -69,23 +70,26 @@ export function TreeCanvas({
           `.topbar` ב-family-tree.css לא מגדיר `background` בכלל */}
       <header className="topbar cosmic">
         <Link className="home-link" href="/" title="חזרה לדף הבית">
-          🏠
+          <Icon name="home" size={22} label="חזרה לדף הבית" />
         </Link>
         <div className="titles">
-          <h1>🌳 העץ המשפחתי</h1>
+          <h1>העץ המשפחתי</h1>
           <p>כהן אימפרייה</p>
         </div>
       </header>
 
       <div className="toolbar">
         <button id="btn-edit" className="tb-btn" aria-pressed="false">
-          ✏️ עריכת העץ
+          <Icon name="edit" size={18} />
+          עריכת העץ
         </button>
         <button id="btn-me" className="tb-btn">
-          🙋 אני בעץ
+          <Icon name="me" size={18} />
+          אני בעץ
         </button>
         <button id="btn-export" className="tb-btn">
-          ⬇️ ייצוא
+          <Icon name="download" size={18} />
+          ייצוא
         </button>
         {/* השלמה אוטומטית משלנו ולא datalist: הרשימה המלאה של המשפחה
             ארוכה מדי, ו-ui.js מציג רק את ההתאמות לטקסט שהוקלד */}
@@ -93,7 +97,7 @@ export function TreeCanvas({
           <input
             id="search"
             className="tb-search"
-            placeholder="🔍 חיפוש בעץ..."
+            placeholder="חיפוש בעץ..."
             autoComplete="off"
             role="combobox"
             aria-autocomplete="list"
@@ -112,23 +116,32 @@ export function TreeCanvas({
           (`-webkit-overflow-scrolling: touch`), והתפריט נפתח בגובה
           הסרגל — בלתי נראה ובלתי לחיץ. בכרום במחשב זה לא משתחזר */}
       <div id="export-menu" className="menu hidden">
-        <button data-act="png">🖼️ תמונה (PNG)</button>
-        <button data-act="pdf">📄 קובץ PDF</button>
+        <button data-act="png">
+          <Icon name="camera" size={18} />
+          תמונה (PNG)
+        </button>
+        <button data-act="pdf">
+          <Icon name="download" size={18} />
+          קובץ PDF
+        </button>
         <hr />
-        <button data-act="json">💾 גיבוי נתונים (JSON)</button>
+        <button data-act="json">
+          <Icon name="save" size={18} />
+          גיבוי נתונים (JSON)
+        </button>
       </div>
 
       <main id="tree-wrap">
         <svg id="tree-svg" xmlns="http://www.w3.org/2000/svg"></svg>
         <div className="zoom-controls">
-          <button id="zoom-in" title="הגדלה">
-            ＋
+          <button id="zoom-in" title="הגדלה" aria-label="הגדלה">
+            <Icon name="plus" size={22} />
           </button>
-          <button id="zoom-out" title="הקטנה">
-            －
+          <button id="zoom-out" title="הקטנה" aria-label="הקטנה">
+            <Icon name="minus" size={22} />
           </button>
-          <button id="zoom-fit" title="התאמה למסך">
-            ⤢
+          <button id="zoom-fit" title="התאמה למסך" aria-label="התאמה למסך">
+            <Icon name="fit" size={22} />
           </button>
         </div>
         <p className="canvas-hint">

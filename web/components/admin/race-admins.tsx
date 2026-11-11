@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { SelectField } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import type { Profile } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * מינוי מנהלים תורנים (docs/01-requirements.md §2, docs/04-screens-ux.md §5).
@@ -36,9 +37,10 @@ export function RaceAdmins({
         {admins.map((admin) => (
           <span
             key={admin.id}
-            className="rounded-full border border-line bg-bg px-3 py-1 text-sm font-semibold"
+            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg px-3 py-1 text-sm font-semibold"
           >
-            👑 {admin.full_name ?? "מנהל"}
+            <Icon name="crown" size={16} className="text-gold" />
+            {admin.full_name ?? "מנהל"}
           </span>
         ))}
       </div>
@@ -75,7 +77,8 @@ export function RaceAdmins({
               });
             }}
           >
-            {pending ? "ממנים…" : "מינוי 👑"}
+            {pending ? null : <Icon name="crown" size={20} />}
+            {pending ? "ממנים…" : "מינוי"}
           </Button>
         </>
       )}

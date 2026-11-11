@@ -1,5 +1,6 @@
 import { Chip } from "@/components/ui/chip";
 import type { Team } from "@/lib/supabase/types";
+import { Icon, TeamGlyph } from "@/components/ui/icon";
 
 /**
  * כותרת מסך הקבוצה — סקיצה 2a.
@@ -30,13 +31,18 @@ export function TeamBanner({
           borderColor: team.color,
         }}
       >
-        {team.animal?.split(" ")[0] ?? "🏁"}
+        <TeamGlyph team={team} />
       </span>
 
       <p className="mt-1.5 font-display text-[30px]">{team.name}</p>
 
       <div className="mt-1.5 flex justify-center gap-2">
-        {rank ? <Chip>🏅 מקום {rank}</Chip> : null}
+        {rank ? (
+          <Chip>
+            <Icon name="trophy" size={16} />
+            מקום {rank}
+          </Chip>
+        ) : null}
         {note ? <Chip tone="muted">{note}</Chip> : null}
       </div>
     </header>

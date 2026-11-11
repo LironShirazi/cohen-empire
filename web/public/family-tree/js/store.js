@@ -144,7 +144,7 @@
 
   function fail(message, err) {
     console.error('[family-tree]', message, err);
-    if (NS.ui && NS.ui.toast) NS.ui.toast('⚠️ ' + message);
+    if (NS.ui && NS.ui.toast) NS.ui.toast(message);
     else alert(message);
   }
 

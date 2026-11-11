@@ -8,6 +8,7 @@ import {
   getRaceTeams,
   getUser,
 } from "@/lib/data";
+import { TeamGlyph } from "@/components/ui/icon";
 
 /** כל משתתף רשאי לראות את כל הקבוצות והרכבן (docs/01-requirements.md §5) */
 export default async function TeamsPage() {
@@ -20,7 +21,7 @@ export default async function TeamsPage() {
   if (!race) {
     return (
       <PageShell>
-        <PageHeader title="👥 הקבוצות" back="/" backLabel="לדף הבית" />
+        <PageHeader title="הקבוצות" icon="users" back="/" backLabel="לדף הבית" />
         <Card className="text-center text-muted">אין כרגע מירוץ פעיל.</Card>
       </PageShell>
     );
@@ -31,7 +32,8 @@ export default async function TeamsPage() {
   return (
     <PageShell className="flex flex-col gap-4">
       <PageHeader
-        title="👥 הקבוצות"
+        title="הקבוצות"
+        icon="users"
         back={membership ? "/team" : "/"}
         backLabel={membership ? "לקבוצה" : "לדף הבית"}
       />
@@ -53,7 +55,7 @@ export default async function TeamsPage() {
               className="flex size-14 flex-none items-center justify-center rounded-2xl text-3xl"
               style={{ background: `color-mix(in srgb, ${team.color} 15%, #fff)` }}
             >
-              {team.animal?.split(" ")[0] ?? "🏁"}
+              <TeamGlyph team={team} />
             </span>
             <div>
               <p className="font-display text-xl">{team.name}</p>

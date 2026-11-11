@@ -13,6 +13,7 @@ import {
   getRandomQuote,
   getUser,
 } from "@/lib/data";
+import { IconTile, LiveDot, TeamGlyph } from "@/components/ui/icon";
 
 export default async function WaitingPage() {
   const user = await getUser();
@@ -28,7 +29,7 @@ export default async function WaitingPage() {
     return (
       <PageShell>
         <Card className="flex flex-col items-center gap-4 text-center">
-          <span className="text-5xl">😕</span>
+          <IconTile name="warning" size={72} className="bg-brand-soft text-brand" />
           <h1 className="font-display text-h1">הבקשה לא אושרה</h1>
           <p className="text-muted">
             אולי שובצתם לקבוצה אחרת — אפשר לנסות שוב עם קוד קבוצה אחר.
@@ -57,13 +58,16 @@ export default async function WaitingPage() {
         className="flex flex-col items-center gap-4 border-s-8 text-center"
         style={{ borderInlineStartColor: team.color }}
       >
-        <Chip tone="yellow">⏳ ממתינים לאישור המנהל</Chip>
+        <Chip tone="yellow">
+          <LiveDot pulse />
+          ממתינים לאישור המנהל
+        </Chip>
 
         <div
           className="flex size-20 items-center justify-center rounded-card-lg text-5xl"
           style={{ background: `color-mix(in srgb, ${team.color} 15%, #fff)` }}
         >
-          {team.animal?.split(" ")[0] ?? "🏁"}
+          <TeamGlyph team={team} />
         </div>
 
         <div>
@@ -74,7 +78,7 @@ export default async function WaitingPage() {
         <WalkingSpinner label="סבא וסבתא בדרך אליכם…" tone="cosmic" />
 
         <p className="text-sm text-muted">
-          ברגע שהמנהל התורן יאשר — המסך יתחלף לבד ותיכנסו לקבוצה 🏁
+          ברגע שהמנהל התורן יאשר — המסך יתחלף לבד ותיכנסו לקבוצה.
         </p>
       </Card>
 

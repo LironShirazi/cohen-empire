@@ -16,6 +16,7 @@ import {
   getUser,
 } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { Icon, type IconName } from "@/components/ui/icon";
 
 /** אריח ניווט — ‎.card.card-tight בסקיצה 1a */
 function Tile({
@@ -24,13 +25,13 @@ function Tile({
   label,
 }: {
   href: string;
-  icon: string;
+  icon: IconName;
   label: string;
 }) {
   return (
     <Link href={href} className="flex-1">
       <Card tight className="px-1.5 py-3.5 text-center">
-        <span className="block text-[26px]">{icon}</span>
+        <Icon name={icon} size={26} className="mx-auto text-brand" />
         <span className="mt-0.5 block text-small font-bold">{label}</span>
       </Card>
     </Link>
@@ -56,10 +57,10 @@ export default async function Home() {
 
   // לאן הכפתור הראשי מוביל תלוי במצב של המשתמש הזה בדיוק
   const primary = membership
-    ? { href: "/team", label: "לקבוצה שלי 🏁" }
+    ? { href: "/team", label: "לקבוצה שלי", icon: "flag" as const }
     : request?.status === "pending"
-      ? { href: "/waiting", label: "הבקשה שלכם ממתינה ⏳" }
-      : { href: "/join", label: "כניסה למשחק 🏁" };
+      ? { href: "/waiting", label: "הבקשה שלכם ממתינה", icon: null }
+      : { href: "/join", label: "כניסה למשחק", icon: "flag" as const };
 
   return (
     <main className="flex flex-1 flex-col">
@@ -69,6 +70,7 @@ export default async function Home() {
           user ? (
             <Link href={primary.href}>
               <Button variant="accent" size="lg" className="w-full">
+                {primary.icon ? <Icon name={primary.icon} size={24} /> : null}
                 {primary.label}
               </Button>
             </Link>
@@ -93,7 +95,8 @@ export default async function Home() {
         {user && race?.status === "finished" ? (
           <Link href="/winners" className="w-full self-center md:max-w-sm">
             <Button variant="accent" size="lg" className="w-full">
-              🏆 מסך הזוכים
+              <Icon name="trophy" size={24} />
+              מסך הזוכים
             </Button>
           </Link>
         ) : null}
@@ -113,15 +116,15 @@ export default async function Home() {
           }`}
         >
           <div className="flex gap-2.5 md:contents">
-            <Tile href="/hall-of-fame" icon="🏆" label="היכל התהילה" />
-            <Tile href="/gallery" icon="📸" label="גלריה" />
-            <Tile href="/family-tree" icon="🌳" label="העץ המשפחתי" />
+            <Tile href="/hall-of-fame" icon="hall" label="היכל התהילה" />
+            <Tile href="/gallery" icon="camera" label="גלריה" />
+            <Tile href="/family-tree" icon="tree" label="העץ המשפחתי" />
           </div>
 
           {user ? (
             <div className="flex gap-2.5 md:contents">
-              <Tile href="/leaderboard" icon="🏅" label="לוח מובילים" />
-              <Tile href="/teams" icon="👥" label="הקבוצות" />
+              <Tile href="/leaderboard" icon="trophy" label="לוח מובילים" />
+              <Tile href="/teams" icon="users" label="הקבוצות" />
             </div>
           ) : null}
         </div>
@@ -129,7 +132,8 @@ export default async function Home() {
         {showAdminLink ? (
           <Link href="/admin" className="w-full self-center md:max-w-sm">
             <Button variant="quiet" className="w-full">
-              🛠️ ניהול המירוץ
+              <Icon name="sliders" />
+              ניהול המירוץ
             </Button>
           </Link>
         ) : null}
@@ -137,7 +141,7 @@ export default async function Home() {
         {user ? (
           <div className="text-center">
             <p className="text-small text-muted">
-              שלום, {profile?.full_name ?? user.email} 👋
+              שלום, {profile?.full_name ?? user.email}
             </p>
             <SignOutButton variant="quiet" />
           </div>

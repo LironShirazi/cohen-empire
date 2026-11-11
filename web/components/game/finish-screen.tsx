@@ -6,6 +6,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { WalkerSprite } from "@/components/ui/walking-spinner";
 import { Button } from "@/components/ui/button";
 import { distanceMeters, formatDistance } from "@/lib/geo";
+import { Icon, IconTile } from "@/components/ui/icon";
 
 const noopSubscribe = () => () => {};
 const geolocationSupported = () => "geolocation" in navigator;
@@ -54,7 +55,7 @@ export function FinishScreen({
       </p>
 
       <p className="font-semibold text-ink opacity-80">
-        סיימתם את כל התחנות 🎉 הראשונים שחוצים את הקו — מנצחים
+        סיימתם את כל התחנות. הראשונים שחוצים את הקו — מנצחים
       </p>
 
       <HomeDistance home={home} />
@@ -72,7 +73,8 @@ export function FinishScreen({
       {announced ? (
         <Link href="/winners">
           <Button variant="navy" size="lg" className="w-full">
-            🏆 למסך הזוכים
+            <Icon name="trophy" size={24} />
+            למסך הזוכים
           </Button>
         </Link>
       ) : (
@@ -82,7 +84,8 @@ export function FinishScreen({
           className="w-full"
           onClick={() => setNavOpen(true)}
         >
-          🗺️ ניווט לבית סבא
+          <Icon name="navigate" size={24} />
+          ניווט לבית סבא
         </Button>
       )}
 
@@ -92,14 +95,14 @@ export function FinishScreen({
           onClick={() => setNavOpen(false)}
         >
           <div className="flex animate-[reveal-arrive_0.45s_cubic-bezier(.34,1.56,.64,1)_both] flex-col gap-3 rounded-card border border-line bg-surface px-5 py-6 text-center shadow-card">
-            <span className="text-[44px]">🤨</span>
+            <IconTile name="home" size={60} className="mx-auto bg-yellow-soft text-ink" />
             <p className="font-display text-2xl leading-tight">
               מה, אתם לא יודעים את הכתובת?!
             </p>
             <p className="text-small text-muted">
-              כל שנה אותו בית. פשוט תתחילו ללכת 😄
+              כל שנה אותו בית. פשוט תתחילו ללכת.
             </p>
-            <Button onClick={() => setNavOpen(false)}>צודקים, זזנו 🏃</Button>
+            <Button onClick={() => setNavOpen(false)}>צודקים, זזנו</Button>
           </div>
         </div>
       ) : null}
@@ -124,8 +127,9 @@ function HomeDistance({ home }: { home: { lat: number; lng: number } | null }) {
   if (!home || meters === null) return null;
 
   return (
-    <p className="distpulse self-center rounded-full bg-ink px-5 py-3 text-[22px] font-extrabold text-yellow">
-      📍 עוד {formatDistance(meters)} הביתה
+    <p className="distpulse flex items-center gap-2 self-center rounded-full bg-ink px-5 py-3 text-[22px] font-extrabold text-yellow">
+      <Icon name="pin" size={24} />
+      עוד {formatDistance(meters)} הביתה
     </p>
   );
 }

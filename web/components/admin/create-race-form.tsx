@@ -5,6 +5,7 @@ import { createRaceAction, type AdminFormState } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
+import { Icon } from "@/components/ui/icon";
 
 export function CreateRaceForm() {
   const [state, action, pending] = useActionState(
@@ -54,7 +55,8 @@ export function CreateRaceForm() {
 
       <FormError>{state.error}</FormError>
       <Button size="lg" type="submit" disabled={pending}>
-        {pending ? "יוצרים…" : "יצירת מירוץ 🏁"}
+        {pending ? null : <Icon name="flag" size={22} />}
+        {pending ? "יוצרים…" : "יצירת מירוץ"}
       </Button>
     </form>
   );

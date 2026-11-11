@@ -22,7 +22,8 @@ export default async function AdminTeamsPage(
   return (
     <main className="flex flex-1 flex-col">
       <AdminHeader
-        title="👥 קבוצות"
+        title="קבוצות"
+        icon="users"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
         size="wide"

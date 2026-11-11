@@ -88,7 +88,7 @@
       `<style>${exportCSS()}</style>` +
       content.defs +
       `<rect x="0" y="0" width="${w}" height="${h}" fill="#fcf8ef"/>` +
-      `<text x="${midX}" y="46" text-anchor="middle" style="font:700 28px 'Segoe UI',Arial,sans-serif;fill:#0b1b3f">🌳 העץ המשפחתי — אימפריית כהן</text>` +
+      `<text x="${midX}" y="46" text-anchor="middle" style="font:700 28px 'Segoe UI',Arial,sans-serif;fill:#0b1b3f">העץ המשפחתי — אימפריית כהן</text>` +
       `<text x="${midX}" y="72" text-anchor="middle" style="font:14px 'Segoe UI',Arial,sans-serif;fill:#7a6a55">נכון לתאריך ${todayStr()}</text>` +
       `<g transform="translate(${ox} ${oy})">${content.body}</g>` +
       `</svg>`;
@@ -101,7 +101,7 @@
       .link{fill:none;stroke:#b3a689;stroke-width:2}
       .couple{stroke:#c9962e;stroke-width:2.5}
       .couple.far{stroke-dasharray:5 5;stroke-width:1.5;opacity:.6;fill:none}
-      .heart{font-size:13px;fill:#c0392b;paint-order:stroke;stroke:#fcf8ef;stroke-width:5}
+      .heart{fill:#c0392b;paint-order:stroke;stroke:#fcf8ef;stroke-width:7;stroke-linejoin:round}
       .couple-name{font:700 11px 'Segoe UI',Arial,sans-serif;fill:#c9962e;paint-order:stroke;stroke:#fcf8ef;stroke-width:4}
       .person .ph-bg{fill:#eee9dc;stroke:none}
       .person.g-m .ph-bg{fill:#dbe9f6}
@@ -113,8 +113,8 @@
       .initial{font:700 26px 'Segoe UI',Arial,sans-serif;fill:#7a6a55}
       .name{font:700 13px 'Segoe UI',Arial,sans-serif;fill:#1a1206;paint-order:stroke;stroke:#fcf8ef;stroke-width:4}
       .year{font:11px 'Segoe UI',Arial,sans-serif;fill:#7a6a55;paint-order:stroke;stroke:#fcf8ef;stroke-width:4}
-      .me-badge circle{fill:#1fa363}
-      .me-badge text{font-size:11px}
+      .me-badge .bg{fill:#1fa363}
+      .me-badge .me-ic{fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
     `;
   }
 

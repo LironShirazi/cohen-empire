@@ -11,6 +11,7 @@ import {
   getUser,
   isRaceAdmin,
 } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 export default async function AdminTeamChatPage(
   props: PageProps<"/admin/[raceId]/chat/[teamId]">,
@@ -42,9 +43,10 @@ export default async function AdminTeamChatPage(
       <header className="flex flex-none items-center gap-3">
         <Link
           href={`/admin/${raceId}/chat`}
-          className="text-sm font-bold text-muted hover:text-brand"
+          className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-brand"
         >
-          → לכל הקבוצות
+          <Icon name="back" size={16} />
+          לכל הקבוצות
         </Link>
         <h1 className="flex items-center gap-2 font-display text-xl">
           <span

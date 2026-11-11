@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { HallOfFameForm } from "@/components/family/hall-of-fame-form";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * "ניהול היכל התהילה" — הוספת שנים, בתחתית `/hall-of-fame`, למנהל-על בלבד.
@@ -20,10 +21,13 @@ export function HallOfFameEditor() {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-h2">✏️ ניהול היכל התהילה</h2>
+      <h2 className="flex items-center gap-2 font-display text-h2">
+        <Icon name="edit" size={22} className="text-brand" />
+        ניהול היכל התהילה
+      </h2>
       <p className="-mt-2 text-sm text-muted">
         גלוי למנהלי-על בלבד. מירוץ שמסתיים באפליקציה נכנס לבד — כאן מזינים
-        את השנים שקדמו לה. עריכה ומחיקה — בכפתור ✏️ על השורה עצמה.
+        את השנים שקדמו לה. עריכה ומחיקה — בכפתור העיפרון על השורה עצמה.
       </p>
 
       {open ? (
@@ -32,7 +36,8 @@ export function HallOfFameEditor() {
         </Card>
       ) : (
         <Button className="w-full" onClick={() => setOpen(true)}>
-          ➕ שנה מההיסטוריה
+          <Icon name="plus" size={22} />
+          שנה מההיסטוריה
         </Button>
       )}
     </section>

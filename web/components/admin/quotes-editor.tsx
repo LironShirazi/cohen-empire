@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
 import type { Quote } from "@/lib/supabase/types";
 import { useConfirm } from "@/components/ui/confirm";
+import { Icon } from "@/components/ui/icon";
 
 const MAX_LEN = 280; // תואם ל-`quotes_text_len` ב-0014
 const WHO = ["סבא", "סבתא"] as const;
@@ -102,7 +103,10 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-h2">💬 משפטי סבא וסבתא</h2>
+      <h2 className="flex items-center gap-2 font-display text-h2">
+        <Icon name="chat" size={22} className="text-brand" />
+        משפטי סבא וסבתא
+      </h2>
 
       {open ? (
         <Card className="flex flex-col gap-3">
@@ -129,7 +133,7 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
                 className="flex-1"
                 onClick={() => setWho(option)}
               >
-                {option === "סבתא" ? "👵" : "👴"} {option}
+                {option}
               </Button>
             ))}
           </div>
@@ -142,7 +146,8 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
           <Button variant="quiet" onClick={() => fileInput.current?.click()}>
-            {file ? `🖼️ ${file.name}` : "🖼️ קריקטורה או תמונה (לא חובה)"}
+            <Icon name="camera" />
+            {file ? file.name : "קריקטורה או תמונה (לא חובה)"}
           </Button>
 
           <div className="flex gap-2">
@@ -167,7 +172,8 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
       ) : (
         <>
           <Button className="w-full" onClick={() => setOpen(true)}>
-            ➕ משפט חדש
+            <Icon name="plus" size={22} />
+            משפט חדש
           </Button>
           <FormError>{error}</FormError>
         </>
@@ -190,7 +196,8 @@ export function QuotesEditor({ quotes }: { quotes: Quote[] }) {
               disabled={!!busy}
               className="flex min-h-11 items-center gap-1.5 self-start rounded-full border-2 border-line px-4 text-sm font-bold text-muted active:bg-brand-soft active:text-brand disabled:opacity-50"
             >
-              🗑️ מחיקה
+              <Icon name="trash" size={18} />
+              מחיקה
             </button>
           </div>
         ))

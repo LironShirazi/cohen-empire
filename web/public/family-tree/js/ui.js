@@ -77,7 +77,7 @@
       <div class="crop-box">
         <div class="modal-head">
           <h3>מיקום התמונה בעיגול</h3>
-          <button class="btn-close" data-crop-cancel>✕</button>
+          <button class="btn-close" data-crop-cancel aria-label="סגירה">${NS.icon('close', 20)}</button>
         </div>
         <div class="crop-body">
           <div class="crop-stage" style="width:${stage}px;height:${stage}px">
@@ -86,9 +86,9 @@
           </div>
           <p class="hint">גררו את התמונה עם האצבע וכוונו את הזום — מה שנמצא בתוך העיגול הוא מה שיישמר.</p>
           <div class="crop-zoom">
-            <button type="button" class="btn-mini" data-zoom="out" aria-label="הקטנה">－</button>
+            <button type="button" class="btn-mini" data-zoom="out" aria-label="הקטנה">${NS.icon('minus')}</button>
             <input type="range" class="crop-range" min="1" max="4" step="0.01" value="1" aria-label="זום">
-            <button type="button" class="btn-mini" data-zoom="in" aria-label="הגדלה">＋</button>
+            <button type="button" class="btn-mini" data-zoom="in" aria-label="הגדלה">${NS.icon('plus')}</button>
           </div>
           <div class="form-actions">
             <button type="button" class="btn btn-primary" data-crop-save>שמירת התמונה</button>
@@ -221,7 +221,7 @@
         <label>תמונה</label>
         <div class="photo-row">
           <button type="button" class="photo-preview${existing ? ' has-photo' : ''}" aria-label="בחירת תמונה">${
-            existing ? `<img src="${esc(existing)}" alt="">` : '📷'
+            existing ? `<img src="${esc(existing)}" alt="">` : NS.icon('camera', 28)
           }</button>
           <div class="photo-buttons">
             <button type="button" class="btn-mini photo-pick">${existing ? 'החלפת תמונה' : 'בחירת תמונה'}</button>
@@ -245,7 +245,7 @@
     let source = null;   // התמונה כפי שנבחרה, כדי שאפשר יהיה למקם מחדש בלי בחירה חוזרת
 
     function render() {
-      preview.innerHTML = value ? `<img src="${esc(value)}" alt="">` : '📷';
+      preview.innerHTML = value ? `<img src="${esc(value)}" alt="">` : NS.icon('camera', 28);
       preview.classList.toggle('has-photo', !!value);
       pickBtn.textContent = value ? 'החלפת תמונה' : 'בחירת תמונה';
       adjustBtn.hidden = !value;
@@ -370,7 +370,7 @@
         form.querySelector('.form-actions').before(box);
       }
       box.innerHTML = `
-        <strong>⚠️ כבר יש בעץ:</strong>
+        <strong>${NS.icon('warning', 16)} כבר יש בעץ:</strong>
         <ul>${hits.map((q) => `<li>${esc(describe(q))}</li>`).join('')}</ul>
         <p>${esc(hint)}</p>`;
       form.querySelector('[type=submit]').textContent = 'זה מישהו אחר — להוסיף בכל זאת';
@@ -384,7 +384,7 @@
     const modal = $('#modal');
     const box = $('#modal-box');
     box.innerHTML = `
-      <div class="modal-head"><h3>${esc(title)}</h3><button class="btn-close" data-close>✕</button></div>
+      <div class="modal-head"><h3>${esc(title)}</h3><button class="btn-close" data-close aria-label="סגירה">${NS.icon('close', 20)}</button></div>
       <div class="modal-body">${bodyHTML}</div>`;
     modal.classList.remove('hidden');
     box.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeModal));
@@ -443,29 +443,29 @@
       <div class="sheet-head">
         ${avatarHTML(p, 56)}
         <div class="sheet-title">
-          <h3>${esc(p.name)} ${p.isRoot ? '⭐' : ''} ${isMe ? '<span class="me-tag">אני</span>' : ''}</h3>
+          <h3>${esc(p.name)} ${p.isRoot ? NS.icon('crown', 18) : ''} ${isMe ? '<span class="me-tag">אני</span>' : ''}</h3>
           <p>${p.birthYear ? 'שנת לידה: ' + p.birthYear : 'שנת לידה לא ידועה'}</p>
         </div>
-        <button class="btn-close" id="sheet-close">✕</button>
+        <button class="btn-close" id="sheet-close" aria-label="סגירה">${NS.icon('close', 20)}</button>
       </div>
       <div class="sheet-rels">
         ${rel('הורים', parents)}${rel('בן/בת זוג', partners)}${rel('ילדים', children)}
       </div>
       <div class="sheet-actions">
-        <button class="btn" id="act-full">🔍 תצוגה מוגדלת</button>
-        <button class="btn" id="act-edit">✏️ עריכת העלה</button>
+        <button class="btn" id="act-full">${NS.icon('search')}תצוגה מוגדלת</button>
+        <button class="btn" id="act-edit">${NS.icon('edit')}עריכת העלה</button>
       </div>
       ${edit ? `
       <div class="sheet-actions edit-actions">
-        ${parents.length < 2 ? `<button class="btn btn-add" id="act-parents">➕ אבא ואמא</button>` : ''}
-        <button class="btn btn-add" id="act-child">➕ בן/בת</button>
-        <button class="btn btn-add" id="act-partner">➕ בן/בת זוג</button>
-        ${NS.store.canDelete(id) ? `<button class="btn btn-danger" id="act-delete">🗑️ מחיקה</button>` : ''}
+        ${parents.length < 2 ? `<button class="btn btn-add" id="act-parents">${NS.icon('plus')}אבא ואמא</button>` : ''}
+        <button class="btn btn-add" id="act-child">${NS.icon('plus')}בן/בת</button>
+        <button class="btn btn-add" id="act-partner">${NS.icon('plus')}בן/בת זוג</button>
+        ${NS.store.canDelete(id) ? `<button class="btn btn-danger" id="act-delete">${NS.icon('trash')}מחיקה</button>` : ''}
       </div>` : `
       <div class="sheet-actions">
-        <button class="btn btn-ghost" id="act-enable-edit">🔓 הפעלת מצב עריכה להוספת קרובים</button>
+        <button class="btn btn-ghost" id="act-enable-edit">${NS.icon('edit')}הפעלת מצב עריכה להוספת קרובים</button>
       </div>`}
-      ${!isMe ? `<button class="btn-link" id="act-me">🙋 זה אני — סמנו את העיגול שלי</button>` : ''}
+      ${!isMe ? `<button class="btn-link" id="act-me">${NS.icon('me')}זה אני — סמנו את העיגול שלי</button>` : ''}
     `;
     sheet.classList.remove('hidden');
 
@@ -481,7 +481,7 @@
     on('#act-enable-edit', () => { setEditMode(true); openCard(id); });
     on('#act-me', () => {
       NS.store.prefs.myId = id;
-      toast('סומן! זה העיגול שלך 🙋');
+      toast('סומן! זה העיגול שלך');
       refresh();
       openCard(id);
     });
@@ -507,14 +507,14 @@
     const overlay = $('#overlay-full');
     overlay.innerHTML = `
       <div class="full-box">
-        <button class="btn-close" id="full-close">✕</button>
+        <button class="btn-close" id="full-close" aria-label="סגירה">${NS.icon('close', 20)}</button>
         ${avatarHTML(p, 190)}
-        <h2>${esc(p.name)} ${p.isRoot ? '⭐' : ''}</h2>
+        <h2>${esc(p.name)} ${p.isRoot ? NS.icon('crown', 22) : ''}</h2>
         <p class="full-year">${p.birthYear ? 'שנת לידה: ' + p.birthYear : 'שנת לידה לא ידועה'}</p>
-        ${p.phone ? `<p class="full-phone">📞 <a href="tel:${esc(p.phone.replace(/[^\d+*#]/g, ''))}">${esc(p.phone)}</a></p>` : ''}
+        ${p.phone ? `<p class="full-phone">${NS.icon('phone')} <a href="tel:${esc(p.phone.replace(/[^\d+*#]/g, ''))}">${esc(p.phone)}</a></p>` : ''}
         ${rel('הורים', parents)}${rel('בן/בת זוג', partners)}${rel(`ילדים (${children.length})`, children)}
         <div class="sheet-actions">
-          <button class="btn" id="full-edit">✏️ עריכת העלה</button>
+          <button class="btn" id="full-edit">${NS.icon('edit')}עריכת העלה</button>
           <button class="btn btn-cancel" id="full-back">חזרה לעץ</button>
         </div>
       </div>`;
@@ -546,7 +546,7 @@
       if (!data.name) return toast('חובה להזין שם');
       NS.store.updatePerson(id, data);
       closeModal();
-      toast('נשמר ✔');
+      toast('נשמר');
       openCard(id);
     });
   }
@@ -616,7 +616,7 @@
         mPick ? { id: mPick } : mName ? { name: mName, birthYear: val('#mo-year') } : null
       );
       closeModal();
-      toast('ההורים נוספו לעץ 🌳');
+      toast('ההורים נוספו לעץ');
       openCard(id);
     });
   }
@@ -627,7 +627,7 @@
     const partners = NS.store.partnersOf(id);
     const options =
       partners.map((q, i) => `<option value="${esc(q.id)}" ${i === 0 ? 'selected' : ''}>${esc(q.name)}</option>`).join('') +
-      `<option value="__new__">➕ הורה שני חדש...</option>` +
+      `<option value="__new__">+ הורה שני חדש...</option>` +
       `<option value="" ${partners.length ? '' : 'selected'}>ללא הורה שני</option>`;
     const box = openModal('הוספת בן/בת ל' + p.name, `
       <form novalidate id="f-child">
@@ -664,7 +664,7 @@
       if (!guard([data.name, other && other.create ? other.create.name : ''].filter(Boolean))) return;
       const child = NS.store.addChild(id, data, other);
       closeModal();
-      toast(data.name + ' נוסף/ה לעץ 🌱');
+      toast(data.name + ' נוסף/ה לעץ');
       openCard(child.id);
     });
   }
@@ -690,7 +690,7 @@
       if (!guard([data.name])) return;
       const partner = NS.store.addPartner(id, data);
       closeModal();
-      toast('נוסף/ה לעץ ♥');
+      toast('נוסף/ה לעץ');
       openCard(partner.id);
     });
   }
@@ -716,7 +716,7 @@
         .filter(filter)
         .map((q) => `<option value="${esc(q.id)}">${esc(q.name)}${q.birthYear ? ' (' + q.birthYear + ')' : ''}</option>`)
         .join('');
-    const box = openModal('אני בעץ המשפחתי 🙋', `
+    const box = openModal('אני בעץ המשפחתי', `
       <div class="self-tabs">
         <label class="radio"><input type="radio" name="self-mode" value="exists" checked> אני כבר מופיע/ה בעץ</label>
         <label class="radio"><input type="radio" name="self-mode" value="new"> עדיין לא בעץ — הוסיפו אותי</label>
@@ -756,7 +756,7 @@
         if (!pick) return toast('בחרו את עצמכם מהרשימה');
         NS.store.prefs.myId = pick;
         closeModal();
-        toast('נמצאת! אפשר לערוך את העיגול שלך ✔');
+        toast('נמצאת! אפשר לערוך את העיגול שלך');
         refresh();
         openCard(pick);
       } else {
@@ -770,7 +770,7 @@
           NS.store.updatePerson(person.id, { fatherId: faId || null, motherId: moId || null });
         NS.store.prefs.myId = person.id;
         closeModal();
-        toast('ברוך הבא לעץ המשפחתי! 🌳');
+        toast('ברוך הבא לעץ המשפחתי!');
         refresh();
         openCard(person.id);
       }
@@ -789,9 +789,9 @@
     const on = NS.store.prefs.editMode;
     btn.classList.toggle('active', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.textContent = on ? '✏️ מצב עריכה פעיל' : '✏️ עריכת העץ';
+    btn.innerHTML = NS.icon('edit') + (on ? 'מצב עריכה פעיל' : 'עריכת העץ');
     const meBtn = $('#btn-me');
-    meBtn.textContent = NS.store.prefs.myId ? '🙋 העיגול שלי' : '🙋 אני בעץ';
+    meBtn.innerHTML = NS.icon('me') + (NS.store.prefs.myId ? 'העיגול שלי' : 'אני בעץ');
   }
 
   /* ---------- חיפוש עם השלמה אוטומטית ----------
@@ -1029,7 +1029,7 @@
       reader.onload = () => {
         try {
           NS.store.importJSON(reader.result);
-          toast('הנתונים יובאו בהצלחה ✔');
+          toast('הנתונים יובאו בהצלחה');
           NS.render.fit();
         } catch (err) {
           alert('ייבוא נכשל: ' + err.message);

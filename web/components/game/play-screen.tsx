@@ -14,6 +14,7 @@ import { Chip } from "@/components/ui/chip";
 import { WalkingSpinner } from "@/components/ui/walking-spinner";
 import { isVideoUrl } from "@/lib/media";
 import type { CompletionType, GameState } from "@/lib/supabase/types";
+import { Icon, IconTile, FinishFlag, LiveDot, TeamGlyph } from "@/components/ui/icon";
 
 const completionNote: Record<CompletionType, string> = {
   admin_approve: "אופן ההשלמה: אישור המנהל התורן",
@@ -37,7 +38,7 @@ export function PlayScreen({ state }: { state: GameState }) {
   if (state.state === "no_stations") {
     return (
       <Card className="flex flex-col items-center gap-3 text-center">
-        <span className="text-5xl">🛠️</span>
+        <IconTile name="sliders" size={72} className="bg-bg-2 text-muted" />
         <h2 className="font-display text-h2">המירוץ עוד בהכנות</h2>
         <p className="text-muted">
           המנהל התורן עדיין מסדר את התחנות. תכף מתחילים!
@@ -55,15 +56,16 @@ export function PlayScreen({ state }: { state: GameState }) {
   if (raceClosed && state.state !== "finished") {
     return (
       <Card className="flex flex-col items-center gap-3 text-center">
-        <span className="text-6xl">🏁</span>
+        <FinishFlag size={76} />
         <h2 className="font-display text-h1">המירוץ נסגר</h2>
         <p className="text-muted">
           המנהל סגר את המירוץ. חבל שלא הספקתם את כל התחנות — אבל
-          ההליכה נחשבת, וגם הסיפורים בדרך 😄
+          ההליכה נחשבת, וגם הסיפורים בדרך.
         </p>
         <Link href="/winners" className="w-full">
           <Button variant="accent" size="lg" className="w-full">
-            🏆 למסך הזוכים
+            <Icon name="trophy" size={24} />
+            למסך הזוכים
           </Button>
         </Link>
       </Card>
@@ -77,20 +79,24 @@ export function PlayScreen({ state }: { state: GameState }) {
 
     return (
       <Card className="flex flex-col items-center gap-3 border-ok text-center">
-        <span className="text-6xl">🏁</span>
+        <FinishFlag size={76} />
         <h2 className="font-display text-h1">סיימתם את כל התחנות!</h2>
         {announced ? (
           <>
-            <p className="text-lg font-bold">המירוץ נגמר 🏆</p>
+            <p className="text-lg font-bold">המירוץ נגמר</p>
             <Link href="/winners" className="w-full">
               <Button variant="accent" size="lg" className="w-full">
-                🏆 למסך הזוכים
+                <Icon name="trophy" size={24} />
+            למסך הזוכים
               </Button>
             </Link>
           </>
         ) : (
           <>
-            <p className="text-lg font-bold">חזרו לבית סבא! 🏠</p>
+            <p className="flex items-center gap-2 text-lg font-bold">
+              <Icon name="home" size={22} className="text-brand" />
+              חזרו לבית סבא!
+            </p>
             <p className="text-muted">
               נתראה בקו הסיום — שם מכריזים על הזוכים.
             </p>
@@ -108,7 +114,7 @@ export function PlayScreen({ state }: { state: GameState }) {
         className="flex size-11 flex-none items-center justify-center rounded-2xl text-2xl"
         style={{ background: `color-mix(in srgb, ${team.color} 15%, #fff)` }}
       >
-        {team.animal?.split(" ")[0] ?? "🏁"}
+        <TeamGlyph team={team} />
       </span>
       <b className="text-xl">{team.name}</b>
     </div>
@@ -117,7 +123,10 @@ export function PlayScreen({ state }: { state: GameState }) {
   if (state.state === "awaiting_approval") {
     return (
       <Card className="flex flex-col items-center gap-3 text-center">
-        <Chip tone="yellow">✋ ממתינים לאישור המנהל</Chip>
+        <Chip tone="yellow">
+          <LiveDot pulse />
+          ממתינים לאישור המנהל
+        </Chip>
         <h2 className="font-display text-h2">{station.name}</h2>
         <WalkingSpinner label="המנהל בודק את המשימה…" height={88} />
         <p className="text-sm text-muted">ברגע שיאשר — הרמז הבא ייפתח לבד.</p>
@@ -135,7 +144,7 @@ export function PlayScreen({ state }: { state: GameState }) {
           phase="clue"
           title="תחנה חדשה נפתחה!"
           body={station.clue ?? "אין רמז לתחנה הזו"}
-          cta="יצאנו לדרך! 🏃"
+          cta="יצאנו לדרך!"
         />
 
         {/* מסך הרמז — סקיצה 1f */}
@@ -143,7 +152,10 @@ export function PlayScreen({ state }: { state: GameState }) {
           {teamStrip}
 
           <Card className="flex flex-col gap-3">
-            <Chip className="self-start">🔒 בדרך לתחנה {station.position}</Chip>
+            <Chip className="self-start">
+              <Icon name="lock" size={16} />
+              בדרך לתחנה {station.position}
+            </Chip>
             <h2 className="font-display text-h2">הרמז</h2>
             <p className="text-[19px] leading-relaxed">
               {station.clue ?? "אין רמז לתחנה הזו"}
@@ -166,7 +178,8 @@ export function PlayScreen({ state }: { state: GameState }) {
           )}
 
           <p className="rounded-card-sm border border-line bg-bg-2 px-3.5 py-3 text-center text-sm text-muted">
-            המשימה תיחשף רק כשתגיעו פיזית לנקודה 🤫
+            <Icon name="hidden" size={16} className="me-1 inline align-[-3px]" />
+            המשימה תיחשף רק כשתגיעו פיזית לנקודה
           </p>
         </div>
       </>
@@ -182,7 +195,7 @@ export function PlayScreen({ state }: { state: GameState }) {
         phase="task"
         title="הגעתם!"
         body={station.name ?? "המשימה נפתחה"}
-        cta="לפתיחת המשימה 🎯"
+        cta="לפתיחת המשימה"
       />
 
       <div className="flex flex-col gap-3.5">
@@ -199,8 +212,9 @@ export function PlayScreen({ state }: { state: GameState }) {
           <p className="mt-2.5 font-display text-2xl text-ink">
             תחנה {station.position} · {station.name}
           </p>
-          <span className="mt-1.5 inline-block rounded-full bg-ink px-4 py-1.5 text-sm font-extrabold text-yellow">
-            🎉 הגעתם! המשימה נפתחה
+          <span className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-1.5 text-sm font-extrabold text-yellow">
+            <Icon name="check" size={16} />
+            הגעתם! המשימה נפתחה
           </span>
         </div>
 
@@ -215,7 +229,7 @@ export function PlayScreen({ state }: { state: GameState }) {
           {/* טקסט ומדיה שניהם רשות, אבל תחנה בלי שום משימה לא צריכה
               כותרת "המשימה" מרחפת מעל כלום */}
           {station.task_content?.text || station.task_content?.media ? (
-            <h2 className="mt-1.5 font-display text-h2">המשימה 📸</h2>
+            <h2 className="mt-1.5 font-display text-h2">המשימה</h2>
           ) : null}
 
           {station.task_content?.text ? (
@@ -247,8 +261,9 @@ export function PlayScreen({ state }: { state: GameState }) {
           ) : null}
         </Card>
 
-        <p className="rounded-card-sm border border-line bg-bg-2 px-3.5 py-3 text-sm text-muted">
-          ✔️ {completionNote[station.completion_type]}
+        <p className="flex items-start gap-2 rounded-card-sm border border-line bg-bg-2 px-3.5 py-3 text-sm text-muted">
+          <Icon name="check" size={18} className="text-ok" />
+          {completionNote[station.completion_type]}
         </p>
 
         <CompleteStation

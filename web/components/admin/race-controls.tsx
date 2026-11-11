@@ -15,10 +15,13 @@ import { Chip } from "@/components/ui/chip";
 import { FormError } from "@/components/ui/page";
 import type { RaceStatus } from "@/lib/supabase/types";
 import { startNavProgress } from "@/components/ui/navigation-progress";
+import { Icon, type IconName } from "@/components/ui/icon";
 
-const nextStep: Partial<Record<RaceStatus, { status: RaceStatus; label: string }>> = {
-  draft: { status: "open", label: "פתיחת הרשמה 🔓" },
-  open: { status: "live", label: "יוצאים לדרך! 🏁" },
+const nextStep: Partial<
+  Record<RaceStatus, { status: RaceStatus; label: string; icon: IconName }>
+> = {
+  draft: { status: "open", label: "פתיחת הרשמה", icon: "bolt" },
+  open: { status: "live", label: "יוצאים לדרך!", icon: "flag" },
 };
 
 /**
@@ -65,6 +68,7 @@ export function RaceControls({
           disabled={pending}
           onClick={() => run(() => setRaceStatusAction(raceId, step.status))}
         >
+          <Icon name={step.icon} size={24} />
           {step.label}
         </Button>
       ) : null}
@@ -87,7 +91,8 @@ export function RaceControls({
               })
             }
           >
-            🏆 הכרזת הזוכים
+            <Icon name="trophy" size={24} />
+            הכרזת הזוכים
           </Button>
           <p className="text-sm text-muted">
             לוחצים כשהקבוצה הראשונה חוזרת לבית סבא. <b>המירוץ ממשיך לרוץ</b> —
@@ -99,12 +104,16 @@ export function RaceControls({
       {status === "live" && winnerDeclared ? (
         <>
           <div className="flex items-center justify-between gap-2">
-            <Chip tone="yellow">🏆 האלופים הוכרזו</Chip>
+            <Chip tone="yellow">
+              <Icon name="trophy" size={16} />
+              האלופים הוכרזו
+            </Chip>
             <Link
               href={winnersHref}
-              className="text-sm font-bold text-brand hover:underline"
+              className="inline-flex items-center gap-1 text-sm font-bold text-brand hover:underline"
             >
-              למסך הזוכים →
+              למסך הזוכים
+              <Icon name="forward" size={16} />
             </Link>
           </div>
           <Button
@@ -113,7 +122,8 @@ export function RaceControls({
             disabled={pending}
             onClick={() => run(() => finishRaceAction(raceId))}
           >
-            🏁 סיום המירוץ לכולם
+            <Icon name="flag" size={24} />
+            סיום המירוץ לכולם
           </Button>
           {/* פאנל האזהרה האדום מסקיצה 3i. הפעולה הזו נועלת את המשחק
               לכולם, והיא נלחצת באמצע ארוחה רועשת — היא צריכה להיראות
@@ -128,7 +138,8 @@ export function RaceControls({
       {status === "finished" || status === "archived" ? (
         <Link href={winnersHref}>
           <Button variant="accent" className="w-full">
-            🏆 מסך הזוכים
+            <Icon name="trophy" size={22} />
+            מסך הזוכים
           </Button>
         </Link>
       ) : null}
@@ -144,7 +155,7 @@ export function RaceControls({
             disabled={pending}
             onClick={() => run(() => archiveRaceAction(raceId))}
           >
-            ארכוב המירוץ 📦
+            ארכוב המירוץ
           </Button>
         </>
       ) : null}

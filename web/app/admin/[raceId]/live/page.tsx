@@ -42,7 +42,8 @@ export default async function AdminLivePage(
   return (
     <main className="flex flex-1 flex-col">
       <AdminHeader
-        title="🟢 מהלך המירוץ"
+        title="מהלך המירוץ"
+        icon="flag"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
       />

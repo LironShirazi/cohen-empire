@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { reportLocationAction } from "@/app/team/actions";
 import { distanceMeters } from "@/lib/geo";
+import { Icon } from "@/components/ui/icon";
 
 /** לא מציפים את השרת: דיווח כל חצי דקה, או מוקדם יותר אם באמת זזו */
 const MIN_INTERVAL_MS = 30000;
@@ -56,7 +57,8 @@ export function LocationReporter({ teamId }: { teamId: string }) {
 
   return (
     <p className="text-center text-xs text-muted">
-      👀 בזמן המירוץ המיקום שלכם מוצג למנהל התורן על המפה — ולא לקבוצות
+      <Icon name="map" size={14} className="me-1 inline align-[-2px]" />
+      בזמן המירוץ המיקום שלכם מוצג למנהל התורן על המפה — ולא לקבוצות
       האחרות.
     </p>
   );

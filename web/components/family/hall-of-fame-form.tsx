@@ -8,6 +8,7 @@ import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
 import type { HallOfFameRow } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * טופס שנה בהיכל התהילה — אותו טופס להוספה (בלי `row`) ולעריכה (עם).
@@ -135,7 +136,7 @@ export function HallOfFameForm({
         value={teamName}
         onChange={(e) => setTeamName(e.target.value)}
         maxLength={60}
-        placeholder="🐬 הדולפינים"
+        placeholder="הדולפינים"
       />
       <span className="-mt-1 text-xs text-muted">
         אפשר להתחיל באימוג׳י של החיה — הוא חלק מהשם
@@ -191,11 +192,12 @@ export function HallOfFameForm({
           className="flex-1"
           onClick={() => fileInput.current?.click()}
         >
+          <Icon name="camera" />
           {file
-            ? `🖼️ ${file.name}`
+            ? file.name
             : existingPhoto
-              ? "🖼️ החלפת התמונה"
-              : "🖼️ תמונת הקבוצה (לא חובה)"}
+              ? "החלפת התמונה"
+              : "תמונת הקבוצה (לא חובה)"}
         </Button>
         {shownPhoto ? (
           <button
@@ -204,7 +206,7 @@ export function HallOfFameForm({
             onClick={() => (file ? setFile(null) : setRemovePhoto(true))}
             className="flex min-h-11 min-w-11 flex-none items-center justify-center rounded-full border-2 border-line text-muted active:bg-brand-soft active:text-brand"
           >
-            ✕
+            <Icon name="close" size={18} />
           </button>
         ) : null}
       </div>

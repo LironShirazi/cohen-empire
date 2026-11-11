@@ -20,6 +20,7 @@ import {
   isRaceAdmin,
   raceStatusLabel,
 } from "@/lib/data";
+import { Icon, LiveDot } from "@/components/ui/icon";
 
 export default async function RaceDashboardPage(
   props: PageProps<"/admin/[raceId]">,
@@ -93,26 +94,30 @@ export default async function RaceDashboardPage(
 
           <Link href={`/admin/${raceId}/live`}>
             <Button size="lg" className="w-full">
-              🟢 מהלך המירוץ (Live)
+              <LiveDot color="var(--ok)" className="size-3 ring-2 ring-white" pulse />
+              מהלך המירוץ (Live)
             </Button>
           </Link>
 
           <div className="flex gap-2.5">
             <Link href={`/admin/${raceId}/stations`} className="flex-1">
               <Button variant="navy" className="w-full">
-                📍 תחנות
+                <Icon name="pin" size={22} />
+                תחנות
               </Button>
             </Link>
             <Link href={`/admin/${raceId}/teams`} className="flex-1">
               <Button variant="navy" className="w-full">
-                👥 קבוצות
+                <Icon name="users" size={22} />
+                קבוצות
               </Button>
             </Link>
           </div>
 
           <Link href={`/admin/${raceId}/chat`}>
             <Button variant="secondary" className="w-full">
-              💬 צ׳אט עם הקבוצות
+              <Icon name="chat" size={22} />
+              צ׳אט עם הקבוצות
             </Button>
           </Link>
         </div>

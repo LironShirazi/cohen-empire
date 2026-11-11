@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { SelectField, TextareaField } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import type { TeamWithMembers } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 const ALL = "all";
 
@@ -53,15 +54,18 @@ export function BroadcastForm({
       setBody("");
       setSent(
         result.teams === 1
-          ? "ההודעה נשלחה לצ'אט של הקבוצה 📣"
-          : `ההודעה נשלחה לצ'אט של ${result.teams} הקבוצות 📣`
+          ? "ההודעה נשלחה לצ'אט של הקבוצה"
+          : `ההודעה נשלחה לצ'אט של ${result.teams} הקבוצות`
       );
     });
   }
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="font-display text-h2">📣 הודעה מהמנהל התורן</h2>
+      <h2 className="flex items-center gap-2 font-display text-h2">
+        <Icon name="megaphone" size={22} className="text-brand" />
+        הודעה מהמנהל התורן
+      </h2>
 
       {locked ? (
         <p className="text-sm text-muted">
@@ -81,7 +85,6 @@ export function BroadcastForm({
             {teams.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.name}
-                {team.animal ? ` ${team.animal.split(" ")[0]}` : ""}
               </option>
             ))}
           </SelectField>
@@ -92,7 +95,7 @@ export function BroadcastForm({
             value={body}
             onChange={(event) => setBody(event.target.value)}
             disabled={pending}
-            placeholder="למשל: מזג האוויר משתגע — נפגשים בבית סבא בעוד 20 דקות ☔"
+            placeholder="למשל: מזג האוויר משתגע — נפגשים בבית סבא בעוד 20 דקות"
           />
 
           <Button

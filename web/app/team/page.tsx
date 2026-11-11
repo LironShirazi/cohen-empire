@@ -16,6 +16,7 @@ import {
 } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import type { GameState } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 export default async function TeamPage() {
   const user = await getUser();
@@ -51,7 +52,7 @@ export default async function TeamPage() {
     state === null
       ? race.name
       : state.state === "finished"
-        ? "המסלול שלכם הושלם 🏁"
+        ? "המסלול שלכם הושלם"
         : state.state === "no_stations"
           ? "המירוץ עוד בהכנות"
           : state.state === "awaiting_approval"
@@ -69,7 +70,7 @@ export default async function TeamPage() {
         {showWinners ? (
           <Link href="/winners">
             <Button variant="accent" className="min-h-[88px] w-full flex-col gap-0.5 text-2xl">
-              🏆 מסך הזוכים
+              <span className="flex items-center gap-2"><Icon name="trophy" size={26} />מסך הזוכים</span>
               <span className="text-small font-semibold opacity-85">
                 האלופים של {race.year}
               </span>
@@ -82,14 +83,14 @@ export default async function TeamPage() {
             variant={showWinners ? "secondary" : "primary"}
             className="min-h-[88px] w-full flex-col gap-0.5 text-2xl"
           >
-            ▶️ מהלך המשחק
+            <span className="flex items-center gap-2"><Icon name="navigate" size={26} />מהלך המשחק</span>
             <span className="text-small font-semibold opacity-85">{playNote}</span>
           </Button>
         </Link>
 
         <Link href="/team/chat" className="relative block">
           <Button variant="navy" className="min-h-[88px] w-full flex-col gap-0.5 text-2xl">
-            💬 צ׳אט קבוצתי
+            <span className="flex items-center gap-2"><Icon name="chat" size={26} />צ׳אט קבוצתי</span>
             <span className="text-small font-semibold opacity-85">
               {unread.length > 0
                 ? `${unread.length} הודעות חדשות`
@@ -106,7 +107,8 @@ export default async function TeamPage() {
 
         <Link href="/teams">
           <Button variant="quiet" className="w-full">
-            👥 כל הקבוצות והרכבן
+            <Icon name="users" />
+            כל הקבוצות והרכבן
           </Button>
         </Link>
 
@@ -154,7 +156,10 @@ function MiniLeaderboard({
   return (
     <Card tight className="flex flex-col gap-2">
       <div className="flex items-baseline gap-2">
-        <h2 className="font-display text-h2">🏅 לוח מובילים</h2>
+        <h2 className="flex items-center gap-2 font-display text-h2">
+          <Icon name="trophy" size={22} className="text-brand" />
+          לוח מובילים
+        </h2>
         <span className="ms-auto text-small text-muted">מתעדכן חי</span>
       </div>
 
@@ -171,7 +176,7 @@ function MiniLeaderboard({
               {row.rank}
             </b>
             <span className={isMine ? "font-bold" : ""}>
-              {row.team_animal?.split(" ")[0]} {row.team_name}
+              {row.team_name}
             </span>
           </div>
         );
