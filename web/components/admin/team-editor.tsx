@@ -53,7 +53,11 @@ export function TeamEditor({
         <input type="hidden" name="color" value={color} />
         <input type="hidden" name="animal" value={animal} />
 
-        <div className="grid grid-cols-[1fr_auto] gap-3">
+        {/* הרוחבות נקבעים בעמודות ולא על ה-input: `w-20` שהועבר ל-Field
+            מפסיד ל-`w-full` שלו (סדר ה-CSS, לא סדר המחלקות), ובעמודת `auto`
+            input ברוחב 100% מתנפח לרוחב המובנה שלו (~20 תווים) ומועך את
+            השם. ו-`minmax(0,1fr)` ולא `1fr`, שהוא `minmax(auto,1fr)`. */}
+        <div className="grid grid-cols-[minmax(0,1fr)_5rem] items-end gap-3">
           <Field
             label="שם הקבוצה"
             name="name"
@@ -68,7 +72,7 @@ export function TeamEditor({
             inputMode="numeric"
             pattern="[0-9]{1,2}"
             maxLength={2}
-            className="w-20 text-center"
+            className="text-center"
             required
           />
         </div>
