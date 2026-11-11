@@ -29,8 +29,12 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // אסור להסיר: מרענן טוקן שפג, אחרת משתמשים ינותקו אקראית
-  await supabase.auth.getUser();
+  // אסור להסיר: מרענן טוקן שפג, אחרת משתמשים ינותקו אקראית.
+  // `getClaims` ולא `getUser`: הוא מרענן באותה מידה, אבל מאמת את ה-JWT
+  // מקומית מול מפתחות ה-JWKS (כשהפרויקט על מפתחות אסימטריים) — בלי סבב
+  // רשת לשרת ה-Auth על כל ניווט ועל כל prefetch. על מפתח HS256 ישן הוא
+  // חוזר בעצמו ל-getUser, כך שבמקרה הגרוע זה בדיוק מה שהיה.
+  await supabase.auth.getClaims();
 
   return response;
 }

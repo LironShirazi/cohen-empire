@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
+import { startNavProgress } from "@/components/ui/navigation-progress";
 
 /**
  * פתיחת אלבום חדש. כותב ישירות מול RLS (`gallery_albums_insert`),
@@ -36,6 +37,7 @@ export function NewAlbumForm({ myUserId }: { myUserId: string }) {
     setBusy(false);
 
     if (insertError) return setError(insertError.message);
+    startNavProgress(`/gallery/${data.id}`);
     router.push(`/gallery/${data.id}`);
   }
 

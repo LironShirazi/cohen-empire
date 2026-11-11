@@ -494,3 +494,27 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   margin-inline-start: 0;
   margin-inline-end: auto;
 }
+
+/* פס ההתקדמות בניווט (components/ui/navigation-progress.tsx).
+   רוחב ב-transition ארוך ולא אנימציה: הוא "זוחל" ל-85% ונעצר שם עד
+   שהניווט מסתיים — פס שמגיע ל-100% לפני שהמסך התחלף משקר.
+   ב-RTL בלוק נצמד לימין, ולכן הפס גדל מימין לשמאל — כיוון הקריאה */
+.nav-progress {
+  width: 0;
+  opacity: 0;
+  background: linear-gradient(to left, var(--brand), var(--yellow));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--brand) 60%, transparent);
+}
+.nav-progress.is-loading {
+  width: 85%;
+  opacity: 1;
+  transition: width 8s cubic-bezier(0.1, 0.7, 0.2, 1);
+}
+.nav-progress.is-done {
+  width: 100%;
+  opacity: 0;
+  transition: width 150ms ease-out, opacity 250ms ease 150ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress.is-loading { width: 100%; transition: none; }
+}

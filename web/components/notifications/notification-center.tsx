@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Notification, NotificationType } from "@/lib/supabase/types";
+import { startNavProgress } from "@/components/ui/navigation-progress";
 
 /**
  * הבאנר הקופץ של ההתראות (docs/01 §5.1, docs/02 §3.8, docs/04 §3):
@@ -218,6 +219,8 @@ export function NotificationCenter({ children }: { children: React.ReactNode }) 
 
   async function open() {
     if (!toast) return;
+    // הפס מתחיל כבר כאן: עדכון `read_at` הוא סבב רשת לפני ה-push
+    startNavProgress(toast.href);
     setToast(null);
     const supabase = createClient();
     await supabase

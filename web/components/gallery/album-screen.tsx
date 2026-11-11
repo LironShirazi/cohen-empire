@@ -23,6 +23,7 @@ import type { GalleryAlbum } from "@/lib/supabase/types";
 import type { GalleryPhotoRow } from "@/lib/data";
 import { useConfirm } from "@/components/ui/confirm";
 
+import { startNavProgress } from "@/components/ui/navigation-progress";
 /**
  * אלבום בגלריה: שם שאפשר לתקן, מדיה שכל בן משפחה מוסיף, ותצוגה מוגדלת.
  *
@@ -99,6 +100,7 @@ export function AlbumScreen({
     }
     router.push("/gallery");
   }
+    startNavProgress("/gallery");
 
   async function uploadFiles(files: File[]) {
     if (files.length === 0) return;

@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Rubik, Secular_One } from "next/font/google";
 import Script from "next/script";
+import { Suspense } from "react";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 import { ConfirmProvider } from "@/components/ui/confirm";
+import { NavigationProgress } from "@/components/ui/navigation-progress";
 import "./globals.css";
 
 // הפונטים של מערכת העיצוב: Rubik לגוף, Secular One לכותרות
@@ -68,6 +70,11 @@ export default function RootLayout({
       className={`${rubik.variable} ${secularOne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* משוב מיידי על לחיצה לפני שהמסך הבא מוכן. Suspense כי
+            `useSearchParams` בלעדיו מוציא כל ראוט סטטי מרינדור מוקדם */}
+        <Suspense fallback={null}>
+          <NavigationProgress />
+        </Suspense>
         {/* באנר ההתראות חייב לחיות מעל כל מסך, גם "מהלך המשחק"
             (docs/02 §3.8) — לכן הוא כאן ולא בתוך הצ'אט */}
         {/* דיאלוג האישור עוטף הכל מאותה סיבה שהבאנר עוטף: כל מסך
