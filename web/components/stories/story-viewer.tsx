@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,17 @@ import {
  *
  * הסטורי שלי (6e) נפתח עם גיליון "מי צפה" ובלי התקדמות אוטומטית —
  * מי שפותח את העיגול שלו בא לבדוק מי ראה, לא לצפות.
+ *
+ * גרירה למטה סוגרת, כמו באינסטגרם: הסטורי נגרר עם האצבע ומתכווץ,
+ * והרקע השחור דוהה ומגלה את המסך שמתחת. שחרור אחרי DISMISS_PX או
+ * בתנופה מהירה — סגירה; אחרת חוזר למקום. נגיעה ארוכה משהה את ההתקדמות.
+ * ⚠️ גרירה שמתחילה בגיליון "מי צפה" לא נתפסת — הרשימה שם נגללת.
+ * ⚠️ אחרי גרירה ה-click נבלע ב-capture, אחרת שחרור האצבע מעל אזור
+ * "הבא"/"הקודם" היה גם מדפדף.
  */
+const DISMISS_PX = 120;
+const DISMISS_VELOCITY = 0.6; // px/ms
+const DRAG_SLOP = 10;
 export function StoryViewer({
   groups,
   start,
@@ -49,6 +59,18 @@ export function StoryViewer({
   const [paused, setPaused] = useState(false);
   const [ended, setEnded] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [holding, setHolding] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const drag = useRef<{
+    id: number;
+    x: number;
+    y: number;
+    t: number;
+    active: boolean;
+  } | null>(null);
+  const swallowClick = useRef(false);
 
   const group = groups[gi];
   const item = group?.items[ii];
@@ -103,24 +125,98 @@ export function StoryViewer({
     };
   }, [next, prev, onClose]);
 
+  const dismiss = useCallback(() => {
+    if (closing) return;
+    setClosing(true);
+    setDragY(window.innerHeight);
+    window.setTimeout(onClose, 200);
+  }, [closing, onClose]);
+
+  function onPointerDown(e: PointerEvent<HTMLDivElement>) {
+    if (closing || drag.current) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if ((e.target as Element).closest("[data-no-drag]")) return;
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, active: false };
+    swallowClick.current = false;
+    setHolding(true);
+  }
+
+  function onPointerMove(e: PointerEvent<HTMLDivElement>) {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    const dy = e.clientY - d.y;
+    const dx = e.clientX - d.x;
+    if (!d.active) {
+      // מכריעים רק כשהתנועה בעיקר אנכית ולמטה
+      if (Math.abs(dy) < DRAG_SLOP && Math.abs(dx) < DRAG_SLOP) return;
+      if (dy <= 0 || Math.abs(dx) > dy) {
+        drag.current = null;
+        setHolding(false);
+        return;
+      }
+      d.active = true;
+      swallowClick.current = true;
+      setDragging(true);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    setDragY(Math.max(0, dy));
+  }
+
+  function onPointerEnd(e: PointerEvent<HTMLDivElement>) {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    setHolding(false);
+    if (!d.active) return;
+    setDragging(false);
+    const dy = Math.max(0, e.clientY - d.y);
+    const velocity = dy / Math.max(1, e.timeStamp - d.t);
+    if (e.type === "pointerup" && (dy > DISMISS_PX || velocity > DISMISS_VELOCITY)) dismiss();
+    else setDragY(0);
+  }
+
   if (!group || typeof document === "undefined") return null;
 
-  const running = !paused && !isMine && !ended;
+  const running = !paused && !holding && !dragging && !closing && !isMine && !ended;
+  const progress = Math.min(1, dragY / 400);
 
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`הסטורי של ${group.name}`}
-      className="fixed inset-0 z-[60] overflow-hidden bg-black text-white"
+      className="fixed inset-0 z-[60] touch-none overflow-hidden text-white select-none"
+      style={{
+        backgroundColor: `rgba(0,0,0,${closing ? 0 : 1 - progress * 0.7})`,
+        transition: dragging ? "none" : "background-color 200ms ease-out",
+      }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+      onClickCapture={(e) => {
+        if (!swallowClick.current) return;
+        swallowClick.current = false;
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
-      <div className="relative mx-auto h-full w-full max-w-lg">
+      <div
+        className="relative mx-auto h-full w-full max-w-lg overflow-hidden bg-black"
+        style={{
+          transform: dragY ? `translateY(${dragY}px) scale(${1 - progress * 0.15})` : undefined,
+          borderRadius: dragY ? 24 : undefined,
+          opacity: closing ? 0 : 1,
+          transition: dragging ? "none" : "transform 200ms ease-out, opacity 200ms ease-out, border-radius 200ms ease-out",
+        }}
+      >
         {!ended && item ? (
           <>
             {item.kind === "photo" && item.url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={item.url}
+                draggable={false}
                 alt={item.caption ?? `תמונה מ${group.name}`}
                 className="absolute inset-0 h-full w-full object-cover"
               />
@@ -297,7 +393,10 @@ function ViewersSheet({
   }
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-[4] flex h-[60%] flex-col rounded-t-card-lg bg-surface px-5 pt-3 text-ink">
+    <div
+      data-no-drag
+      className="absolute inset-x-0 bottom-0 z-[4] flex h-[60%] touch-auto flex-col rounded-t-card-lg bg-surface px-5 pt-3 text-ink select-text"
+    >
       <div aria-hidden className="mx-auto mb-3.5 h-[5px] w-11 rounded-full bg-line" />
       <div className="flex items-center gap-2.5">
         <h2 className="flex items-center gap-2 font-display text-h2">
