@@ -221,7 +221,8 @@ export function StoryViewer({
                 src={item.url}
                 draggable={false}
                 alt={item.caption ?? `תמונה מ${group.name}`}
-                className="absolute inset-0 h-full w-full object-cover"
+                // לחיצה ארוכה משהה — בלי זה ספארי פותח עליה "שמירת תמונה"
+                className="absolute inset-0 h-full w-full object-cover [-webkit-touch-callout:none]"
               />
             ) : (
               // ⚠️ בסטורי שלי גיליון "מי צפה" מכסה את 60% התחתונים —
