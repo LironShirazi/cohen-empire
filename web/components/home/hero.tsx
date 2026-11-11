@@ -57,7 +57,7 @@ export function HomeHero({
 
         {race?.status === "live" ? (
           <p className="mt-3 text-sm font-bold text-on-navy-muted">
-            🔴 {race.name} — רץ עכשיו
+            🟢 {race.name} — רץ עכשיו
           </p>
         ) : null}
 
