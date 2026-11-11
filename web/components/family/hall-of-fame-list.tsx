@@ -1,6 +1,6 @@
 import type { HallOfFameRow } from "@/lib/supabase/types";
 import { Card } from "@/components/ui/card";
-import { HallOfFameDelete } from "@/components/family/hall-of-fame-delete";
+import { HallOfFameRowActions } from "@/components/family/hall-of-fame-row-actions";
 import { HallOfFamePhoto } from "@/components/family/hall-of-fame-photo";
 
 /**
@@ -16,7 +16,7 @@ export function HallOfFameList({
   canEdit = false,
 }: {
   rows: HallOfFameRow[];
-  /** מנהל-על — מציג כפתור מחיקה על כל שורה */
+  /** מנהל-על — מציג ✏️ (עריכה ומחיקה) על כל שורה */
   canEdit?: boolean;
 }) {
   // ⚠️ הרכיב מקבל `HallOfFameRow[]` ולא מבטיח כלום על אורכו. הקורא
@@ -67,7 +67,7 @@ function ChampionCard({
         ) : null}
       </div>
       <HallOfFamePhoto row={row} className="ms-auto size-16" />
-      {canEdit ? <HallOfFameDelete row={row} tone="dark" /> : null}
+      {canEdit ? <HallOfFameRowActions row={row} tone="dark" /> : null}
     </div>
   );
 }
@@ -91,7 +91,7 @@ function YearRow({ row, canEdit }: { row: HallOfFameRow; canEdit: boolean }) {
           </p>
         ) : null}
       </div>
-      {canEdit ? <HallOfFameDelete row={row} /> : null}
+      {canEdit ? <HallOfFameRowActions row={row} /> : null}
     </div>
   );
 }
