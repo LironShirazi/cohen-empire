@@ -8,11 +8,16 @@ import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { deleteFamilyImage, uploadFamilyImage } from "@/lib/family-content";
-import type { HallOfFameRow } from "@/lib/supabase/types";
-import { useConfirm } from "@/components/ui/confirm";
 
 /**
  * הזנת היכל התהילה ההיסטורי (docs/04 §5) — למנהל-על בלבד.
+ *
+ * מרונדר בתחתית `/hall-of-fame` עצמו ולא ב-`/admin/content`: מי שמזין
+ * שנה רואה מיד איך היא נראית בהיכל. השער שם (`profile.is_owner`) הוא
+ * נוחות — האכיפה היא ב-RLS (`is_owner()`, 0014).
+ *
+ * כאן רק ההוספה. המחיקה יושבת על השורות של הרשימה עצמה
+ * (`HallOfFameDelete`), כדי שלא תהיה רשימה כפולה במסך.
  *
  * הטבלה נכתבת משני מקורות: `finish_race` (0002) מוסיף שורה בסיום כל
  * מירוץ באפליקציה, וכאן מוזנות ידנית 20 השנים שקדמו לה.
@@ -20,9 +25,8 @@ import { useConfirm } from "@/components/ui/confirm";
  * ⚠️ **`race_id` לא נשלח מכאן ואי אפשר לשנות אותו** — הוא מחוץ ל-
  * `grant update` ב-0014. הוא מה שמבדיל שורה של המערכת משורה מהזיכרון.
  */
-export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
+export function HallOfFameEditor() {
   const router = useRouter();
-  const confirm = useConfirm();
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [open, setOpen] = useState(false);
@@ -96,30 +100,13 @@ export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
     }
   }
 
-  async function remove(row: HallOfFameRow) {
-    const ok = await confirm({
-      title: "מחיקה מהיכל התהילה",
-      message: `למחוק את שנת ${row.year} מהיכל התהילה?`,
-    });
-    if (!ok) return;
-
-    setBusy("מוחק...");
-    setError(null);
-    const { error: deleteError } = await createClient()
-      .from("hall_of_fame")
-      .delete()
-      .eq("id", row.id);
-    setBusy(null);
-
-    if (deleteError) return setError(deleteError.message);
-
-    await deleteFamilyImage(row.photo_url);
-    router.refresh();
-  }
-
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-h2">🏆 היכל התהילה</h2>
+      <h2 className="font-display text-h2">✏️ ניהול היכל התהילה</h2>
+      <p className="-mt-2 text-sm text-muted">
+        גלוי למנהלי-על בלבד. מירוץ שמסתיים באפליקציה נכנס לבד — כאן מזינים
+        את השנים שקדמו לה. מחיקה — בכפתור 🗑️ על השורה עצמה.
+      </p>
 
       {open ? (
         <Card className="flex flex-col gap-3">
@@ -212,43 +199,6 @@ export function HallOfFameEditor({ rows }: { rows: HallOfFameRow[] }) {
           </Button>
           <FormError>{error}</FormError>
         </>
-      )}
-
-      {rows.length === 0 ? (
-        <Card className="text-center text-muted">
-          עוד לא הוזנו שנים. מירוץ שמסתיים באפליקציה נכנס לכאן לבד — כאן
-          מזינים את השנים שקדמו לה.
-        </Card>
-      ) : (
-        rows.map((row) => (
-          <Card
-            key={row.id}
-            className="flex items-center gap-3 border-s-8 p-3.5"
-            style={{ borderInlineStartColor: row.team_color ?? "var(--line)" }}
-          >
-            <span className="min-w-[52px] font-display text-xl text-brand">
-              {row.year}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-bold">{row.team_name}</p>
-              <p className="truncate text-sm text-muted">
-                {row.members.join(", ") || "—"}
-              </p>
-            </div>
-            {/* שורה שנוצרה ע"י finish_race — מסומנת כדי שיהיה ברור
-                שמחיקתה מוחקת תיעוד של מירוץ אמיתי */}
-            {row.race_id ? <span title="מתוך מירוץ באפליקציה">🏁</span> : null}
-            <button
-              type="button"
-              aria-label={`מחיקת שנת ${row.year}`}
-              onClick={() => void remove(row)}
-              disabled={!!busy}
-              className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border-2 border-line text-muted active:bg-brand-soft active:text-brand disabled:opacity-50"
-            >
-              🗑️
-            </button>
-          </Card>
-        ))
       )}
     </section>
   );

@@ -1,5 +1,6 @@
 import type { HallOfFameRow } from "@/lib/supabase/types";
 import { Card } from "@/components/ui/card";
+import { HallOfFameDelete } from "@/components/family/hall-of-fame-delete";
 import { HallOfFamePhoto } from "@/components/family/hall-of-fame-photo";
 
 /**
@@ -10,7 +11,14 @@ import { HallOfFamePhoto } from "@/components/family/hall-of-fame-photo";
  * והזנה ידנית של מנהל-על לשנים שקדמו לאפליקציה. **בכוונה אין הבחנה
  * ויזואלית ביניהן** — למשפחה 2009 ו-2026 הן אותה מסורת.
  */
-export function HallOfFameList({ rows }: { rows: HallOfFameRow[] }) {
+export function HallOfFameList({
+  rows,
+  canEdit = false,
+}: {
+  rows: HallOfFameRow[];
+  /** מנהל-על — מציג כפתור מחיקה על כל שורה */
+  canEdit?: boolean;
+}) {
   // ⚠️ הרכיב מקבל `HallOfFameRow[]` ולא מבטיח כלום על אורכו. הקורא
   // היחיד היום בודק ריקנות לפניו, אבל הפירוק למטה (`[champion,
   // ...rest]` ו-`sort(...)[0]`) קורס על מערך ריק — והקורא הבא לא
@@ -21,12 +29,12 @@ export function HallOfFameList({ rows }: { rows: HallOfFameRow[] }) {
 
   return (
     <>
-      <ChampionCard row={champion} />
+      <ChampionCard row={champion} canEdit={canEdit} />
 
       {rest.length > 0 ? (
         <div className="mt-3 flex flex-col gap-2.5">
           {rest.map((row) => (
-            <YearRow key={row.id} row={row} />
+            <YearRow key={row.id} row={row} canEdit={canEdit} />
           ))}
         </div>
       ) : null}
@@ -37,7 +45,13 @@ export function HallOfFameList({ rows }: { rows: HallOfFameRow[] }) {
 }
 
 /** האלופים האחרונים — תמיד על רקע קוסמי וזהב */
-function ChampionCard({ row }: { row: HallOfFameRow }) {
+function ChampionCard({
+  row,
+  canEdit,
+}: {
+  row: HallOfFameRow;
+  canEdit: boolean;
+}) {
   return (
     <div className="cosmic flex items-center gap-3.5 rounded-card p-5 shadow-navy">
       <span className="flex-none text-[40px]">🏆</span>
@@ -53,11 +67,12 @@ function ChampionCard({ row }: { row: HallOfFameRow }) {
         ) : null}
       </div>
       <HallOfFamePhoto row={row} className="ms-auto size-16" />
+      {canEdit ? <HallOfFameDelete row={row} tone="dark" /> : null}
     </div>
   );
 }
 
-function YearRow({ row }: { row: HallOfFameRow }) {
+function YearRow({ row, canEdit }: { row: HallOfFameRow; canEdit: boolean }) {
   return (
     <div
       className="flex items-center gap-3 rounded-card border border-line border-s-8 bg-surface p-3.5 shadow-card"
@@ -76,13 +91,14 @@ function YearRow({ row }: { row: HallOfFameRow }) {
           </p>
         ) : null}
       </div>
+      {canEdit ? <HallOfFameDelete row={row} /> : null}
     </div>
   );
 }
 
 /**
  * "סטטיסטיקות משעשעות" (docs/04 §1) — מחושבות כאן מהשורות שכבר נטענו.
- * שתי ספירות על עשרות שורות לא מצדיקות view או RPC.
+ * ספירה אחת על עשרות שורות לא מצדיקה view או RPC.
  */
 function Stats({ rows }: { rows: HallOfFameRow[] }) {
   const wins = new Map<string, number>();
@@ -90,23 +106,16 @@ function Stats({ rows }: { rows: HallOfFameRow[] }) {
     wins.set(row.team_name, (wins.get(row.team_name) ?? 0) + 1);
   }
   const [topName, topWins] = [...wins.entries()].sort((a, b) => b[1] - a[1])[0];
+  // שיאן זכיות מוצג רק כשמישהו באמת ניצח יותר מפעם אחת — אחרת זו
+  // "עובדה" ריקה שמצביעה על שורה אקראית. ספירת השנים הוסרה בכוונה.
+  if (topWins < 2) return null;
 
   return (
     <div className="mt-4 flex gap-2.5">
       <Card className="flex-1 p-3.5 text-center">
-        <b className="block font-display text-[26px] text-brand">
-          {rows.length}
-        </b>
-        <span className="text-sm text-muted">שנות מירוץ</span>
+        <b className="block font-display text-[26px] text-brand">{topWins}</b>
+        <span className="text-sm text-muted">זכיות · {topName}</span>
       </Card>
-      {/* שיאן זכיות מוצג רק כשמישהו באמת ניצח יותר מפעם אחת — אחרת
-          זו "עובדה" ריקה שמצביעה על שורה אקראית */}
-      {topWins > 1 ? (
-        <Card className="flex-1 p-3.5 text-center">
-          <b className="block font-display text-[26px] text-brand">{topWins}</b>
-          <span className="text-sm text-muted">זכיות · {topName}</span>
-        </Card>
-      ) : null}
     </div>
   );
 }

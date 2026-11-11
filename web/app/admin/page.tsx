@@ -57,7 +57,7 @@ export default async function AdminHomePage() {
                 <div>
                   <p className="font-display text-xl">תוכן משפחתי</p>
                   <p className="text-sm text-muted">
-                    משפטי סבא וסבתא · היכל התהילה
+                    משפטי סבא וסבתא
                   </p>
                 </div>
               </Card>
