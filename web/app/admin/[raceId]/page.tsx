@@ -93,7 +93,7 @@ export default async function RaceDashboardPage(
 
           <Link href={`/admin/${raceId}/live`}>
             <Button size="lg" className="w-full">
-              🔴 מהלך המירוץ (Live)
+              🟢 מהלך המירוץ (Live)
             </Button>
           </Link>
 
