@@ -15,6 +15,7 @@ import {
 import { useActiveChat } from "@/components/notifications/notification-center";
 import { createClient } from "@/lib/supabase/client";
 import type { ChatMessage, Profile } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 const MAX_FILE_MB = 50;
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
@@ -389,7 +390,7 @@ export function ChatRoom({
       >
         {messages.length === 0 ? (
           <p className="m-auto text-center text-sm text-muted">
-            עוד אין הודעות. מי פותח? 💬
+            עוד אין הודעות. מי פותח?
           </p>
         ) : null}
 
@@ -420,7 +421,7 @@ export function ChatRoom({
         <>
           {pending ? (
             <div className="flex items-center gap-2 rounded-card-sm border border-line bg-surface px-3 py-2 text-sm">
-              <span>📎</span>
+              <Icon name="attach" className="text-muted" />
               <span className="min-w-0 flex-1 truncate font-bold">
                 {pending.name}
               </span>
@@ -489,7 +490,10 @@ export function ChatRoom({
                     {person.full_name}
                   </span>
                   {person.is_admin ? (
-                    <span className="text-sm text-muted">👑 מנהל תורן</span>
+                    <span className="inline-flex items-center gap-1 text-sm text-muted">
+                      <Icon name="crown" size={16} className="text-gold" />
+                      מנהל תורן
+                    </span>
                   ) : null}
                 </button>
               ))}
@@ -503,18 +507,18 @@ export function ChatRoom({
               aria-label="צירוף קובץ"
               disabled={busy}
               onClick={() => fileInput.current?.click()}
-              className="text-xl disabled:opacity-50"
+              className="inline-flex size-9 flex-none items-center justify-center text-muted disabled:opacity-50"
             >
-              📎
+              <Icon name="attach" size={24} />
             </button>
             <button
               type="button"
               aria-label="צילום"
               disabled={busy}
               onClick={() => cameraInput.current?.click()}
-              className="text-xl disabled:opacity-50"
+              className="inline-flex size-9 flex-none items-center justify-center text-muted disabled:opacity-50"
             >
-              📷
+              <Icon name="camera" size={24} />
             </button>
             <input
               ref={composer}
@@ -615,7 +619,10 @@ function Bubble({
           style={{ color: fromAdmin ? "#9A7B00" : teamColor }}
         >
           {fromAdmin ? (
-            <span>📣 המנהל התורן</span>
+            <>
+              <Icon name="megaphone" size={16} />
+              המנהל התורן
+            </>
           ) : (
             <>
               <i
@@ -704,9 +711,10 @@ function Attachment({ url, type }: { url: string; type: string | null }) {
       href={url}
       target="_blank"
       rel="noreferrer"
-      className="mb-1.5 block rounded-card-sm bg-black/5 px-3 py-4 text-center text-sm font-bold underline"
+      className="mb-1.5 flex items-center justify-center gap-1.5 rounded-card-sm bg-black/5 px-3 py-4 text-center text-sm font-bold underline"
     >
-      📎 קובץ מצורף
+      <Icon name="attach" size={18} />
+      קובץ מצורף
     </a>
   );
 }

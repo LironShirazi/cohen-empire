@@ -10,6 +10,7 @@ import {
   getUser,
   isRaceAdmin,
 } from "@/lib/data";
+import { Icon, TeamGlyph } from "@/components/ui/icon";
 
 export default async function AdminChatIndexPage(
   props: PageProps<"/admin/[raceId]/chat">,
@@ -33,14 +34,16 @@ export default async function AdminChatIndexPage(
   return (
     <main className="flex flex-1 flex-col">
       <AdminHeader
-        title="💬 צ'אט עם הקבוצות"
+        title="צ'אט עם הקבוצות"
+        icon="chat"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
       />
       <AdminBody className="flex flex-col gap-4">
         <Card className="text-sm text-muted">
           המנהל התורן חבר אוטומטית בצ׳אט של כל קבוצה במירוץ שלו — ההודעות שלכם
-          מסומנות שם 📣.
+          מסומנות שם ב
+          <Icon name="megaphone" size={16} className="mx-1 inline align-[-3px]" />.
         </Card>
 
         {teams.length === 0 ? (
@@ -62,7 +65,7 @@ export default async function AdminChatIndexPage(
                   background: `color-mix(in srgb, ${team.color} 15%, #fff)`,
                 }}
               >
-                {team.animal?.split(" ")[0] ?? "🏁"}
+                <TeamGlyph team={team} />
               </span>
               <div>
                 <p className="font-display text-lg">{team.name}</p>
@@ -76,7 +79,7 @@ export default async function AdminChatIndexPage(
                   className="ms-auto"
                 />
               ) : (
-                <span className="ms-auto text-xl">💬</span>
+                <Icon name="chat" size={24} className="ms-auto text-muted" />
               )}
             </Card>
           </Link>

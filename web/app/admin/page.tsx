@@ -10,6 +10,7 @@ import {
   getUser,
   raceStatusLabel,
 } from "@/lib/data";
+import { IconTile } from "@/components/ui/icon";
 
 export default async function AdminHomePage() {
   const user = await getUser();
@@ -19,7 +20,7 @@ export default async function AdminHomePage() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <AdminHeader title="🛠️ ניהול" back="/" backLabel="לדף הבית" />
+      <AdminHeader title="ניהול" icon="sliders" back="/" backLabel="לדף הבית" />
       <AdminBody className="flex flex-col gap-4">
         {/* מנהל-על רואה כאן את **כל** המירוצים (0018) ולא רק את אלה
             שמונה אליהם, ולכן גם המצב הריק שלו אחר: אצלו זה אומר
@@ -27,7 +28,7 @@ export default async function AdminHomePage() {
         {races.length === 0 ? (
           <Card className="text-center text-muted">
             {profile?.is_owner
-              ? "עוד לא נוצר אף מירוץ. פותחים את הראשון למטה 👇"
+              ? "עוד לא נוצר אף מירוץ. פותחים את הראשון למטה."
               : "אתם עוד לא מנהלים תורנים של אף מירוץ."}
           </Card>
         ) : null}
@@ -53,7 +54,7 @@ export default async function AdminHomePage() {
           <>
             <Link href="/admin/content">
               <Card className="flex items-center gap-3">
-                <span className="text-2xl">🏛️</span>
+                <IconTile name="hall" size={44} className="bg-bg-2 text-brand" />
                 <div>
                   <p className="font-display text-xl">תוכן משפחתי</p>
                   <p className="text-sm text-muted">
@@ -65,7 +66,7 @@ export default async function AdminHomePage() {
 
             <Link href="/admin/stats">
               <Card className="flex items-center gap-3">
-                <span className="text-2xl">📊</span>
+                <IconTile name="chart" size={44} className="bg-bg-2 text-brand" />
                 <div>
                   <p className="font-display text-xl">סטטיסטיקות</p>
                   <p className="text-sm text-muted">מי נכנס, מתי ולאן</p>

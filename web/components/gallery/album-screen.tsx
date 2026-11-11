@@ -24,6 +24,7 @@ import type { GalleryPhotoRow } from "@/lib/data";
 import { useConfirm } from "@/components/ui/confirm";
 
 import { startNavProgress } from "@/components/ui/navigation-progress";
+import { Icon } from "@/components/ui/icon";
 /**
  * אלבום בגלריה: שם שאפשר לתקן, מדיה שכל בן משפחה מוסיף, ותצוגה מוגדלת.
  *
@@ -206,17 +207,19 @@ export function AlbumScreen({
           <h1 className="font-display text-h1">{album.name}</h1>
           <button
             onClick={() => setRenaming(true)}
-            className="min-h-11 rounded-card-sm px-2 text-sm font-bold text-muted"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-card-sm px-2 text-sm font-bold text-muted"
           >
-            ✏️ שינוי השם
+            <Icon name="edit" size={18} />
+            שינוי השם
           </button>
           {canDeleteAlbum ? (
             <button
               onClick={() => void deleteAlbum()}
               disabled={!!busy}
-              className="ms-auto min-h-11 rounded-card-sm px-2 text-sm font-bold text-muted"
+              className="ms-auto inline-flex min-h-11 items-center gap-1.5 rounded-card-sm px-2 text-sm font-bold text-muted"
             >
-              🗑️ מחיקת האלבום
+              <Icon name="trash" size={18} />
+              מחיקת האלבום
             </button>
           ) : null}
         </div>
@@ -240,7 +243,12 @@ export function AlbumScreen({
         disabled={!!busy}
         onClick={() => fileInput.current?.click()}
       >
-        {busy ?? "📷 הוספת תמונות וסרטונים"}
+        {busy ?? (
+          <>
+            <Icon name="camera" size={24} />
+            הוספת תמונות וסרטונים
+          </>
+        )}
       </Button>
       <p className="mt-2 text-sm text-muted">
         אפשר לבחור כמה קבצים בבת אחת. תמונות מוקטנות במכשיר לפני ההעלאה, כדי
@@ -253,7 +261,7 @@ export function AlbumScreen({
 
       {photos.length === 0 ? (
         <Card className="mt-6 text-center">
-          <p className="text-lg font-bold">האלבום עוד ריק 📭</p>
+          <p className="text-lg font-bold">האלבום עוד ריק</p>
           <p className="mt-1 text-muted">
             כל בן משפחה יכול להוסיף לכאן תמונות וסרטונים.
           </p>
@@ -286,8 +294,10 @@ export function AlbumScreen({
                     playsInline
                     className="h-full w-full object-cover"
                   />
-                  <span className="absolute inset-0 flex items-center justify-center text-3xl text-white drop-shadow">
-                    ▶
+                  <span className="absolute inset-0 flex items-center justify-center text-white drop-shadow">
+                    <span className="flex size-11 items-center justify-center rounded-full bg-black/45">
+                      <Icon name="play" size={22} label="סרטון" />
+                    </span>
                   </span>
                 </>
               ) : (

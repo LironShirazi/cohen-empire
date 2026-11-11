@@ -670,3 +670,26 @@ web/proxy.ts                                getClaims במקום getUser
 רק ל-`getUser()`.** כל קריאה היא סבב רשת לשרת ה-Auth, ומסך כמו `/team`
 שילם שלושה-ארבעה ברצף לפני הרינדור. `cache()` של React מחזיק את
 התוצאה לבקשה אחת בלבד.
+
+## 20. אייקונים — אין אימוג׳י בממשק
+
+```
+web/components/ui/icon.tsx           <Icon> + IconTile/FinishFlag/LiveDot/RankBadge/TeamGlyph
+web/public/family-tree/js/icons.js   עותק vanilla לעץ (NS.icon) — רק מה שהעץ צריך
+```
+
+מקור: "הצעת אייקונים" ב-claude-design. קו אחד (רשת 24, עובי 1.9,
+`currentColor`), שני גדלים (20 בטקסט ובשבבים, 24 בכפתורים ובכותרות),
+ולכל היותר אייקון אחד בכפתור. אימוג׳י שהיה קישוט בתוך משפט פשוט ירד.
+לכותרת מסך — `icon` של `PageHeader`/`AdminHeader`, לא אימוג׳י במחרוזת.
+
+חמשת היוצאים מהכלל: חיות הקבוצות ← `TeamGlyph` (אות בצבע הקבוצה),
+🥇🥈🥉 ← `RankBadge`, 🟢/● ← `LiveDot`, 🏁 ← `FinishFlag` (הדגל הצהוב),
+סבא וסבתא ← תמונה או עיגול מקווקו עד שתעלה (`QuoteFace`).
+
+⚠️ **`teams.animal` ב-DB עדיין "🐬 דולפינים".** קבוצות קיימות שמורות כך
+והבורר משווה מחרוזות — התצוגה מורידה את האימוג׳י (`animalName`/`teamInitial`).
+
+⚠️ **שלושה עותקים של אותם paths:** `icon.tsx`, `iconMarkup` (שם, לסמני
+Leaflet שמקבלים HTML) ו-`icons.js` של העץ. הלב והתג "אני" בתוך ה-SVG
+של העץ מצוירים ב-`render.js` וה-CSS שלהם משוכפל ב-`export.js` (§4).

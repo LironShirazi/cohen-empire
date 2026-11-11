@@ -9,6 +9,7 @@ import {
   getMyMembership,
   getUser,
 } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 export default async function LeaderboardPage() {
   const user = await getUser();
@@ -20,7 +21,7 @@ export default async function LeaderboardPage() {
   if (!race) {
     return (
       <PageShell>
-        <PageHeader title="🏅 לוח מובילים" back="/" backLabel="לדף הבית" />
+        <PageHeader title="לוח מובילים" icon="trophy" back="/" backLabel="לדף הבית" />
         <Card className="text-center text-muted">אין כרגע מירוץ פעיל.</Card>
       </PageShell>
     );
@@ -46,14 +47,16 @@ export default async function LeaderboardPage() {
       </div>
 
       <p className="mt-auto pt-6 text-[13px] text-on-navy-muted opacity-80">
-        🤫 לא מגלים באיזו תחנה כל קבוצה — כדי לשמור על המתח
+        <Icon name="hidden" size={16} className="me-1 inline align-[-3px]" />
+        לא מגלים באיזו תחנה כל קבוצה — כדי לשמור על המתח
       </p>
 
       <Link
         href={back}
-        className="text-sm font-bold text-on-navy-muted hover:text-yellow"
+        className="inline-flex items-center justify-center gap-1 text-sm font-bold text-on-navy-muted hover:text-yellow"
       >
-        → {membership ? "לקבוצה" : "לדף הבית"}
+        <Icon name="back" size={16} />
+        {membership ? "לקבוצה" : "לדף הבית"}
       </Link>
     </main>
   );

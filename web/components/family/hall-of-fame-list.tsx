@@ -2,6 +2,7 @@ import type { HallOfFameRow } from "@/lib/supabase/types";
 import { Card } from "@/components/ui/card";
 import { HallOfFameRowActions } from "@/components/family/hall-of-fame-row-actions";
 import { HallOfFamePhoto } from "@/components/family/hall-of-fame-photo";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * היכל התהילה (docs/04 §1) — מקביל ל-
@@ -54,7 +55,7 @@ function ChampionCard({
 }) {
   return (
     <div className="cosmic flex items-center gap-3.5 rounded-card p-5 shadow-navy">
-      <span className="flex-none text-[40px]">🏆</span>
+      <Icon name="trophy" size={40} className="text-gold-lite" />
       <div className="min-w-0">
         <p className="font-display text-[22px] text-gold-lite">
           אלופי {row.year}

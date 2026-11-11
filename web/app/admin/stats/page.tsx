@@ -5,9 +5,10 @@ import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { getAppStats, getProfile, getUser } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 export const metadata = {
-  title: "📊 סטטיסטיקות — אימפריית כהן",
+  title: "סטטיסטיקות — אימפריית כהן",
 };
 
 const RANGES = [7, 30, 90] as const;
@@ -44,7 +45,8 @@ export default async function AdminStatsPage(
   return (
     <main className="flex flex-1 flex-col">
       <AdminHeader
-        title="📊 סטטיסטיקות"
+        title="סטטיסטיקות"
+        icon="chart"
         back="/admin"
         backLabel="לניהול"
         size="wide"
@@ -58,7 +60,8 @@ export default async function AdminStatsPage(
           ))}
           <Link href={href(days, !includeOwners)} className="ms-auto">
             <Chip tone={includeOwners ? "brand" : "muted"}>
-              {includeOwners ? "✓ " : ""}כולל מנהלי-על
+              {includeOwners ? <Icon name="check" size={16} /> : null}
+              כולל מנהלי-על
             </Chip>
           </Link>
         </div>

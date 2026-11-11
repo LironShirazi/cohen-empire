@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Countdown } from "@/components/countdown";
 import { Chip } from "@/components/ui/chip";
 import type { Race } from "@/lib/supabase/types";
+import { Icon, LiveDot } from "@/components/ui/icon";
 
 /**
  * ההיירו הקוסמי של דף הבית — סקיצה 1a.
@@ -27,7 +28,10 @@ export function HomeHero({
   return (
     <header className="cosmic rounded-b-[30px] px-5 pt-14 pb-7 text-center shadow-navy md:pt-20 md:pb-11">
       <div className="mx-auto w-full max-w-lg md:max-w-2xl">
-        <Chip tone="yellow">🏁 יום העצמאות · בית הגדי</Chip>
+        <Chip tone="yellow">
+          <Icon name="flag" size={18} />
+          יום העצמאות · בית הגדי
+        </Chip>
 
         <p className="goldtext mt-3.5 font-display text-[46px] leading-none md:text-[68px]">
           המירוץ
@@ -50,14 +54,15 @@ export function HomeHero({
             <Countdown target={race.starts_at} />
           ) : (
             <p className="text-on-navy-muted">
-              עוד לא נקבע תאריך למירוץ הבא — תכף מעדכנים 🗓️
+              עוד לא נקבע תאריך למירוץ הבא — תכף מעדכנים.
             </p>
           )}
         </div>
 
         {race?.status === "live" ? (
-          <p className="mt-3 text-sm font-bold text-on-navy-muted">
-            🟢 {race.name} — רץ עכשיו
+          <p className="mt-3 flex items-center justify-center gap-2 text-sm font-bold text-on-navy-muted">
+            <LiveDot color="var(--ok)" pulse />
+            {race.name} — רץ עכשיו
           </p>
         ) : null}
 

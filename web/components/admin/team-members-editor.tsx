@@ -12,6 +12,7 @@ import { Field } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import type { Team, TeamMember } from "@/lib/supabase/types";
 import { useConfirm } from "@/components/ui/confirm";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * הרכב הקבוצה (docs/01 §3.4, docs/04 §4).
@@ -66,7 +67,10 @@ export function TeamMembersEditor({
               className="flex items-center gap-2 rounded-card-sm border border-line px-3 py-2"
             >
               <span className="me-auto min-w-0 break-words font-bold">{member.display_name}</span>
-              <span className="shrink-0 text-sm text-muted">📱 עם חשבון</span>
+              <span className="inline-flex shrink-0 items-center gap-1 text-sm text-muted">
+                <Icon name="check" size={14} className="text-ok" />
+                עם חשבון
+              </span>
             </li>
           ))}
 

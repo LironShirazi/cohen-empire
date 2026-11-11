@@ -3,8 +3,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { LeaderboardRow } from "@/lib/supabase/types";
-
-const medals: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
+import { RankBadge, TeamGlyph } from "@/components/ui/icon";
 
 /**
  * לוח המובילים — סקיצה 2b. מסך קוסמי מלא, מקום ראשון בזהב.
@@ -63,13 +62,14 @@ export function LeaderboardList({
                   : "border border-white/12 bg-white/5 px-4 py-3"
             }`}
           >
-            <b
-              className={`w-7 flex-none font-display font-normal ${
-                top ? "text-[26px] text-gold-lite" : "text-[22px] text-on-navy-muted"
-              }`}
-            >
-              {row.rank}
-            </b>
+            {/* 🥇🥈🥉 הפכו לעיגול הדירוג עצמו — במקום ספרה ובנוסף מדליה */}
+            {top ? (
+              <RankBadge rank={row.rank} size={34} />
+            ) : (
+              <b className="w-[34px] flex-none text-center font-display text-[22px] font-normal text-on-navy-muted">
+                {row.rank}
+              </b>
+            )}
 
             <span
               aria-hidden
@@ -81,7 +81,10 @@ export function LeaderboardList({
                 borderColor: row.team_color,
               }}
             >
-              {row.team_animal?.split(" ")[0] ?? "🏁"}
+              <TeamGlyph
+                team={{ animal: row.team_animal, name: row.team_name, color: row.team_color }}
+                onDark
+              />
             </span>
 
             <b className={`flex-1 text-white ${top ? "text-[19px]" : "text-[17px]"}`}>
@@ -93,7 +96,6 @@ export function LeaderboardList({
               ) : null}
             </b>
 
-            {top ? <span className="text-2xl">{medals[row.rank]}</span> : null}
           </li>
         );
       })}

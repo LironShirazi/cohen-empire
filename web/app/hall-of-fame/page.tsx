@@ -5,9 +5,10 @@ import { HallOfFameList } from "@/components/family/hall-of-fame-list";
 import { Card } from "@/components/ui/card";
 import { PageShell } from "@/components/ui/page";
 import { getHallOfFame, getProfile, getUser } from "@/lib/data";
+import { Icon, IconTile } from "@/components/ui/icon";
 
 export const metadata = {
-  title: "🏆 היכל התהילה — אימפריית כהן",
+  title: "היכל התהילה — אימפריית כהן",
 };
 
 /**
@@ -25,7 +26,7 @@ export default async function HallOfFamePage() {
   if (!user) {
     return (
       <PageShell className="flex flex-col items-center gap-6 text-center">
-        <span className="text-6xl">🏆</span>
+        <IconTile name="hall" size={80} className="bg-yellow-soft text-brand" />
         <h1 className="font-display text-h1 text-brand">היכל התהילה</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">
@@ -44,7 +45,7 @@ export default async function HallOfFamePage() {
       {/* כותרת קוסמית (סקיצה 2d) — היכל התהילה הוא ראוט יעד ולא מסך
           שירות, והזהב הוא כל הנקודה שלו */}
       <header className="cosmic rounded-b-[26px] px-5 pt-14 pb-6 text-center shadow-navy">
-        <p className="text-[40px]">🏆</p>
+        <Icon name="trophy" size={44} className="mx-auto text-gold-lite" />
         <h1 className="goldtext font-display text-4xl leading-[1.05]">
           היכל התהילה
         </h1>
@@ -58,11 +59,11 @@ export default async function HallOfFamePage() {
           /* מצב ריק **מוצג** — בניגוד לציטוט. זה ראוט יעד: מי שנכנס
            בכוונה חייב לקבל תשובה ולא מסך ריק */
           <Card className="text-center">
-            <span className="text-5xl">🏛️</span>
+            <IconTile name="hall" size={64} className="bg-bg-2 text-brand" />
             <p className="mt-3 text-lg font-bold">היכל התהילה עוד מתמלא</p>
             <p className="mt-1 text-muted">
               עשרים שנות מירוץ נאספות עכשיו מהמשפחה. כל מירוץ חדש שמסתיים
-              באפליקציה נכנס לכאן לבד 🏁
+              באפליקציה נכנס לכאן לבד.
             </p>
           </Card>
         ) : (
@@ -78,9 +79,10 @@ export default async function HallOfFamePage() {
 
         <Link
           href="/"
-          className="mt-auto pt-4 text-center text-small font-bold text-muted hover:text-brand"
+          className="flex items-center justify-center gap-1 mt-auto pt-4 text-center text-small font-bold text-muted hover:text-brand"
         >
-          → לדף הבית
+          <Icon name="back" size={16} />
+          לדף הבית
         </Link>
       </div>
     </main>

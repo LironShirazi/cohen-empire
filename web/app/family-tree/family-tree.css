@@ -89,8 +89,15 @@
   box-shadow: var(--shadow-navy, 0 14px 44px rgba(11, 27, 63, 0.38));
   z-index: 30;
 }
+/* אייקונים (js/icons.js וגם <Icon> ב-tree-canvas) — לא מתכווצים בשורה */
+.ft-root svg.ic,
+.ft-root .tb-btn svg { flex: none; }
+
 .home-link {
-  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
   line-height: 1;
   text-decoration: none;
   background: rgba(255, 255, 255, 0.14);
@@ -115,6 +122,9 @@
 }
 .tb-btn {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 40px;
   border: 2px solid var(--line);
   background: var(--surface);
@@ -209,7 +219,9 @@
   min-width: 210px;
 }
 .menu button {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   text-align: start;
   background: none;
@@ -260,6 +272,9 @@
   cursor: pointer;
   box-shadow: var(--ft-shadow);
   color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .zoom-controls button:active { transform: translateY(1px); }
 
@@ -268,7 +283,8 @@
 .link { fill: none; stroke: var(--ft-branch); stroke-width: 2; }
 .couple { stroke: var(--ft-gold); stroke-width: 2.5; }
 .couple.far { stroke-dasharray: 5 5; stroke-width: 1.5; opacity: 0.6; fill: none; }
-.heart { font-size: 13px; fill: var(--ft-heart); paint-order: stroke; stroke: var(--bg); stroke-width: 5; }
+/* path ב-scale(0.58) — עובי ההילה נמדד ביחידות ה-path, 7 ≈ 4px במסך */
+.heart { fill: var(--ft-heart); paint-order: stroke; stroke: var(--bg); stroke-width: 7; stroke-linejoin: round; }
 /* שם המשפחה של הזוג, מתחת ללב */
 .couple-name {
   font-size: 11px;
@@ -310,8 +326,8 @@
   stroke-width: 4;
   pointer-events: none;
 }
-.me-badge circle { fill: var(--ok); }
-.me-badge text { font-size: 11px; pointer-events: none; }
+.me-badge .bg { fill: var(--ok); }
+.me-badge .me-ic { fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; pointer-events: none; }
 
 /* ---------- כרטיס עלה (Bottom Sheet) ---------- */
 .sheet {
@@ -354,6 +370,9 @@
   border-radius: 50%;
   width: 40px;
   height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 15px;
   cursor: pointer;
   color: var(--ink);
@@ -434,6 +453,9 @@
    לפעולה ("הפעלת מצב עריכה"), שם הוא אומר "עוד לא פעיל" ולא "ביטול". */
 .btn-cancel { background: var(--bg-2); border-color: var(--line); color: var(--ink); }
 .btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: none;
   background: none;
   color: var(--brand);
@@ -446,6 +468,10 @@
 }
 .btn-link:hover { color: var(--brand-deep); }
 .btn-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   border: 2px solid var(--line);
   background: var(--bg-2);
   border-radius: var(--ft-radius-sm);
@@ -506,7 +532,9 @@
 .full-box .btn-close { position: absolute; top: 12px; inset-inline-start: 12px; }
 .full-box h2 { font-size: 26px; color: var(--brand); max-width: 100%; overflow-wrap: anywhere; }
 .full-year { color: var(--muted); font-size: 15px; }
-.full-phone { font-size: 16px; }
+.full-phone { font-size: 16px; display: inline-flex; align-items: center; gap: 6px; }
+/* הכתר של השורש ליד השם — בצבע הזהב של קו הזוג */
+.ft-root h2 > svg.ic, .ft-root h3 > svg.ic { color: var(--ft-gold); vertical-align: -2px; }
 .full-phone a { color: var(--brand); font-weight: 700; text-decoration: none; }
 .full-rel { width: 100%; margin-top: 6px; }
 .full-rel h4 { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }

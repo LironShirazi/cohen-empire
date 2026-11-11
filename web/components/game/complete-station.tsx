@@ -7,6 +7,7 @@ import { Field } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import type { CompletionType } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * סימון השלמה — הכפתור משתנה לפי סוג התחנה, אבל מי שקובע אם התחנה
@@ -84,7 +85,8 @@ export function CompleteStation({
           disabled={busy || secretCode.trim() === ""}
           onClick={() => submit(secretCode, null)}
         >
-          {busy ? "בודקים…" : "שולחים את הקוד 🔑"}
+          {busy ? null : <Icon name="key" size={24} />}
+          {busy ? "בודקים…" : "שולחים את הקוד"}
         </Button>
       </div>
     );
@@ -108,7 +110,8 @@ export function CompleteStation({
         />
         <FormError>{error}</FormError>
         <Button size="lg" disabled={busy} onClick={() => fileInput.current?.click()}>
-          {busy ? "מעלים…" : "צלמו והעלו תמונה 📸"}
+          {busy ? null : <Icon name="camera" size={24} />}
+          {busy ? "מעלים…" : "צלמו והעלו תמונה"}
         </Button>
       </div>
     );
@@ -138,16 +141,19 @@ export function CompleteStation({
           disabled={busy}
           onClick={() => fileInput.current?.click()}
         >
+          {uploading ? null : (
+            <Icon name={proofUrl ? "check" : "camera"} size={22} />
+          )}
           {uploading
             ? "מעלים…"
             : proofUrl
-              ? "התמונה צורפה ✓ — להחלפה"
-              : "צירוף תמונה (רשות) 📸"}
+              ? "התמונה צורפה — להחלפה"
+              : "צירוף תמונה (רשות)"}
         </Button>
 
         <FormError>{error}</FormError>
         <Button size="lg" disabled={busy} onClick={() => submit(null, proofUrl)}>
-          {pending ? "שולחים…" : "סיימנו! בקשו אישור מהמנהל ✋"}
+          {pending ? "שולחים…" : "סיימנו! בקשו אישור מהמנהל"}
         </Button>
       </div>
     );
@@ -157,7 +163,8 @@ export function CompleteStation({
     <div className="flex flex-col gap-3">
       <FormError>{error}</FormError>
       <Button size="lg" disabled={busy} onClick={() => submit(null, null)}>
-        {busy ? "רגע…" : "סיימנו את המשימה ✅"}
+        {busy ? null : <Icon name="check" size={24} />}
+        {busy ? "רגע…" : "סיימנו את המשימה"}
       </Button>
     </div>
   );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FormError } from "@/components/ui/page";
 import type { PendingRequest } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 export function JoinRequests({ requests }: { requests: PendingRequest[] }) {
   const router = useRouter();
@@ -66,7 +67,8 @@ export function JoinRequests({ requests }: { requests: PendingRequest[] }) {
               disabled={pending}
               onClick={() => decide(request.id, true)}
             >
-              אישור ✓
+<Icon name="check" size={18} />
+              אישור
             </Button>
             <Button
               variant="secondary"

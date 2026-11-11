@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/field";
 import { FormError } from "@/components/ui/page";
 import { createClient } from "@/lib/supabase/client";
 import { startNavProgress } from "@/components/ui/navigation-progress";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * פתיחת אלבום חדש. כותב ישירות מול RLS (`gallery_albums_insert`),
@@ -44,7 +45,8 @@ export function NewAlbumForm({ myUserId }: { myUserId: string }) {
   if (!open) {
     return (
       <Button size="lg" className="w-full" onClick={() => setOpen(true)}>
-        ➕ אלבום חדש
+        <Icon name="plus" size={24} />
+        אלבום חדש
       </Button>
     );
   }

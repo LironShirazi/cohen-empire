@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Chip } from "@/components/ui/chip";
 import type { RaceStatus } from "@/lib/supabase/types";
+import { Icon, LiveDot, type IconName } from "@/components/ui/icon";
 
 /**
  * רוחב העמודה של מסכי הניהול.
@@ -31,6 +32,7 @@ export type AdminWidth = keyof typeof bodyWidth;
  */
 export function AdminHeader({
   title,
+  icon,
   back,
   backLabel = "לרשימת המירוצים",
   meta,
@@ -39,6 +41,8 @@ export function AdminHeader({
   children,
 }: {
   title: string;
+  /** אייקון לצד הכותרת — במקום האימוג׳י שהיה בתוך המחרוזת */
+  icon?: IconName;
   back?: string;
   backLabel?: string;
   meta?: string;
@@ -52,7 +56,10 @@ export function AdminHeader({
     <header className="cosmic rounded-b-3xl px-5 pt-14 pb-5.5 shadow-navy">
       <div className={`mx-auto w-full ${bodyWidth[size]}`}>
         <div className="flex items-center gap-2">
-          <Chip tone="ghost">🎛 מצב ניהול</Chip>
+          <Chip tone="ghost">
+            <Icon name="sliders" size={18} />
+            מצב ניהול
+          </Chip>
           {meta ? (
             <span className="ms-auto text-[13px] text-on-navy-muted">
               {meta}
@@ -60,16 +67,20 @@ export function AdminHeader({
           ) : null}
         </div>
 
-        <h1 className="mt-3 font-display text-[27px]">{title}</h1>
+        <h1 className="mt-3 flex items-center gap-2.5 font-display text-[27px]">
+          {icon ? <Icon name={icon} size={26} className="text-gold-lite" /> : null}
+          {title}
+        </h1>
 
         {status ? <Pipeline status={status} /> : null}
 
         {back ? (
           <Link
             href={back}
-            className="mt-3 inline-block text-sm font-bold text-on-navy-muted hover:text-yellow"
+            className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-on-navy-muted hover:text-yellow"
           >
-            → {backLabel}
+            <Icon name="back" size={16} />
+            {backLabel}
           </Link>
         ) : null}
 
@@ -102,7 +113,7 @@ function Pipeline({ status }: { status: RaceStatus }) {
         return (
           <span
             key={step.status}
-            className={`flex-1 rounded-full px-1 py-2 text-center text-xs font-extrabold ${
+            className={`flex flex-1 items-center justify-center gap-1 rounded-full px-1 py-2 text-center text-xs font-extrabold ${
               done
                 ? "bg-gold-lite/22 text-gold-lite"
                 : active
@@ -110,7 +121,12 @@ function Pipeline({ status }: { status: RaceStatus }) {
                   : "bg-white/8 text-on-navy-muted/70"
             }`}
           >
-            {done ? "✓" : active ? "●" : ""} {step.label}
+            {done ? (
+              <Icon name="check" size={14} />
+            ) : active ? (
+              <LiveDot className="size-2" />
+            ) : null}
+            {step.label}
           </span>
         );
       })}

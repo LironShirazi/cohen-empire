@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
 import { getRace, getRaceResults, getUser, getWinnersRace } from "@/lib/data";
+import { Icon, FinishFlag } from "@/components/ui/icon";
 
 export const metadata = {
-  title: "🏆 מסך הזוכים — אימפריית כהן",
+  title: "מסך הזוכים — אימפריית כהן",
 };
 
 /**
@@ -39,16 +40,19 @@ export default async function WinnersPage(props: PageProps<"/winners">) {
   if (!race || results.length === 0) {
     return (
       <PageShell>
-        <PageHeader title="🏆 מסך הזוכים" back="/" backLabel="לדף הבית" />
+        <PageHeader title="מסך הזוכים" icon="trophy" back="/" backLabel="לדף הבית" />
         <Card className="text-center">
-          <span className="text-5xl">🏁</span>
+          <FinishFlag size={72} />
           <p className="mt-3 text-lg font-bold">עוד אין זוכים להכריז עליהם</p>
           <p className="mt-1 text-muted">
             המסך הזה נדלק ברגע שמנהל המירוץ מכריז על הסיום. בינתיים —
             כל השנים הקודמות מחכות בהיכל התהילה.
           </p>
           <Link href="/hall-of-fame" className="mt-4 inline-block">
-            <Button variant="secondary">🏆 להיכל התהילה</Button>
+            <Button variant="secondary">
+              <Icon name="hall" size={22} />
+              להיכל התהילה
+            </Button>
           </Link>
         </Card>
       </PageShell>

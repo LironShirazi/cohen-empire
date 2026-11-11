@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FormError } from "@/components/ui/page";
 import type { TeamOrder } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * סדר התחנות (docs/01-requirements.md §4).
@@ -69,7 +70,8 @@ export function StationOrder({
               disabled={pending}
               onClick={() => run(() => assignStationOrderAction(raceId, "random"))}
             >
-              אקראי לכל קבוצה 🎲
+              <Icon name="shuffle" size={20} />
+              אקראי לכל קבוצה
             </Button>
           </div>
           <p className="text-xs text-muted">
@@ -102,21 +104,21 @@ export function StationOrder({
                     <>
                       <button
                         type="button"
-                        className="size-8 rounded-full border border-line disabled:opacity-30"
+                        className="inline-flex size-8 items-center justify-center rounded-full border border-line disabled:opacity-30"
                         disabled={pending || index === 0}
                         onClick={() => move(order, index, -1)}
                         aria-label={`הזזת ${station.name} למעלה`}
                       >
-                        ↑
+                        <Icon name="up" size={16} />
                       </button>
                       <button
                         type="button"
-                        className="size-8 rounded-full border border-line disabled:opacity-30"
+                        className="inline-flex size-8 items-center justify-center rounded-full border border-line disabled:opacity-30"
                         disabled={pending || index === order.stations.length - 1}
                         onClick={() => move(order, index, 1)}
                         aria-label={`הזזת ${station.name} למטה`}
                       >
-                        ↓
+                        <Icon name="down" size={16} />
                       </button>
                     </>
                   )}

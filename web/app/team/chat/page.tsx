@@ -9,6 +9,7 @@ import {
   getUnreadNotifications,
   getUser,
 } from "@/lib/data";
+import { Icon, TeamGlyph } from "@/components/ui/icon";
 
 export default async function TeamChatPage() {
   const user = await getUser();
@@ -38,9 +39,10 @@ export default async function TeamChatPage() {
       >
         <Link
           href="/team"
-          className="text-sm font-bold text-muted hover:text-brand"
+          className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-brand"
         >
-          → לקבוצה
+          <Icon name="back" size={16} />
+          לקבוצה
         </Link>
         <span
           aria-hidden
@@ -50,7 +52,7 @@ export default async function TeamChatPage() {
             borderColor: team.color,
           }}
         >
-          {team.animal?.split(" ")[0] ?? "🏁"}
+          <TeamGlyph team={team} />
         </span>
         <div className="min-w-0">
           <h1 className="truncate font-display text-h2">{team.name}</h1>

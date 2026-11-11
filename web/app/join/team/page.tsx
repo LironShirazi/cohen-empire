@@ -5,6 +5,7 @@ import { Chip } from "@/components/ui/chip";
 import { PageShell } from "@/components/ui/page";
 import { getMyMembership, getUser } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
+import { Icon } from "@/components/ui/icon";
 
 export default async function JoinTeamPage(props: PageProps<"/join/team">) {
   const user = await getUser();
@@ -38,9 +39,10 @@ export default async function JoinTeamPage(props: PageProps<"/join/team">) {
 
       <Link
         href="/join"
-        className="mt-auto text-small font-bold text-muted hover:text-brand"
+        className="inline-flex items-center gap-1 mt-auto text-small font-bold text-muted hover:text-brand"
       >
-        → לקוד המשחק
+        <Icon name="back" size={16} />
+        לקוד המשחק
       </Link>
     </PageShell>
   );

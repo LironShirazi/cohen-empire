@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Notification, NotificationType } from "@/lib/supabase/types";
 import { startNavProgress } from "@/components/ui/navigation-progress";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * הבאנר הקופץ של ההתראות (docs/01 §5.1, docs/02 §3.8, docs/04 §3):
@@ -138,11 +139,9 @@ export function NotificationCenter({ children }: { children: React.ReactNode }) 
         messageId: message.id,
         teamId: row.team_id,
         senderName: message.sender?.full_name ?? "בן משפחה",
-        teamLabel: message.team
-          ? `${message.team.name}${message.team.animal ? ` ${message.team.animal.split(" ")[0]}` : ""}`
-          : "",
+        teamLabel: message.team?.name ?? "",
         teamColor: message.team?.color ?? "#e4002b",
-        preview: message.body?.trim() || "צירף/ה קובץ 📎",
+        preview: message.body?.trim() || "צירף/ה קובץ",
         href,
       };
     }
@@ -247,7 +246,7 @@ export function NotificationCenter({ children }: { children: React.ReactNode }) 
               className="flex size-9 flex-none items-center justify-center rounded-full text-lg font-extrabold text-navy"
               style={{ background: "var(--yellow)" }}
             >
-              {toast.kind === "admin_broadcast" ? "📣" : "@"}
+              {toast.kind === "admin_broadcast" ? <Icon name="megaphone" /> : "@"}
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-extrabold">

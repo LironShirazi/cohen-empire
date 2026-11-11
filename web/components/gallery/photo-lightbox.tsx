@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isVideoUrl } from "@/lib/media";
 import type { GalleryPhotoRow } from "@/lib/data";
 import { useConfirm } from "@/components/ui/confirm";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * תצוגה מוגדלת של תמונה מהגלריה, עם ניהול למי שרשאי.
@@ -108,9 +109,9 @@ export function PhotoLightbox({
         <button
           onClick={onClose}
           aria-label="סגירה"
-          className="min-h-11 min-w-11 rounded-full bg-white/15 text-xl"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15"
         >
-          ✕
+          <Icon name="close" size={22} />
         </button>
         <span className="truncate text-sm opacity-80">
           {photo.uploader_name ? `העלה/תה ${photo.uploader_name}` : ""}
@@ -200,7 +201,8 @@ export function PhotoLightbox({
                   disabled={busy}
                   onClick={() => setEditing(true)}
                 >
-                  ✏️ {photo.caption ? "עריכת הכותרת" : "הוספת כותרת"}
+                  <Icon name="edit" />
+                  {photo.caption ? "עריכת הכותרת" : "הוספת כותרת"}
                 </Button>
                 <Button
                   variant="quiet"
@@ -208,7 +210,8 @@ export function PhotoLightbox({
                   disabled={busy}
                   onClick={() => void remove()}
                 >
-                  🗑️ מחיקה
+                  <Icon name="trash" />
+                  מחיקה
                 </Button>
               </div>
             ) : null}

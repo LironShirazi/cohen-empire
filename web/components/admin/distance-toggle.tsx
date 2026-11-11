@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { setShowDistanceAction } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * מד המרחק — ה-tweak `showDistance` מהסקיצות, שעד 0016 לא היה קיים
@@ -24,7 +25,10 @@ export function DistanceToggle({
 
   return (
     <Card className="flex flex-col gap-2">
-      <h2 className="font-display text-h2">📍 מד המרחק</h2>
+      <h2 className="flex items-center gap-2 font-display text-h2">
+        <Icon name="pin" size={22} className="text-brand" />
+        מד המרחק
+      </h2>
       <p className="text-sm text-muted">
         {showDistance
           ? "הקבוצות רואות כמה מטרים נשארו לתחנה."
@@ -43,7 +47,8 @@ export function DistanceToggle({
           })
         }
       >
-        {showDistance ? "כיבוי המד — חיפוש אמיתי 🔎" : "הדלקת המד 📍"}
+        <Icon name={showDistance ? "search" : "pin"} size={20} />
+        {showDistance ? "כיבוי המד — חיפוש אמיתי" : "הדלקת המד"}
       </Button>
 
       {/* בלי זה כישלון נראה בדיוק כמו הצלחה: על מירוץ בארכיון

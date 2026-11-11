@@ -7,6 +7,7 @@ import { HallOfFameForm } from "@/components/family/hall-of-fame-form";
 import { deleteFamilyImage } from "@/lib/family-content";
 import { createClient } from "@/lib/supabase/client";
 import type { HallOfFameRow } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * ✏️ על שורה בהיכל התהילה — עריכה ומחיקה, למנהל-על בלבד.
@@ -80,7 +81,7 @@ export function HallOfFameRowActions({
         onClick={() => setEditing(true)}
         className={`flex size-10 flex-none items-center justify-center rounded-full border-2 ${colors}`}
       >
-        ✏️
+        <Icon name="edit" size={18} />
       </button>
 
       {editing ? (
@@ -107,7 +108,8 @@ export function HallOfFameRowActions({
                 disabled={busy}
                 className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full font-bold text-danger active:bg-brand-soft disabled:opacity-50"
               >
-                {busy ? "מוחק..." : `🗑️ מחיקת שנת ${row.year} מההיכל`}
+                {busy ? null : <Icon name="trash" size={18} />}
+                {busy ? "מוחק..." : `מחיקת שנת ${row.year} מההיכל`}
               </button>
               {error ? (
                 <p role="alert" className="mt-1 text-center text-xs font-bold text-danger">

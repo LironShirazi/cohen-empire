@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Icon, type IconName } from "@/components/ui/icon";
 
 export function PageShell({
   children,
@@ -17,11 +18,14 @@ export function PageShell({
 
 export function PageHeader({
   title,
+  icon,
   back,
   backLabel = "חזרה",
   action,
 }: {
   title: string;
+  /** אייקון לצד הכותרת — במקום האימוג׳י שהיה בתוך המחרוזת */
+  icon?: IconName;
   back?: string;
   backLabel?: string;
   action?: ReactNode;
@@ -31,13 +35,17 @@ export function PageHeader({
       {back ? (
         <Link
           href={back}
-          className="text-sm font-bold text-muted hover:text-brand"
+          className="inline-flex flex-none items-center gap-1 text-sm font-bold text-muted hover:text-brand"
         >
-          → {backLabel}
+          <Icon name="back" size={16} />
+          {backLabel}
         </Link>
       ) : null}
       {/* text-h1 ולא text-2xl — הסקאלה של typography.html היא 28px */}
-      <h1 className="font-display text-h1">{title}</h1>
+      <h1 className="flex items-center gap-2 font-display text-h1">
+        {icon ? <Icon name={icon} size={26} className="text-brand" /> : null}
+        {title}
+      </h1>
       {action ? <div className="ms-auto">{action}</div> : null}
     </header>
   );

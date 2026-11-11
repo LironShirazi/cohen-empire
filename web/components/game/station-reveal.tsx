@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 
 const confetti = [
   { dx: "-90px", dy: "-70px", color: "var(--yellow)" },
@@ -68,9 +69,7 @@ export function StationReveal({
   if (dismissed) return null;
 
   const band =
-    phase === "task"
-      ? `🎉 תחנה ${position} · המשימה`
-      : `🏁 תחנה ${position} · רמז`;
+    phase === "task" ? `תחנה ${position} · המשימה` : `תחנה ${position} · רמז`;
 
   return (
     <div
@@ -85,7 +84,8 @@ export function StationReveal({
 
       <div className="relative mt-3 flex-1">
         <div className="reveal-clue absolute inset-0 m-auto flex h-fit w-[296px] flex-col gap-3 rounded-card border-[3px] border-ink bg-surface p-4.5 shadow-card-lg">
-          <div className="rounded-lg bg-ink px-2.5 py-1.5 font-display text-lg text-yellow">
+          <div className="flex items-center justify-center gap-2 rounded-lg bg-ink px-2.5 py-1.5 font-display text-lg text-yellow">
+            <Icon name={phase === "task" ? "check" : "flag"} size={20} />
             {band}
           </div>
           <p className="text-lg font-bold text-ink">{body}</p>
@@ -124,7 +124,7 @@ export function StationReveal({
             />
             <span className="reveal-tap absolute inset-x-0 -top-10 text-center text-[15px] font-extrabold">
               <span className="rounded-full border-2 border-ink bg-yellow px-3.5 py-1 text-ink shadow-card">
-                👆 לחצו לפתיחה
+                לחצו לפתיחה
               </span>
             </span>
           </button>

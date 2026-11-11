@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { arriveAction } from "@/app/team/actions";
 import { Button } from "@/components/ui/button";
 import { formatDistance } from "@/lib/geo";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * "בדקו אם הגעתם" — המצב שבו מד המרחק כבוי (0016, ה-tweak
@@ -61,12 +62,14 @@ export function BlindArrival({ teamId }: { teamId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-full bg-ink px-4 py-3 text-center text-[22px] font-extrabold text-white">
-        🔎 חפשו לפי הרמז
+      <div className="flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-3 text-center text-[22px] font-extrabold text-white">
+        <Icon name="search" size={24} />
+        חפשו לפי הרמז
       </div>
 
       <Button size="lg" disabled={pending} onClick={check}>
-        {pending ? "בודקים…" : "📍 בדקו אם הגעתם"}
+        {pending ? null : <Icon name="pin" size={24} />}
+        {pending ? "בודקים…" : "בדקו אם הגעתם"}
       </Button>
 
       {tooFar !== null ? (

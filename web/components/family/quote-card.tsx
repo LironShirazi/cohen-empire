@@ -94,7 +94,10 @@ export function QuoteCard({
  * ברירת המחדל היא אימוג'י ולא תמונה, בכוונה: הפורטרט שבריפו הוא של
  * **שניהם יחד** בגוף מלא, וחיתוך שלו לעיגול 56px מציג פיסה אקראית.
  * מנהל-על שיעלה קריקטורה של סבא לבד או סבתא לבד ל-`image_url` יקבל
- * אותה כאן במקום האימוג'י.
+ * אותה כאן במקום מסגרת ההמתנה.
+ *
+ * ⚠️ בלי 👵👴: סבא וסבתא הם דמויות אמיתיות ולא אייקון. עד שתעלה
+ * תמונה — עיגול מקווקו עם המילה עצמה (מסגרת ה-avatar של ה-DS).
  */
 function QuoteFace({ quote, isGranny }: { quote: Quote; isGranny: boolean }) {
   if (quote.image_url) {
@@ -111,13 +114,11 @@ function QuoteFace({ quote, isGranny }: { quote: Quote; isGranny: boolean }) {
   return (
     <span
       aria-hidden
-      className={`flex size-14 flex-none items-center justify-center rounded-full border-2 text-[30px] ${
-        isGranny
-          ? "border-line bg-granny"
-          : "border-line bg-yellow-soft"
+      className={`flex size-14 flex-none items-center justify-center rounded-full border-2 border-dashed border-[#cdbe9f] font-display text-[15px] text-muted ${
+        isGranny ? "bg-granny" : "bg-yellow-soft"
       }`}
     >
-      {isGranny ? "👵" : "👴"}
+      {quote.who}
     </span>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { HallOfFameRow } from "@/lib/supabase/types";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * תמונת הקבוצה הזוכה — ממוזערת בשורה, ובלחיצה נפתחת במסך מלא.
@@ -36,9 +37,9 @@ export function HallOfFamePhoto({
     return (
       <span
         aria-hidden
-        className={`flex flex-none items-center justify-center rounded-card-sm bg-bg-2 text-xl opacity-40 ${className}`}
+        className={`flex flex-none items-center justify-center rounded-card-sm bg-bg-2 text-muted opacity-60 ${className}`}
       >
-        📷
+        <Icon name="camera" size={22} />
       </span>
     );
   }
@@ -71,9 +72,9 @@ export function HallOfFamePhoto({
               type="button"
               onClick={() => setOpen(false)}
               aria-label="סגירה"
-              className="min-h-11 min-w-11 rounded-full bg-white/15 text-xl"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/15"
             >
-              ✕
+              <Icon name="close" size={22} />
             </button>
             <span className="font-display text-xl text-gold-lite">
               אלופי {row.year}

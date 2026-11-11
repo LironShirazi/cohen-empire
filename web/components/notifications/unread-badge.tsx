@@ -1,4 +1,5 @@
 import type { UnreadNotification } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * הבאדג' על כפתור הצ'אט (docs/01 §5.1, docs/04 §3) — השכבה המתמידה
@@ -24,7 +25,7 @@ export function UnreadBadge({
     <span
       className={`flex min-w-8 items-center justify-center gap-0.5 rounded-full bg-ok px-2 py-0.5 text-sm font-extrabold text-white ${className}`}
     >
-      {mentions > 0 ? "@" : "📣"}
+      {mentions > 0 ? "@" : <Icon name="megaphone" size={16} label="הודעת רוחב" />}
       {count > 1 ? count : ""}
     </span>
   );

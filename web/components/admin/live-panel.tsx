@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { FormError } from "@/components/ui/page";
 import type { ApprovalRow, TeamPosition } from "@/lib/data";
+import { Icon } from "@/components/ui/icon";
 
 export function LivePanel({
   approvals,
@@ -91,7 +92,8 @@ export function LivePanel({
                   )
                 }
               >
-                אישור ✓
+                <Icon name="check" size={18} />
+                אישור
               </Button>
               <Button
                 variant="secondary"
@@ -130,7 +132,7 @@ export function LivePanel({
               <p className="text-sm text-muted">
                 {row.station
                   ? `תחנה ${row.position} · ${row.station.name}`
-                  : "סיימו הכל 🏁"}
+                  : "סיימו הכל"}
               </p>
             </div>
 
@@ -146,7 +148,8 @@ export function LivePanel({
                     run(() => adminOpenStationAction(row.team.id, row.station!.id))
                   }
                 >
-                  פתח ידנית 🔓
+                  <Icon name="bolt" size={18} />
+                  פתח ידנית
                 </Button>
               )
             ) : null}

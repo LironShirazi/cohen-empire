@@ -46,14 +46,15 @@ export default async function AdminStationsPage(
   return (
     <main className="flex flex-1 flex-col">
       <AdminHeader
-        title="📍 תחנות"
+        title="תחנות"
+        icon="pin"
         back={`/admin/${raceId}`}
         backLabel="ללוח הבקרה"
       />
       <AdminBody className="flex flex-col gap-4">
         {stations.length === 0 ? (
           <Card className="text-center text-muted">
-            עוד אין תחנות. מוסיפים את הראשונה למטה 👇
+            עוד אין תחנות. מוסיפים את הראשונה למטה.
           </Card>
         ) : (
           // מפה של כל התחנות יחד (docs/04-screens-ux.md §4) — קל לראות

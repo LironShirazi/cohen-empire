@@ -56,7 +56,7 @@ export default async function PlayPage() {
 
   return (
     <PageShell>
-      <PageHeader title="🧭 מהלך המשחק" back="/team" backLabel="לקבוצה" />
+      <PageHeader title="מהלך המשחק" icon="navigate" back="/team" backLabel="לקבוצה" />
 
       {state === null ? (
         <Card className="text-center">

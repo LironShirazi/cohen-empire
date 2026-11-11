@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card";
 import { PageShell } from "@/components/ui/page";
 import { getProfile, getUser } from "@/lib/data";
 import { TreeCanvas } from "./tree-canvas";
+import { IconTile } from "@/components/ui/icon";
 
 export const metadata = {
-  title: "🌳 העץ המשפחתי — אימפריית כהן",
+  title: "העץ המשפחתי — אימפריית כהן",
 };
 
 /**
@@ -24,7 +25,7 @@ export default async function FamilyTreePage() {
   if (!user) {
     return (
       <PageShell className="flex flex-col items-center gap-6 text-center">
-        <span className="text-6xl">🌳</span>
+        <IconTile name="tree" size={80} className="bg-yellow-soft text-brand" />
         <h1 className="font-display text-h1 text-brand">העץ המשפחתי</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">

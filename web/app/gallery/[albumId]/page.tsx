@@ -21,7 +21,7 @@ export default async function AlbumPage(
 
   return (
     <PageShell>
-      <PageHeader title="📸 גלריה" back="/gallery" backLabel="לכל האלבומים" />
+      <PageHeader title="גלריה" icon="camera" back="/gallery" backLabel="לכל האלבומים" />
       <AlbumScreen
         album={album}
         photos={photos}

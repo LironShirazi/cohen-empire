@@ -5,6 +5,7 @@ import type { Map as LeafletMap, LayerGroup } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { TeamOnMap } from "@/lib/data";
 import type { Station } from "@/lib/supabase/types";
+import { iconMarkup, teamInitial } from "@/components/ui/icon";
 
 // ה-default של leaflet הוא ה-namespace עצמו (ראו StationMap); בטיפוסים
 // אין default סינתטי, ולכן מציינים את ה-namespace ישירות
@@ -84,7 +85,7 @@ export function LiveMap({
     for (const station of stations) {
       L.marker([station.lat, station.lng], {
         icon: L.divIcon({
-          html: '<span style="font-size:20px;line-height:1;opacity:.6">🏁</span>',
+          html: `<span style="display:block;opacity:.6">${iconMarkup("flag", 20, { color: "#1a1206" })}</span>`,
           className: "",
           iconSize: [20, 20],
           iconAnchor: [10, 18],
@@ -117,14 +118,14 @@ export function LiveMap({
     const now = Date.now();
     for (const row of teams) {
       const age = now - new Date(row.location.updated_at).getTime();
-      const emoji = row.team.animal?.split(" ")[0] ?? "🏃";
+      const letter = teamInitial(row.team);
 
       L.marker([row.location.lat, row.location.lng], {
         icon: L.divIcon({
           className: "",
           iconSize: [34, 34],
           iconAnchor: [17, 17],
-          html: teamMarker(row.team.color, emoji, age > STALE_MS),
+          html: teamMarker(row.team.color, letter, age > STALE_MS),
         }),
       })
         .addTo(layer)
@@ -174,13 +175,14 @@ export function LiveMap({
  * כאן `style.background` מסנן ערך לא תקין מעצמו ו-`textContent` לא
  * מפרש markup, אז אין מה לברוח ממנו.
  */
-function teamMarker(color: string, emoji: string, stale: boolean): HTMLElement {
+/** עיגול בצבע הקבוצה עם האות שלה — כמו `TeamGlyph`, בלי אימוג׳י החיה */
+function teamMarker(color: string, letter: string, stale: boolean): HTMLElement {
   const span = document.createElement("span");
   span.style.cssText =
-    "display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);font-size:17px";
+    "display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);font-size:17px;color:#fff;font-family:var(--font-display)";
   span.style.background = color;
   span.style.opacity = stale ? "0.45" : "1";
-  span.textContent = emoji;
+  span.textContent = letter;
   return span;
 }
 

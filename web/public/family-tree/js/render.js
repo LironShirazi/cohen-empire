@@ -77,7 +77,10 @@
       : '';
     const meBadge =
       opts.myId === p.id
-        ? `<g class="me-badge"><circle cx="${x + R - 6}" cy="${y - R + 6}" r="10"/><text x="${x + R - 6}" y="${y - R + 10}" text-anchor="middle">🙋</text></g>`
+        ? `<g class="me-badge"><circle class="bg" cx="${x + R - 6}" cy="${y - R + 6}" r="10"/>` +
+          // האייקון "אני בעץ" (icons.js) מוקטן לעיגול — בלי הנקודה שלו
+          `<g class="me-ic" transform="translate(${x + R - 13} ${y - R - 1}) scale(0.583)">` +
+          `<circle cx="12" cy="8.5" r="3.2"/><path d="M6 19.5c0-3.3 2.7-5.3 6-5.3s6 2 6 5.3"/></g></g>`
         : '';
     const hit = opts.interactive
       ? `<circle class="hit" cx="${x}" cy="${y}" r="${R + 14}"/>`
@@ -119,7 +122,8 @@
         const family = coupleLastName(a, b);
         couples +=
           `<line class="couple" x1="${left.x + R}" y1="${left.y}" x2="${right.x - R}" y2="${right.y}"/>` +
-          `<text class="heart" x="${midX}" y="${pa.y + 4}" text-anchor="middle">♥</text>` +
+          // הלב הוא path ולא התו ♥ — התו מצויר בגודל ובצבע אחרים בכל מכשיר
+          `<path class="heart" transform="translate(${midX - 7} ${pa.y - 8.5}) scale(0.58)" d="M12 20.3S3.8 15.2 3.8 9.9A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.2 2.8c0 5.3-8.2 10.4-8.2 10.4z"/>` +
           (family
             ? `<text class="couple-name" x="${midX}" y="${pa.y + 20}" text-anchor="middle">${esc(family)}</text>`
             : '');

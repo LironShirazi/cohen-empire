@@ -4,9 +4,10 @@ import { NewAlbumForm } from "@/components/gallery/new-album-form";
 import { Card } from "@/components/ui/card";
 import { PageHeader, PageShell } from "@/components/ui/page";
 import { getAlbums, getUser } from "@/lib/data";
+import { Icon, IconTile } from "@/components/ui/icon";
 
 export const metadata = {
-  title: "📸 גלריה — אימפריית כהן",
+  title: "גלריה — אימפריית כהן",
 };
 
 /**
@@ -23,7 +24,7 @@ export default async function GalleryPage() {
   if (!user) {
     return (
       <PageShell className="flex flex-col items-center gap-6 text-center">
-        <span className="text-6xl">📸</span>
+        <IconTile name="camera" size={80} className="bg-yellow-soft text-brand" />
         <h1 className="font-display text-h1 text-brand">גלריה</h1>
         <Card className="flex flex-col items-center gap-4">
           <p className="text-muted">
@@ -40,13 +41,13 @@ export default async function GalleryPage() {
 
   return (
     <PageShell>
-      <PageHeader title="📸 גלריה" back="/" backLabel="לדף הבית" />
+      <PageHeader title="גלריה" icon="camera" back="/" backLabel="לדף הבית" />
 
       <NewAlbumForm myUserId={user.id} />
 
       {albums.length === 0 ? (
         <Card className="mt-6 text-center">
-          <p className="text-lg font-bold">עוד אין אלבומים 📭</p>
+          <p className="text-lg font-bold">עוד אין אלבומים</p>
           <p className="mt-1 text-muted">
             חתונה, טיול, מירוץ — כל אירוע משפחתי יכול לקבל אלבום משלו.
           </p>
@@ -68,7 +69,7 @@ export default async function GalleryPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <span className="text-4xl opacity-40">📷</span>
+                  <Icon name="camera" size={40} className="text-muted opacity-50" />
                 )}
               </div>
               <div className="p-3">
