@@ -423,7 +423,8 @@ export type Recipe = {
   servings: number;
   ingredients: string[];
   steps: RecipeStep[];
-  photo_url: string;
+  /** רשות מ-0025 — בלי תמונה מוצג אייקון (`RecipeImage`) */
+  photo_url: string | null;
   thumb_url: string | null;
   created_by: string | null;
   created_at: string;

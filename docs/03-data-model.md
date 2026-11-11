@@ -180,7 +180,7 @@ erDiagram
 ### ספר המתכונים (0023)
 - **`recipes`** — `name`, `owner_name` (טקסט חופשי: "של מי המתכון" — לא
   הפניה לעץ, כי לסבתא ז"ל אין חשבון), `servings`, `ingredients` (jsonb,
-  מערך מחרוזות), `steps` (jsonb, `[{text, image_url}]`), `photo_url`,
+  מערך מחרוזות), `steps` (jsonb, `[{text, image_url}]`), `photo_url` (רשות מ-0025),
   `thumb_url`, `created_by`. כל מחובר קורא ומוסיף; עריכה ומחיקה — מי
   שהוסיף ומנהל-על. `grant update` לעמודות התוכן בלבד, לא ל-`created_by`
 - **`recipe_questions`** — `recipe_id` (cascade), `asked_by`, `text` (עד 200),

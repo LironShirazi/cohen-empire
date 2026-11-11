@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Icon } from "@/components/ui/icon";
 
 /**
  * השפה של ספר המתכונים (סבב 7, ‎.rb בסקיצה) — נפרדת משאר האפליקציה
@@ -28,6 +29,45 @@ export function RecipeShell({ children }: { children: ReactNode }) {
     <main className="flex flex-1 flex-col bg-rb-bg text-[18px] leading-[1.55] text-rb-ink">
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">{children}</div>
     </main>
+  );
+}
+
+/**
+ * תמונת המתכון, או אייקון של מנה כשאין (התמונה רשות מ-0025). אותו
+ * רקע ירוק בהיר בשורה ברשימה ובראש דף המתכון, כדי שמתכון בלי תמונה
+ * ייראה מכוון ולא שבור.
+ */
+export function RecipeImage({
+  url,
+  alt,
+  iconSize,
+  className = "",
+  lazy = false,
+}: {
+  url: string | null;
+  alt: string;
+  iconSize: number;
+  className?: string;
+  lazy?: boolean;
+}) {
+  if (url) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={url}
+        alt={alt}
+        loading={lazy ? "lazy" : undefined}
+        className={`bg-rb-soft object-cover ${className}`}
+      />
+    );
+  }
+  return (
+    <span
+      {...(alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true })}
+      className={`flex items-center justify-center bg-rb-green-soft text-rb-green ${className}`}
+    >
+      <Icon name="dish" size={iconSize} />
+    </span>
   );
 }
 
