@@ -63,6 +63,8 @@ export function StoryViewer({
   const [dragY, setDragY] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [closing, setClosing] = useState(false);
+  // גיליון "מי צפה" בסטורי שלי — מקופל משאיר רק את שורת הכותרת
+  const [sheetCollapsed, setSheetCollapsed] = useState(false);
   const drag = useRef<{
     id: number;
     x: number;
@@ -75,6 +77,7 @@ export function StoryViewer({
   const group = groups[gi];
   const item = group?.items[ii];
   const isMine = group?.user_id === myUserId;
+  const sheetOpen = isMine && !sheetCollapsed;
 
   const go = useCallback((g: number, i: number) => {
     setGi(g);
@@ -230,12 +233,12 @@ export function StoryViewer({
               >
                 <div
                   className={`absolute inset-x-0 top-0 flex items-center justify-center px-8 text-center ${
-                    isMine ? "bottom-[60%] pt-16" : "bottom-0"
+                    sheetOpen ? "bottom-[60%] pt-16" : "bottom-0"
                   }`}
                 >
                   <p
                     className={`font-display leading-snug ${
-                      isMine ? "line-clamp-4 text-[26px]" : "text-[34px]"
+                      sheetOpen ? "line-clamp-4 text-[26px]" : "text-[34px]"
                     }`}
                   >
                     {item.caption}
@@ -310,7 +313,7 @@ export function StoryViewer({
             />
 
             {item.kind === "photo" && item.caption ? (
-              <div className={`absolute inset-x-0 z-[1] text-center ${isMine ? "top-[22%]" : "bottom-[150px]"}`}>
+              <div className={`absolute inset-x-0 z-[1] text-center ${sheetOpen ? "top-[22%]" : "bottom-[150px]"}`}>
                 <span className="inline-block max-w-[84%] rounded-card-sm bg-black/60 px-4.5 py-2 font-display text-[22px]">
                   {item.caption}
                 </span>
@@ -332,6 +335,8 @@ export function StoryViewer({
                 now={now}
                 onAddMore={onAddMore}
                 onDeleted={onDeleted}
+                collapsed={sheetCollapsed}
+                onCollapsedChange={setSheetCollapsed}
               />
             )}
           </>
@@ -354,6 +359,9 @@ export function StoryViewer({
   );
 }
 
+/** כמה מהגיליון נשאר גלוי כשהוא מקופל: ידית (31px) + שורת הכותרת + אוויר */
+const SHEET_PEEK_PX = 96;
+
 /** הסטורי שלי — מי צפה (6e). רק המעלה רואה את הרשימה (RLS ב-0024) */
 function ViewersSheet({
   group,
@@ -361,13 +369,19 @@ function ViewersSheet({
   now,
   onAddMore,
   onDeleted,
+  collapsed,
+  onCollapsedChange,
 }: {
   group: StoryGroup;
   itemIndex: number;
   now: number;
   onAddMore: () => void;
   onDeleted: () => void;
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
 }) {
+  const handleStart = useRef<number | null>(null);
+  const handleSwiped = useRef(false);
   const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -395,14 +409,51 @@ function ViewersSheet({
   return (
     <div
       data-no-drag
-      className="absolute inset-x-0 bottom-0 z-[4] flex h-[60%] touch-auto flex-col rounded-t-card-lg bg-surface px-5 pt-3 text-ink select-text"
+      className="absolute inset-x-0 bottom-0 z-[4] flex h-[60%] touch-auto flex-col rounded-t-card-lg bg-surface px-5 text-ink select-text transition-transform duration-200 ease-out"
+      style={{
+        // מקופל: נשארים גלויים הידית ושורת הכותרת בלבד (PEEK_PX)
+        transform: collapsed
+          ? `translateY(calc(100% - ${SHEET_PEEK_PX}px - env(safe-area-inset-bottom)))`
+          : undefined,
+      }}
     >
-      <div aria-hidden className="mx-auto mb-3.5 h-[5px] w-11 rounded-full bg-line" />
+      {/* הידית: הקשה מקפלת/פותחת, וגם החלקה קצרה למטה/למעלה */}
+      <button
+        type="button"
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? "פתיחת רשימת הצופים" : "קיפול רשימת הצופים"}
+        onClick={() => {
+          // אחרי החלקה הדפדפן שולח גם click — בלי זה הוא מבטל אותה מיד
+          if (handleSwiped.current) handleSwiped.current = false;
+          else onCollapsedChange(!collapsed);
+        }}
+        onPointerDown={(e) => {
+          handleSwiped.current = false;
+          handleStart.current = e.clientY;
+        }}
+        onPointerUp={(e) => {
+          const start = handleStart.current;
+          handleStart.current = null;
+          if (start === null) return;
+          const dy = e.clientY - start;
+          if (Math.abs(dy) <= 24) return;
+          handleSwiped.current = true;
+          onCollapsedChange(dy > 0);
+        }}
+        className="-mx-5 flex touch-none justify-center pt-3 pb-3.5"
+      >
+        <span aria-hidden className="h-[5px] w-11 rounded-full bg-line" />
+      </button>
       <div className="flex items-center gap-2.5">
-        <h2 className="flex items-center gap-2 font-display text-h2">
+        <button
+          type="button"
+          onClick={() => onCollapsedChange(!collapsed)}
+          aria-expanded={!collapsed}
+          className="flex items-center gap-2 font-display text-h2"
+        >
           <Icon name="eye" size={22} />
           {viewers.length === 1 ? "צפה אחד" : `${viewers.length} צפו`}
-        </h2>
+        </button>
         <button
           type="button"
           onClick={() => void remove()}
