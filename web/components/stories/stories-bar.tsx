@@ -6,7 +6,7 @@ import { StoryAvatar, StoryRing } from "@/components/stories/story-avatar";
 import { StoryComposer } from "@/components/stories/story-composer";
 import { StoryViewer } from "@/components/stories/story-viewer";
 import { purgeMyExpiredStories } from "@/lib/story-actions";
-import { shortName, type StoryFeed, type StoryGroup } from "@/lib/stories";
+import { shortName, type StoryFeed, type StoryGroup, type StoryItem } from "@/lib/stories";
 
 /**
  * פס הסטוריז בראש ההיירו (6a) — כמו באינסטגרם, מעל הלוגו.
@@ -16,12 +16,19 @@ import { shortName, type StoryFeed, type StoryGroup } from "@/lib/stories";
  *
  * "נצפה" מתעדכן כאן מקומית מיד עם הצפייה, ולא רק ברענון — אחרת
  * הטבעת הייתה נשארת צבעונית אחרי שסוגרים את הסטורי.
+ *
+ * ⚠️ מאותה סיבה גם הסטורי שלי מתעדכן מקומית: מה שפרסמתי נוסף לעיגול
+ * מיד (השורה שחזרה מה-insert), ומה שמחקתי יורד מיד. `router.refresh()`
+ * עדיין רץ ברקע ומיישר קו, אבל בנייד הוא לא תמיד הגיע — והסטורי החדש
+ * הופיע רק אחרי רענון ידני של העמוד.
  */
 export function StoriesBar({ feed }: { feed: StoryFeed }) {
   const router = useRouter();
   const [seenIds, setSeenIds] = useState<Set<string>>(() => new Set());
   const [viewing, setViewing] = useState<{ groups: StoryGroup[]; start: number } | null>(null);
   const [composing, setComposing] = useState(false);
+  const [posted, setPosted] = useState<StoryItem[]>([]);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     void purgeMyExpiredStories();
@@ -47,7 +54,27 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
     router.refresh();
   }, [router]);
 
-  const mine = feed.mine;
+  const mine = useMemo<StoryGroup | null>(() => {
+    const fromServer = feed.mine?.items ?? [];
+    const known = new Set(fromServer.map((it) => it.id));
+    const items = [...fromServer, ...posted.filter((it) => !known.has(it.id))].filter(
+      (it) => !deletedIds.has(it.id)
+    );
+    if (!items.length) return null;
+    return (
+      feed.mine
+        ? { ...feed.mine, items }
+        : { ...feed.me, items, seen: true, viewers: {} }
+    );
+  }, [feed.mine, feed.me, posted, deletedIds]);
+
+  const onDeleted = useCallback(
+    (id: string) => {
+      setDeletedIds((prev) => new Set(prev).add(id));
+      closeViewer();
+    },
+    [closeViewer]
+  );
 
   return (
     <>
@@ -111,7 +138,7 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
             setViewing(null);
             setComposing(true);
           }}
-          onDeleted={closeViewer}
+          onDeleted={onDeleted}
         />
       ) : null}
 
@@ -119,7 +146,8 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
         open={composing}
         userId={feed.me.user_id}
         onClose={() => setComposing(false)}
-        onPosted={() => {
+        onPosted={(item) => {
+          setPosted((prev) => [...prev, item]);
           setComposing(false);
           router.refresh();
         }}

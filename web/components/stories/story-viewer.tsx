@@ -50,7 +50,7 @@ export function StoryViewer({
   onClose: () => void;
   onSeen: (storyId: string) => void;
   onAddMore: () => void;
-  onDeleted: () => void;
+  onDeleted: (storyId: string) => void;
 }) {
   const [gi, setGi] = useState(start);
   const [ii, setIi] = useState(0);
@@ -368,7 +368,7 @@ function ViewersSheet({
   itemIndex: number;
   now: number;
   onAddMore: () => void;
-  onDeleted: () => void;
+  onDeleted: (storyId: string) => void;
   collapsed: boolean;
   onCollapsedChange: (collapsed: boolean) => void;
 }) {
@@ -391,7 +391,7 @@ function ViewersSheet({
     setError(null);
     try {
       await deleteStory(item);
-      onDeleted();
+      onDeleted(item.id);
     } catch {
       setBusy(false);
       setError("המחיקה נכשלה — ננסה שוב?");

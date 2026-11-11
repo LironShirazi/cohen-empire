@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { Note } from "@/components/ui/card";
 import { Sheet } from "@/components/ui/sheet";
 import { postPhotoStory, postTextStory } from "@/lib/story-actions";
-import { STORY_CAPTION_MAX, STORY_COLORS, storyBackground } from "@/lib/stories";
+import { STORY_CAPTION_MAX, STORY_COLORS, storyBackground, type StoryItem } from "@/lib/stories";
 
 type Draft =
   | { kind: "photo"; file: File; preview: string }
@@ -29,7 +29,7 @@ export function StoryComposer({
   open: boolean;
   userId: string;
   onClose: () => void;
-  onPosted: () => void;
+  onPosted: (item: StoryItem) => void;
 }) {
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -97,9 +97,9 @@ export function StoryComposer({
           draft={draft}
           userId={userId}
           onBack={() => setDraft(null)}
-          onPosted={() => {
+          onPosted={(item) => {
             setDraft(null);
-            onPosted();
+            onPosted(item);
           }}
         />
       ) : null}
@@ -140,7 +140,7 @@ function StoryEditor({
   draft: Draft;
   userId: string;
   onBack: () => void;
-  onPosted: () => void;
+  onPosted: (item: StoryItem) => void;
 }) {
   const [text, setText] = useState("");
   const [color, setColor] = useState(0);
@@ -154,9 +154,11 @@ function StoryEditor({
     setBusy(true);
     setError(null);
     try {
-      if (draft.kind === "photo") await postPhotoStory(userId, draft.file, text);
-      else await postTextStory(userId, text, color);
-      onPosted();
+      const item =
+        draft.kind === "photo"
+          ? await postPhotoStory(userId, draft.file, text)
+          : await postTextStory(userId, text, color);
+      onPosted(item);
     } catch {
       setBusy(false);
       setError("השיתוף נכשל — ננסה שוב?");
