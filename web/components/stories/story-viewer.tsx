@@ -320,15 +320,7 @@ export function StoryViewer({
               </div>
             ) : null}
 
-            {!isMine ? (
-              <p className="absolute inset-x-0 bottom-[max(40px,env(safe-area-inset-bottom))] z-[1] text-center text-[13px] text-white/75">
-                {group.avatar_source === "tree"
-                  ? "התמונה בעיגול — מהעץ המשפחתי"
-                  : group.avatar_source === "google"
-                    ? "התמונה בעיגול — מחשבון ה-Google"
-                    : null}
-              </p>
-            ) : (
+            {isMine ? (
               <ViewersSheet
                 group={group}
                 itemIndex={ii}
@@ -338,7 +330,7 @@ export function StoryViewer({
                 collapsed={sheetCollapsed}
                 onCollapsedChange={setSheetCollapsed}
               />
-            )}
+            ) : null}
           </>
         ) : (
           <div className="cosmic absolute inset-0 flex flex-col items-center justify-center gap-3.5 p-8 text-center">
