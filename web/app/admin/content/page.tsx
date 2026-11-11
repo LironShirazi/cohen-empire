@@ -1,15 +1,16 @@
 import { redirect } from "next/navigation";
-import { HallOfFameEditor } from "@/components/admin/hall-of-fame-editor";
 import { QuotesEditor } from "@/components/admin/quotes-editor";
 import { AdminBody, AdminHeader } from "@/components/admin/admin-header";
-import { getHallOfFame, getProfile, getQuotes, getUser } from "@/lib/data";
+import { getProfile, getQuotes, getUser } from "@/lib/data";
 
 export const metadata = {
   title: "🏛️ תוכן משפחתי — אימפריית כהן",
 };
 
 /**
- * ניהול תוכן קבוע (docs/04 §5) — משפטי סבא וסבתא והיכל התהילה.
+ * ניהול תוכן קבוע (docs/04 §5) — משפטי סבא וסבתא.
+ *
+ * היכל התהילה עבר לראוט שלו (`/hall-of-fame`), בתחתית המסך למנהל-על.
  *
  * ⚠️ **הראוט הוא אחות של `/admin/[raceId]` אבל אינו מירוץ.** כל שאר
  * `/admin` הוא race-scoped; התוכן הקבוע לא שייך לשום מירוץ (משפט של
@@ -28,14 +29,13 @@ export default async function AdminContentPage() {
   const profile = await getProfile();
   if (!profile?.is_owner) redirect("/admin");
 
-  const [quotes, rows] = await Promise.all([getQuotes(), getHallOfFame()]);
+  const quotes = await getQuotes();
 
   return (
     <main className="flex flex-1 flex-col">
       <AdminHeader title="🏛️ תוכן משפחתי" back="/admin" backLabel="לניהול" />
       <AdminBody className="flex flex-col gap-8">
         <QuotesEditor quotes={quotes} />
-        <HallOfFameEditor rows={rows} />
       </AdminBody>
     </main>
   );
