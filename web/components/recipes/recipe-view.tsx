@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
 import { useConfirm } from "@/components/ui/confirm";
 import { startNavProgress } from "@/components/ui/navigation-progress";
-import { StepNumber, rb } from "@/components/recipes/rb";
+import { RecipeImage, StepNumber, rb } from "@/components/recipes/rb";
 import { createClient } from "@/lib/supabase/client";
 import { RECIPE_LIMITS, servingsLabel } from "@/lib/recipes";
 import { deleteRecipeFiles } from "@/lib/recipe-actions";
@@ -81,8 +81,7 @@ export function RecipeView({
   return (
     <div className="flex-1">
       <div className="relative h-[250px] bg-rb-soft md:h-[340px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={recipe.photo_url} alt={recipe.name} className="h-full w-full object-cover" />
+        <RecipeImage url={recipe.photo_url} alt={recipe.name} iconSize={110} className="h-full w-full" />
         <Link
           href="/recipes"
           aria-label="חזרה לספר המתכונים"

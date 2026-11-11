@@ -114,6 +114,8 @@ function Wizard({
     Array.isArray(draft?.steps) && draft.steps.length ? draft.steps.length - 1 : 0
   );
   const [photo, setPhoto] = useState<File | null>(null);
+  // בעריכה: האם התמונה השמורה נשארת (אפשר להסיר — התמונה רשות, 0025)
+  const [keepSaved, setKeepSaved] = useState(!!recipe?.photo_url);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,13 +144,11 @@ function Wizard({
         ? filledSteps.length > 0
         : true;
 
-  const hasPhoto = !!photo || !!recipe?.photo_url;
   const canSave =
     !busy &&
     name.trim().length > 0 &&
     owner.trim().length > 0 &&
-    filledSteps.length > 0 &&
-    hasPhoto;
+    filledSteps.length > 0;
 
   function addIngredient() {
     const text = ingredientDraft.trim();
@@ -172,7 +172,6 @@ function Wizard({
   }
 
   async function save() {
-    if (!hasPhoto) return setError("צריך תמונה ראשית — היא מה שמופיע בספר");
     if (!canSave) return setError("חסר שם, של מי המתכון, או לפחות שלב אחד");
     // רכיב שהוקלד ולא נוסף לרשימה — נכנס גם הוא
     const allIngredients = ingredientDraft.trim()
@@ -182,8 +181,9 @@ function Wizard({
     setError(null);
     const uploaded: string[] = [];
     try {
-      let photoUrl = recipe?.photo_url ?? "";
-      let thumbUrl = recipe?.thumb_url ?? null;
+      // בלי תמונה — `null`, והספר מציג אייקון של מנה במקומה
+      let photoUrl = keepSaved ? (recipe?.photo_url ?? null) : null;
+      let thumbUrl = keepSaved ? (recipe?.thumb_url ?? null) : null;
       if (photo) {
         photoUrl = await uploadRecipeImage(userId, photo, RECIPE_PHOTO_PX);
         uploaded.push(photoUrl);
@@ -222,7 +222,7 @@ function Wizard({
         // קודם השורה, אחר-כך הקבצים הישנים שאף אחד כבר לא מצביע עליהם
         // (CLAUDE.md §10) — תמונה ראשית שהוחלפה ותמונות שלבים שהוסרו
         const kept = new Set<string>([
-          photoUrl,
+          ...(photoUrl ? [photoUrl] : []),
           ...(thumbUrl ? [thumbUrl] : []),
           ...stepRows.flatMap((st) => (st.image_url ? [st.image_url] : [])),
         ]);
@@ -492,8 +492,12 @@ function Wizard({
         {stage === 4 ? (
           <MainPhoto
             file={photo}
-            savedUrl={recipe?.photo_url ?? null}
+            savedUrl={keepSaved ? (recipe?.photo_url ?? null) : null}
             onChange={setPhoto}
+            onRemove={() => {
+              setPhoto(null);
+              setKeepSaved(false);
+            }}
             name={name}
           />
         ) : null}
@@ -637,16 +641,21 @@ function StepPhoto({
   );
 }
 
-/** שלב 4 — תמונה ראשית, חובה: היא מה שמופיע בספר */
+/**
+ * שלב 4 — תמונה ראשית, **רשות** (0025): מתכון מהזיכרון לא תמיד מגיע
+ * עם תמונה. בלי תמונה הספר מציג אייקון של מנה.
+ */
 function MainPhoto({
   file,
   savedUrl,
   onChange,
+  onRemove,
   name,
 }: {
   file: File | null;
   savedUrl: string | null;
   onChange: (f: File | null) => void;
+  onRemove: () => void;
   name: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
@@ -655,7 +664,8 @@ function MainPhoto({
     <>
       <p className="text-[18px] font-bold">איך נראה {name.trim() || "המתכון"} כשהוא מוכן?</p>
       <p className={`mt-1 text-[15.5px] ${rb.muted}`}>
-        התמונה הזו היא מה שכולם יראו בספר. צלמו עכשיו או בחרו מהגלריה.
+        התמונה הזו היא מה שכולם יראו בספר. צלמו עכשיו או בחרו מהגלריה —
+        או דלגו: בלי תמונה יופיע אייקון של מנה.
       </p>
       <input
         ref={input}
@@ -684,13 +694,18 @@ function MainPhoto({
         )}
       </button>
       {preview ? (
-        <button
-          type="button"
-          onClick={() => input.current?.click()}
-          className={`${rb.btn2} mt-3 w-full`}
-        >
-          החלפת התמונה
-        </button>
+        <div className="mt-3 flex gap-2.5">
+          <button
+            type="button"
+            onClick={() => input.current?.click()}
+            className={`${rb.btn2} flex-1`}
+          >
+            החלפת התמונה
+          </button>
+          <button type="button" onClick={onRemove} className={`${rb.btn2} flex-none`}>
+            הסרה
+          </button>
+        </div>
       ) : null}
     </>
   );

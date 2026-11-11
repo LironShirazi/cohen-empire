@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { rb } from "@/components/recipes/rb";
+import { RecipeImage, rb } from "@/components/recipes/rb";
 import type { RecipeListItem } from "@/lib/recipes-data";
 import {
   matchesRecipe,
@@ -139,12 +139,12 @@ export function RecipeBook({ recipes }: { recipes: RecipeListItem[] }) {
                 href={`/recipes/${recipe.id}`}
                 className="flex items-center gap-3.5 border-b border-rb-line py-3 text-rb-ink"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={recipe.thumb_url ?? recipe.photo_url}
+                <RecipeImage
+                  url={recipe.thumb_url ?? recipe.photo_url}
                   alt=""
-                  loading="lazy"
-                  className="size-[78px] flex-none rounded-2xl bg-rb-soft object-cover"
+                  iconSize={40}
+                  lazy
+                  className="size-[78px] flex-none rounded-2xl"
                 />
                 <span className="min-w-0 flex-1">
                   <b className="block text-[19.5px] leading-snug">
