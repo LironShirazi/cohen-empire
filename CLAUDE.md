@@ -641,3 +641,23 @@ Supabase מאמת חתימה, audience ו-nonce.
 שולח POST גם לעמוד היעד.
 
 בלי `NEXT_PUBLIC_GOOGLE_CLIENT_ID` הכפתור חוזר לזרימה הישנה (`/auth/callback`).
+
+## 19. מהירות ניווט ומשוב על לחיצה
+
+```
+web/components/ui/navigation-progress.tsx   פס ההתקדמות + startNavProgress()
+web/lib/data.ts                             getUser עטוף ב-cache()
+web/proxy.ts                                getClaims במקום getUser
+```
+
+⚠️ **`app/loading.tsx` מופיע מיד רק אחרי prefetch.** בנייד הלחיצה
+מקדימה אותו, והמסך הישן נשאר קפוא בלי סימן. הפס בראש המסך נדלק מכל
+לחיצה על `<a>` פנימי (מאזין אחד ב-capture, לא עטיפה של כל Link) —
+**אבל `router.push` לא עובר דרך קישור**, ולכן לפניו קוראים
+`startNavProgress()`. ב-`next dev` אין prefetch בכלל, ולכן שם הפס
+יופיע כמעט בכל לחיצה.
+
+⚠️ **ב-`lib/data.ts` לא קוראים ל-`supabase.auth.getUser()` ישירות —
+רק ל-`getUser()`.** כל קריאה היא סבב רשת לשרת ה-Auth, ומסך כמו `/team`
+שילם שלושה-ארבעה ברצף לפני הרינדור. `cache()` של React מחזיק את
+התוצאה לבקשה אחת בלבד.

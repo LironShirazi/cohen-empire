@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Mentionable } from "@/lib/mentions";
@@ -26,25 +27,34 @@ export type PublicRace = Pick<
   "id" | "year" | "name" | "starts_at" | "status"
 >;
 
-export async function getUser() {
+/**
+ * המשתמש המחובר — פעם אחת לבקשה.
+ *
+ * `auth.getUser()` הוא סבב רשת לשרת ה-Auth של Supabase. כל פונקציה
+ * כאן קראה לו בעצמה, ומסך כמו `/team` שילם שלושה-ארבעה סבבים ברצף
+ * לפני שהתחיל לרנדר — זה היה רוב ההמתנה במעבר בין מסכים. `cache()`
+ * של React מחזיק את התוצאה לאורך רינדור אחד בשרת בלבד, ולכן אין כאן
+ * סיכון לדליפה בין משתמשים או בין בקשות.
+ */
+export const getUser = cache(async () => {
   if (!isSupabaseConfigured) return null;
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   return data.user;
-}
+});
 
-export async function getProfile(): Promise<Profile | null> {
+export const getProfile = cache(async (): Promise<Profile | null> => {
   if (!isSupabaseConfigured) return null;
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return null;
+  const user = await getUser();
+  if (!user) return null;
   const { data } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", auth.user.id)
+    .eq("id", user.id)
     .maybeSingle();
   return data as Profile | null;
-}
+});
 
 /**
  * המירוץ שדף הבית מציג: קודם אחד שכבר רץ או פתוח להצטרפות,
@@ -101,15 +111,15 @@ export type Membership = { team: Team; race: Race };
 export async function getMyMembership(): Promise<Membership | null> {
   if (!isSupabaseConfigured) return null;
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return null;
+  const user = await getUser();
+  if (!user) return null;
 
   // שתי שאילתות במקום סינון על משאב מקונן — צורת הסינון של PostgREST
   // על embed מקונן שברירית, וכאן מדובר בכמה שורות בודדות ממילא.
   const { data: memberships } = await supabase
     .from("team_members")
     .select("team_id")
-    .eq("user_id", auth.user.id);
+    .eq("user_id", user.id);
 
   const teamIds = (memberships ?? []).map((row) => row.team_id as string);
   if (teamIds.length === 0) return null;
@@ -143,13 +153,13 @@ export async function getMyJoinRequest(): Promise<
 > {
   if (!isSupabaseConfigured) return null;
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return null;
+  const user = await getUser();
+  if (!user) return null;
 
   const { data } = await supabase
     .from("join_requests")
     .select("*, team:teams(*), race:races(*)")
-    .eq("user_id", auth.user.id)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -164,18 +174,18 @@ export async function getMyJoinRequest(): Promise<
  * ומאז 0018 היא גם מה שהופך מנהל-על למנהל תורן של כל מירוץ. כאן זה
  * רק כדי לצייר את המסך הנכון — מי שיעקוף ייתקל ב-RLS.
  */
-async function amOwner(): Promise<boolean> {
+const amOwner = cache(async (): Promise<boolean> => {
   if (!isSupabaseConfigured) return false;
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return false;
+  const user = await getUser();
+  if (!user) return false;
   const { data } = await supabase
     .from("profiles")
     .select("is_owner")
-    .eq("id", auth.user.id)
+    .eq("id", user.id)
     .maybeSingle();
   return (data as { is_owner: boolean } | null)?.is_owner === true;
-}
+});
 
 /**
  * המירוצים שאני מנהל: מה שמוניתי אליו כתורן — **ולמנהל-על, הכל**.
@@ -187,8 +197,8 @@ async function amOwner(): Promise<boolean> {
 export async function getMyAdminRaces(): Promise<Race[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return [];
+  const user = await getUser();
+  if (!user) return [];
 
   if (await amOwner()) {
     const { data } = await supabase
@@ -201,7 +211,7 @@ export async function getMyAdminRaces(): Promise<Race[]> {
   const { data } = await supabase
     .from("race_admins")
     .select("race:races(*)")
-    .eq("user_id", auth.user.id);
+    .eq("user_id", user.id);
 
   return ((data ?? []) as unknown as { race: Race }[])
     .map((row) => row.race)
@@ -242,15 +252,15 @@ export async function getAllProfiles(): Promise<Profile[]> {
 export async function isRaceAdmin(raceId: string): Promise<boolean> {
   if (!isSupabaseConfigured) return false;
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  if (!auth.user) return false;
+  const user = await getUser();
+  if (!user) return false;
 
   const [duty, owner] = await Promise.all([
     supabase
       .from("race_admins")
       .select("race_id")
       .eq("race_id", raceId)
-      .eq("user_id", auth.user.id)
+      .eq("user_id", user.id)
       .maybeSingle(),
     amOwner(),
   ]);

@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { FormError } from "@/components/ui/page";
 import type { RaceStatus } from "@/lib/supabase/types";
+import { startNavProgress } from "@/components/ui/navigation-progress";
 
 const nextStep: Partial<Record<RaceStatus, { status: RaceStatus; label: string }>> = {
   draft: { status: "open", label: "פתיחת הרשמה 🔓" },
@@ -78,7 +79,10 @@ export function RaceControls({
               run(async () => {
                 const result = await declareWinnerAction(raceId);
                 // המנהל רואה בדיוק את המסך שהקבוצות שסיימו מוקפצות אליו
-                if (!result.error) router.push(winnersHref);
+                if (!result.error) {
+                  startNavProgress(winnersHref);
+                  router.push(winnersHref);
+                }
                 return result;
               })
             }
