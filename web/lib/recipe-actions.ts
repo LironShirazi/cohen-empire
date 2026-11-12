@@ -38,11 +38,12 @@ export function recipeStoragePath(url: string | null): string | null {
 
 /** קבצים בלבד — **אחרי** שהשורה נמחקה (CLAUDE.md §10) */
 export async function deleteRecipeFiles(
-  recipe: Pick<Recipe, "photo_url" | "thumb_url" | "steps">
+  recipe: Pick<Recipe, "photo_url" | "thumb_url" | "extra_photo_urls" | "steps">
 ): Promise<void> {
   await removeRecipeUrls([
     recipe.photo_url,
     recipe.thumb_url,
+    ...(recipe.extra_photo_urls ?? []),
     ...recipe.steps.map((s) => s.image_url),
   ]);
 }

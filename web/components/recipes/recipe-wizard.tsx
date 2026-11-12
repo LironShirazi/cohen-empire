@@ -18,6 +18,9 @@ import type { Recipe } from "@/lib/supabase/types";
 /** `image` — קובץ חדש שנבחר; `imageUrl` — תמונה שכבר שמורה (בעריכה) */
 type StepDraft = { text: string; image: File | null; imageUrl: string | null };
 
+/** תמונה של המתכון: קובץ חדש, או תמונה שכבר שמורה (בעריכה). הראשונה היא הראשית */
+type PhotoDraft = { key: string; file: File | null; url: string | null };
+
 type Saved = {
   name: string;
   owner: string;
@@ -43,7 +46,7 @@ const noop = () => () => {};
 
 /**
  * הוספת מתכון (7c–7d) — ארבעה שלבים קצרים, שאלה אחת בכל פעם:
- * שם/של מי/מנות → רכיבים → אופן ההכנה → תמונה ראשית.
+ * שם/של מי/מנות → רכיבים → אופן ההכנה → תמונות (הראשונה היא הראשית).
  *
  * ⚠️ **הטיוטה נשמרת בטלפון, אבל רק הטקסט.** אפשר לצאת באמצע ולחזור
  * (localStorage), אבל תמונות לא נכנסות לשם — `File` לא עובר
@@ -113,9 +116,14 @@ function Wizard({
   const [current, setCurrent] = useState(() =>
     Array.isArray(draft?.steps) && draft.steps.length ? draft.steps.length - 1 : 0
   );
-  const [photo, setPhoto] = useState<File | null>(null);
-  // בעריכה: האם התמונה השמורה נשארת (אפשר להסיר — התמונה רשות, 0025)
-  const [keepSaved, setKeepSaved] = useState(!!recipe?.photo_url);
+  // הראשונה היא הראשית; כולן רשות (0025), עד RECIPE_LIMITS.photos (0026)
+  const [photos, setPhotos] = useState<PhotoDraft[]>(() =>
+    recipe
+      ? [recipe.photo_url, ...(recipe.extra_photo_urls ?? [])]
+          .filter((u): u is string => !!u)
+          .map((url) => ({ key: url, file: null, url }))
+      : []
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -181,14 +189,27 @@ function Wizard({
     setError(null);
     const uploaded: string[] = [];
     try {
-      // בלי תמונה — `null`, והספר מציג אייקון של מנה במקומה
-      let photoUrl = keepSaved ? (recipe?.photo_url ?? null) : null;
-      let thumbUrl = keepSaved ? (recipe?.thumb_url ?? null) : null;
-      if (photo) {
-        photoUrl = await uploadRecipeImage(userId, photo, RECIPE_PHOTO_PX);
-        uploaded.push(photoUrl);
-        thumbUrl = await uploadRecipeImage(userId, photo, RECIPE_THUMB_PX);
+      // בלי תמונות — `null`, והספר מציג אייקון של מנה במקומה
+      const photoUrls: string[] = [];
+      for (const p of photos) {
+        if (p.file) {
+          const url = await uploadRecipeImage(userId, p.file, RECIPE_PHOTO_PX);
+          uploaded.push(url);
+          photoUrls.push(url);
+        } else if (p.url) {
+          photoUrls.push(p.url);
+        }
+      }
+      const photoUrl = photoUrls[0] ?? null;
+      // הממוזערת נגזרת רק מהראשית: חדשה — מעלים; אותה ראשית — שומרים;
+      // תמונה נוספת שהועברה לראשית — בלי ממוזערת, והספר נופל ל-photo_url
+      let thumbUrl: string | null = null;
+      const first = photos[0];
+      if (first?.file) {
+        thumbUrl = await uploadRecipeImage(userId, first.file, RECIPE_THUMB_PX);
         uploaded.push(thumbUrl);
+      } else if (first?.url && first.url === recipe?.photo_url) {
+        thumbUrl = recipe.thumb_url;
       }
 
       const stepRows = [];
@@ -209,6 +230,7 @@ function Wizard({
         steps: stepRows,
         photo_url: photoUrl,
         thumb_url: thumbUrl,
+        extra_photo_urls: photoUrls.slice(1),
       };
 
       let id = recipe?.id;
@@ -220,16 +242,19 @@ function Wizard({
         if (updateError) throw updateError;
 
         // קודם השורה, אחר-כך הקבצים הישנים שאף אחד כבר לא מצביע עליהם
-        // (CLAUDE.md §10) — תמונה ראשית שהוחלפה ותמונות שלבים שהוסרו
+        // (CLAUDE.md §10) — תמונות שהוסרו או הוחלפו, ותמונות שלבים שהוסרו
         const kept = new Set<string>([
-          ...(photoUrl ? [photoUrl] : []),
+          ...photoUrls,
           ...(thumbUrl ? [thumbUrl] : []),
           ...stepRows.flatMap((st) => (st.image_url ? [st.image_url] : [])),
         ]);
         await removeRecipeUrls(
-          [recipe.photo_url, recipe.thumb_url, ...recipe.steps.map((st) => st.image_url)].filter(
-            (u) => u && !kept.has(u)
-          )
+          [
+            recipe.photo_url,
+            recipe.thumb_url,
+            ...(recipe.extra_photo_urls ?? []),
+            ...recipe.steps.map((st) => st.image_url),
+          ].filter((u) => u && !kept.has(u))
         );
       } else {
         const { data, error: insertError } = await createClient()
@@ -255,7 +280,7 @@ function Wizard({
     }
   }
 
-  const title = [editing ? "עריכת מתכון" : "מתכון חדש", "רכיבים", "אופן ההכנה", "תמונה ראשית"][
+  const title = [editing ? "עריכת מתכון" : "מתכון חדש", "רכיבים", "אופן ההכנה", "תמונות"][
     stage - 1
   ];
   const exitHref = recipe ? `/recipes/${recipe.id}` : "/recipes";
@@ -490,16 +515,7 @@ function Wizard({
         ) : null}
 
         {stage === 4 ? (
-          <MainPhoto
-            file={photo}
-            savedUrl={keepSaved ? (recipe?.photo_url ?? null) : null}
-            onChange={setPhoto}
-            onRemove={() => {
-              setPhoto(null);
-              setKeepSaved(false);
-            }}
-            name={name}
-          />
+          <RecipePhotos photos={photos} onChange={setPhotos} name={name} />
         ) : null}
 
         {error ? (
@@ -517,7 +533,7 @@ function Wizard({
         ) : null}
         {stage < TOTAL ? (
           <button type="button" onClick={next} disabled={!canContinue} className={`${rb.btn} flex-1`}>
-            {["המשך לרכיבים", "המשך לאופן ההכנה", "המשך לתמונה ראשית"][stage - 1]}
+            {["המשך לרכיבים", "המשך לאופן ההכנה", "המשך לתמונות"][stage - 1]}
             <Icon name="forward" size={22} />
           </button>
         ) : (
@@ -642,71 +658,137 @@ function StepPhoto({
 }
 
 /**
- * שלב 4 — תמונה ראשית, **רשות** (0025): מתכון מהזיכרון לא תמיד מגיע
- * עם תמונה. בלי תמונה הספר מציג אייקון של מנה.
+ * שלב 4 — תמונות, **רשות** (0025): מתכון מהזיכרון לא תמיד מגיע עם
+ * תמונה, ובלי תמונה הספר מציג אייקון של מנה. אפשר כמה (0026) —
+ * הראשונה היא הראשית, זו שרואים בספר, ו"לראשית" מקדם אחרת למקומה.
  */
-function MainPhoto({
-  file,
-  savedUrl,
+function RecipePhotos({
+  photos,
   onChange,
-  onRemove,
   name,
 }: {
-  file: File | null;
-  savedUrl: string | null;
-  onChange: (f: File | null) => void;
-  onRemove: () => void;
+  photos: PhotoDraft[];
+  onChange: (next: PhotoDraft[]) => void;
   name: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
-  const preview = usePreview(file) ?? savedUrl;
+  const room = RECIPE_LIMITS.photos - photos.length;
+
+  function add(files: File[]) {
+    if (!files.length) return;
+    onChange([
+      ...photos,
+      ...files.slice(0, room).map((file) => ({ key: crypto.randomUUID(), file, url: null })),
+    ]);
+  }
+
   return (
     <>
       <p className="text-[18px] font-bold">איך נראה {name.trim() || "המתכון"} כשהוא מוכן?</p>
       <p className={`mt-1 text-[15.5px] ${rb.muted}`}>
-        התמונה הזו היא מה שכולם יראו בספר. צלמו עכשיו או בחרו מהגלריה —
-        או דלגו: בלי תמונה יופיע אייקון של מנה.
+        אפשר כמה תמונות. הראשונה היא מה שכולם יראו בספר. צלמו עכשיו או בחרו
+        מהגלריה — או דלגו: בלי תמונה יופיע אייקון של מנה.
       </p>
       <input
         ref={input}
         type="file"
         accept="image/*"
+        multiple
         hidden
         onChange={(e) => {
-          const f = e.target.files?.[0];
+          const files = Array.from(e.target.files ?? []);
           e.target.value = "";
-          if (f) onChange(f);
+          add(files);
         }}
       />
-      <button
-        type="button"
-        onClick={() => input.current?.click()}
-        className="mt-4 flex aspect-[4/3] w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-rb-faint bg-white"
+      {photos.length === 0 ? (
+        <button
+          type="button"
+          onClick={() => input.current?.click()}
+          className="mt-4 flex aspect-[4/3] w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-rb-faint bg-white"
+        >
+          <span className="flex flex-col items-center gap-2 text-[18px] font-bold text-rb-green">
+            <Icon name="camera" size={44} />
+            בחירת תמונות
+          </span>
+        </button>
+      ) : (
+        <>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {photos.map((p, i) => (
+              <PhotoTile
+                key={p.key}
+                photo={p}
+                index={i}
+                onRemove={() => onChange(photos.filter((_, k) => k !== i))}
+                onMakeMain={() => onChange([p, ...photos.filter((_, k) => k !== i)])}
+              />
+            ))}
+            {room > 0 ? (
+              <button
+                type="button"
+                onClick={() => input.current?.click()}
+                className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-rb-faint bg-white text-[17px] font-bold text-rb-green"
+              >
+                <Icon name="plus" size={34} />
+                עוד תמונה
+              </button>
+            ) : null}
+          </div>
+          <p className={`mt-3 text-[15px] ${rb.muted}`}>
+            {photos.length} מתוך {RECIPE_LIMITS.photos} תמונות
+          </p>
+        </>
+      )}
+    </>
+  );
+}
+
+function PhotoTile({
+  photo,
+  index,
+  onRemove,
+  onMakeMain,
+}: {
+  photo: PhotoDraft;
+  index: number;
+  onRemove: () => void;
+  onMakeMain: () => void;
+}) {
+  const preview = usePreview(photo.file) ?? photo.url;
+  const main = index === 0;
+  return (
+    <div>
+      <div
+        className={`relative aspect-square overflow-hidden rounded-2xl bg-rb-soft ${main ? "outline-3 outline-rb-green" : ""}`}
       >
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="התמונה הראשית שנבחרה" className="h-full w-full object-cover" />
-        ) : (
-          <span className="flex flex-col items-center gap-2 text-[18px] font-bold text-rb-green">
-            <Icon name="camera" size={44} />
-            בחירת תמונה
+          <img src={preview} alt={`תמונה ${index + 1}`} className="h-full w-full object-cover" />
+        ) : null}
+        {main ? (
+          <span className="absolute start-2 bottom-2 rounded-full bg-rb-green px-3 py-1 text-[14.5px] font-bold text-white">
+            ראשית
           </span>
-        )}
-      </button>
-      {preview ? (
-        <div className="mt-3 flex gap-2.5">
-          <button
-            type="button"
-            onClick={() => input.current?.click()}
-            className={`${rb.btn2} flex-1`}
-          >
-            החלפת התמונה
-          </button>
-          <button type="button" onClick={onRemove} className={`${rb.btn2} flex-none`}>
-            הסרה
-          </button>
-        </div>
+        ) : null}
+        <button
+          type="button"
+          aria-label={`הסרת תמונה ${index + 1}`}
+          onClick={onRemove}
+          className={`${rb.ic} absolute end-2 top-2 bg-white shadow-card`}
+        >
+          <Icon name="close" size={18} />
+        </button>
+      </div>
+      {!main ? (
+        <button
+          type="button"
+          onClick={onMakeMain}
+          className={`${rb.chip} ${rb.chipOff} mt-2 w-full px-2 py-1.5 text-[15px]`}
+        >
+          לתמונה הראשית
+        </button>
       ) : null}
-    </>
+    </div>
   );
 }

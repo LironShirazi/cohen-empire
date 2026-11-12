@@ -42,6 +42,8 @@ export default async function RecipePage(props: PageProps<"/recipes/[recipeId]">
         recipe={recipe}
         addedLabel={addedLabel}
         canManage={recipe.created_by === user.id || !!profile?.is_owner}
+        userId={user.id}
+        isOwner={!!profile?.is_owner}
       />
     </RecipeShell>
   );
