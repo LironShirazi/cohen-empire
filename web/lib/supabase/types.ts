@@ -426,6 +426,8 @@ export type Recipe = {
   /** רשות מ-0025 — בלי תמונה מוצג אייקון (`RecipeImage`) */
   photo_url: string | null;
   thumb_url: string | null;
+  /** תמונות נוספות אחרי הראשית, לפי סדר התצוגה — עד 9 (0026) */
+  extra_photo_urls: string[];
   created_by: string | null;
   created_at: string;
 };

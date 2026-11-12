@@ -79,6 +79,8 @@ export const RECIPE_LIMITS = {
   steps: 40,
   question: 200,
   answer: 400,
+  /** הראשית + 9 נוספות (0026) */
+  photos: 10,
 } as const;
 
 /** הקטנת תמונות: ראשית ושלבים לצפייה מלאה, ממוזערת לשורה ברשימה */

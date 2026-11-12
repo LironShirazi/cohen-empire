@@ -181,11 +181,13 @@ erDiagram
 - **`recipes`** — `name`, `owner_name` (טקסט חופשי: "של מי המתכון" — לא
   הפניה לעץ, כי לסבתא ז"ל אין חשבון), `servings`, `ingredients` (jsonb,
   מערך מחרוזות), `steps` (jsonb, `[{text, image_url}]`), `photo_url` (רשות מ-0025),
-  `thumb_url`, `created_by`. כל מחובר קורא ומוסיף; עריכה ומחיקה — מי
+  `thumb_url` (ממוזערת של הראשית בלבד), `extra_photo_urls` (text[], עד 9
+  תמונות נוספות אחרי הראשית — 0026), `created_by`. כל מחובר קורא ומוסיף; עריכה ומחיקה — מי
   שהוסיף ומנהל-על. `grant update` לעמודות התוכן בלבד, לא ל-`created_by`
 - **`recipe_questions`** — `recipe_id` (cascade), `asked_by`, `text` (עד 200),
   `answer`, `answered_by`, `answered_at`. התשובה רק דרך
-  `answer_recipe_question()` — של מי שהוסיף את המתכון או מנהל-על
+  `answer_recipe_question()` — של מי שהוסיף את המתכון או מנהל-על (טקסט ריק
+  מוחק את התשובה). מחיקת שאלה — השואל או מנהל-על
 - bucket **`recipes`** (10MB, תמונות): תיקייה לפי מזהה המעלה
 
 ### סטוריז (0024)

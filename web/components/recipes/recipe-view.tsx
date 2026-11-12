@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
@@ -24,12 +24,17 @@ export function RecipeView({
   recipe,
   addedLabel,
   canManage,
+  userId,
+  isOwner,
 }: {
   recipe: RecipeDetail;
   /** "נוסף ע״י יעל · לפני שבוע" — מחושב בשרת, בלי hydration mismatch */
   addedLabel: string;
   /** מי שהוסיף את המתכון, או מנהל-על — עורך, עונה על שאלות ומוחק */
   canManage: boolean;
+  /** הקורא — כדי לדעת על אילו שאלות להציג מחיקה */
+  userId: string;
+  isOwner: boolean;
 }) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -81,7 +86,7 @@ export function RecipeView({
   return (
     <div className="flex-1">
       <div className="relative h-[250px] bg-rb-soft md:h-[340px]">
-        <RecipeImage url={recipe.photo_url} alt={recipe.name} iconSize={110} className="h-full w-full" />
+        <RecipePhotoStrip recipe={recipe} />
         <Link
           href="/recipes"
           aria-label="חזרה לספר המתכונים"
@@ -178,7 +183,12 @@ export function RecipeView({
             <p className={`text-[16px] ${rb.muted}`}>עוד אין שאלות. משהו לא ברור? שאלו כאן.</p>
           ) : (
             recipe.questions.map((q) => (
-              <QuestionCard key={q.id} question={q} canAnswer={canManage} />
+              <QuestionCard
+                key={q.id}
+                question={q}
+                canAnswer={canManage}
+                canDelete={q.asked_by === userId || isOwner}
+              />
             ))
           )}
 
@@ -222,14 +232,75 @@ export function RecipeView({
   );
 }
 
+/**
+ * התמונות בראש הדף — הראשית ואחריה הנוספות (0026), בגלילה אופקית
+ * עם הצמדה. תמונה אחת (או אף אחת) — בלי מונה ובלי גלילה, כמו קודם.
+ */
+function RecipePhotoStrip({ recipe }: { recipe: RecipeDetail }) {
+  const urls = [recipe.photo_url, ...(recipe.extra_photo_urls ?? [])].filter(
+    (u): u is string => !!u
+  );
+  const strip = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
+
+  if (urls.length <= 1) {
+    return (
+      <RecipeImage url={urls[0] ?? null} alt={recipe.name} iconSize={110} className="h-full w-full" />
+    );
+  }
+
+  return (
+    <>
+      <div
+        ref={strip}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          // ב-RTL ‏scrollLeft שלילי — הערך המוחלט הוא המרחק מהתמונה הראשונה
+          setIndex(Math.round(Math.abs(el.scrollLeft) / el.clientWidth));
+        }}
+        className="flex h-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {urls.map((url, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={url}
+            src={url}
+            alt={i === 0 ? recipe.name : `${recipe.name} — תמונה ${i + 1}`}
+            loading={i === 0 ? undefined : "lazy"}
+            className="h-full w-full flex-none snap-center bg-rb-soft object-cover"
+          />
+        ))}
+      </div>
+      <span
+        aria-hidden
+        className="absolute end-4 bottom-4 rounded-full bg-black/55 px-3 py-1 text-[15px] font-bold text-white"
+      >
+        {index + 1}/{urls.length}
+      </span>
+      <div aria-hidden className="absolute inset-x-0 bottom-2 flex justify-center gap-1.5">
+        {urls.map((url, i) => (
+          <span
+            key={url}
+            className={`size-2 rounded-full ${i === index ? "bg-white" : "bg-white/50"}`}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
 function QuestionCard({
   question,
   canAnswer,
+  canDelete,
 }: {
   question: RecipeDetail["questions"][number];
   canAnswer: boolean;
+  /** השואל עצמו, או מנהל-על — אותו כלל כמו `recipe_questions_delete` (0023) */
+  canDelete: boolean;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [answer, setAnswer] = useState("");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -250,14 +321,80 @@ function QuestionCard({
     router.refresh();
   }
 
+  async function removeQuestion() {
+    const ok = await confirm({
+      title: "מחיקת השאלה",
+      message: question.answer ? "השאלה תימחק יחד עם התשובה עליה." : "השאלה תימחק.",
+      confirmLabel: "מחיקה",
+    });
+    if (!ok) return;
+    setBusy(true);
+    setError(null);
+    // RLS לא מחזיר שגיאה על שורה שאסור למחוק — רק 0 שורות. לכן `select`
+    const { data, error: deleteError } = await createClient()
+      .from("recipe_questions")
+      .delete()
+      .eq("id", question.id)
+      .select("id");
+    setBusy(false);
+    if (deleteError || !data?.length) return setError("המחיקה נכשלה — ננסה שוב?");
+    router.refresh();
+  }
+
+  /** ניקוי תשובה = אותו RPC עם טקסט ריק (0023), ואז אפשר לענות מחדש */
+  async function removeAnswer() {
+    const ok = await confirm({
+      title: "מחיקת התשובה",
+      message: "התשובה תימחק, והשאלה תחזור להמתין לתשובה.",
+      confirmLabel: "מחיקה",
+    });
+    if (!ok) return;
+    setBusy(true);
+    setError(null);
+    const { error: rpcError } = await createClient().rpc("answer_recipe_question", {
+      p_question_id: question.id,
+      p_answer: "",
+    });
+    setBusy(false);
+    if (rpcError) return setError("המחיקה נכשלה — ננסה שוב?");
+    setAnswer("");
+    router.refresh();
+  }
+
   return (
     <div className="mt-2.5 rounded-[14px] border border-rb-line bg-white px-4 py-3.5">
-      <div>
-        <b>{question.asker_name ?? "בן משפחה"} שאל/ה:</b> {question.text}
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <b>{question.asker_name ?? "בן משפחה"} שאל/ה:</b> {question.text}
+        </div>
+        {canDelete ? (
+          <button
+            type="button"
+            aria-label="מחיקת השאלה"
+            onClick={() => void removeQuestion()}
+            disabled={busy}
+            className={`${rb.ic} -me-1.5 -mt-1 bg-transparent text-rb-muted disabled:opacity-45`}
+          >
+            <Icon name="trash" size={18} />
+          </button>
+        ) : null}
       </div>
       {question.answer ? (
-        <div className="mt-2 border-s-4 border-rb-green ps-3">
-          <b>{question.answerer_name ?? "תשובה"}:</b> {question.answer}
+        <div className="mt-2 flex items-start gap-2 border-s-4 border-rb-green ps-3">
+          <div className="min-w-0 flex-1">
+            <b>{question.answerer_name ?? "תשובה"}:</b> {question.answer}
+          </div>
+          {canAnswer ? (
+            <button
+              type="button"
+              aria-label="מחיקת התשובה"
+              onClick={() => void removeAnswer()}
+              disabled={busy}
+              className={`${rb.ic} -me-1.5 -mt-1 bg-transparent text-rb-muted disabled:opacity-45`}
+            >
+              <Icon name="trash" size={18} />
+            </button>
+          ) : null}
         </div>
       ) : canAnswer ? (
         open ? (
@@ -277,11 +414,6 @@ function QuestionCard({
             <button type="submit" disabled={busy || !answer.trim()} className={`${rb.btn} mt-2`}>
               שליחת תשובה
             </button>
-            {error ? (
-              <p role="alert" className="mt-2 text-[15px] font-bold text-brand">
-                {error}
-              </p>
-            ) : null}
           </form>
         ) : (
           <button
@@ -292,6 +424,11 @@ function QuestionCard({
             תשובה
           </button>
         )
+      ) : null}
+      {error ? (
+        <p role="alert" className="mt-2 text-[15px] font-bold text-brand">
+          {error}
+        </p>
       ) : null}
     </div>
   );
