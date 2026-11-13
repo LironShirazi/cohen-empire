@@ -458,10 +458,11 @@
       ${edit ? `
       <div class="sheet-actions edit-actions">
         ${parents.length < 2 ? `<button class="btn btn-add" id="act-parents">${NS.icon('plus')}אבא ואמא</button>` : ''}
-        <button class="btn btn-add" id="act-child">${NS.icon('plus')}בן/בת</button>
+        ${NS.store.canHaveChildren(id) ? `<button class="btn btn-add" id="act-child">${NS.icon('plus')}בן/בת</button>` : ''}
         <button class="btn btn-add" id="act-partner">${NS.icon('plus')}בן/בת זוג</button>
         ${NS.store.canDelete(id) ? `<button class="btn btn-danger" id="act-delete">${NS.icon('trash')}מחיקה</button>` : ''}
-      </div>` : `
+      </div>
+      ${NS.store.canHaveChildren(id) ? '' : '<p class="hint sheet-hint">הוספת ילדים אפשרית מגיל 18</p>'}` : `
       <div class="sheet-actions">
         <button class="btn btn-ghost" id="act-enable-edit">${NS.icon('edit')}הפעלת מצב עריכה להוספת קרובים</button>
       </div>`}
@@ -531,9 +532,27 @@
   function formEdit(id) {
     const p = NS.store.get(id);
     if (!p) return;
+    // ההורים: כל מי שאינו העלה עצמו או צאצא שלו (לולאה בהורות), ולא
+    // מהמגדר ההפוך — אותו סינון כמו ב"אבא ואמא" (formAddParents)
+    const blocked = NS.store.descendantsOf(id);
+    blocked.add(id);
+    const parentOptions = (notGender, current) =>
+      `<option value="">ללא</option>` +
+      NS.store.all()
+        .filter((q) => !blocked.has(q.id) && (q.gender !== notGender || q.id === current))
+        .sort((a, b) => a.name.localeCompare(b.name, 'he'))
+        .map((q) => `<option value="${esc(q.id)}" ${q.id === current ? 'selected' : ''}>${esc(describe(q))}</option>`)
+        .join('');
     const box = openModal('עריכת ' + p.name, `
       <form novalidate id="f-edit">
         ${personFieldsHTML('pe', p)}
+        <div class="parents-grid">
+          <div class="field"><label>אבא</label>
+            <select id="pe-father">${parentOptions('f', p.fatherId)}</select></div>
+          <div class="field"><label>אמא</label>
+            <select id="pe-mother">${parentOptions('m', p.motherId)}</select></div>
+        </div>
+        <p class="hint">ההורים חייבים להיות כבר בעץ. הורה שעוד לא קיים — מוסיפים מהכרטיס במצב עריכה ("אבא ואמא").</p>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">שמירה</button>
           <button type="button" class="btn btn-cancel" data-close>ביטול</button>
@@ -544,6 +563,9 @@
       e.preventDefault();
       const data = readPersonFields(box, 'pe', photo);
       if (!data.name) return toast('חובה להזין שם');
+      data.fatherId = box.querySelector('#pe-father').value || null;
+      data.motherId = box.querySelector('#pe-mother').value || null;
+      if (data.fatherId && data.fatherId === data.motherId) return toast('אבא ואמא לא יכולים להיות אותו אדם');
       NS.store.updatePerson(id, data);
       closeModal();
       toast('נשמר');
@@ -624,6 +646,7 @@
   function formAddChild(id) {
     const p = NS.store.get(id);
     if (!p) return;
+    if (!NS.store.canHaveChildren(id)) return toast('הוספת ילדים אפשרית מגיל 18');
     const partners = NS.store.partnersOf(id);
     const options =
       partners.map((q, i) => `<option value="${esc(q.id)}" ${i === 0 ? 'selected' : ''}>${esc(q.name)}</option>`).join('') +

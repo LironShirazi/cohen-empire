@@ -95,6 +95,7 @@
     let defs = '';
     let links = '';
     let couples = '';
+    let coupleNames = '';
     let nodes = '';
 
     for (const link of model.childLinks) {
@@ -123,10 +124,12 @@
         couples +=
           `<line class="couple" x1="${left.x + R}" y1="${left.y}" x2="${right.x - R}" y2="${right.y}"/>` +
           // הלב הוא path ולא התו ♥ — התו מצויר בגודל ובצבע אחרים בכל מכשיר
-          `<path class="heart" transform="translate(${midX - 7} ${pa.y - 8.5}) scale(0.58)" d="M12 20.3S3.8 15.2 3.8 9.9A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.2 2.8c0 5.3-8.2 10.4-8.2 10.4z"/>` +
-          (family
-            ? `<text class="couple-name" x="${midX}" y="${pa.y + 20}" text-anchor="middle">${esc(family)}</text>`
-            : '');
+          `<path class="heart" transform="translate(${midX - 7} ${pa.y - 8.5}) scale(0.58)" d="M12 20.3S3.8 15.2 3.8 9.9A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.2 2.8c0 5.3-8.2 10.4-8.2 10.4z"/>`;
+        // שכבה נפרדת מעל העיגולים: בין שני בני הזוג יש רק ~34px, ושם ארוך
+        // ("אברמוביץ׳") נבלע מתחת לעיגולים כשצויר לפניהם. ההילה בצבע הרקע
+        // שומרת אותו קריא גם כשהוא חוצה את קצה העיגול
+        if (family)
+          coupleNames += `<text class="couple-name" x="${midX}" y="${pa.y + 22}" text-anchor="middle">${esc(family)}</text>`;
       } else {
         couples += `<path class="couple far" d="M ${pa.x} ${pa.y} L ${pb.x} ${pb.y}"/>`;
       }
@@ -144,7 +147,7 @@
 
     return {
       defs: `<defs>${defs}</defs>`,
-      body: `<g class="links">${links}</g><g class="couples">${couples}</g><g class="nodes">${nodes}</g>`,
+      body: `<g class="links">${links}</g><g class="couples">${couples}</g><g class="nodes">${nodes}</g><g class="couple-names">${coupleNames}</g>`,
     };
   }
 

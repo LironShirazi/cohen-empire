@@ -389,10 +389,23 @@
     if (data.phone !== undefined)
       p.phone = data.phone ? String(data.phone).trim().slice(0, 20) : null;
     if (data.photo !== undefined) p.photo = data.photo || null;
-    if (data.fatherId !== undefined)
-      p.fatherId = data.fatherId && data.fatherId !== p.id && state.persons[data.fatherId] ? data.fatherId : null;
-    if (data.motherId !== undefined)
-      p.motherId = data.motherId && data.motherId !== p.id && state.persons[data.motherId] ? data.motherId : null;
+    // הורה לא יכול להיות העלה עצמו או צאצא שלו — לולאה בהורות שוברת את
+    // שיוך הדורות ב-layout.js. מאז שאפשר להחליף הורים בעריכת העלה, זו
+    // לא רק שאלה של הטופס
+    const okParent = (pid) =>
+      pid && pid !== p.id && state.persons[pid] && !descendantsOf(p.id).has(pid) ? pid : null;
+    if (data.fatherId !== undefined) p.fatherId = okParent(data.fatherId);
+    if (data.motherId !== undefined) p.motherId = okParent(data.motherId);
+  }
+
+  // הוספת ילדים רק למי שבן 18 ומעלה. בלי שנת לידה מותר — בעץ הזה
+  // שנה חסרה היא כמעט תמיד של מבוגר שהוזן מהזיכרון (סבא, דודה)
+  const ADULT_AGE = 18;
+  function canHaveChildren(id) {
+    const p = get(id);
+    if (!p) return false;
+    if (!p.birthYear) return true;
+    return new Date().getFullYear() - p.birthYear >= ADULT_AGE;
   }
 
   function updatePerson(id, patch) {
@@ -596,7 +609,7 @@
   };
 
   NS.store = {
-    load, get, all, childrenOf, parentsOf, partnersOf, descendantsOf,
+    load, get, all, childrenOf, parentsOf, partnersOf, descendantsOf, canHaveChildren,
     createPerson: (d) => { const p = createPerson(d); save(); return p; },
     updatePerson, addParents, addChild, addPartner,
     canDelete, deletePerson, resetToSeed,
