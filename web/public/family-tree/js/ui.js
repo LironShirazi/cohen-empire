@@ -532,14 +532,17 @@
   function formEdit(id) {
     const p = NS.store.get(id);
     if (!p) return;
-    // ההורים: כל מי שאינו העלה עצמו או צאצא שלו (לולאה בהורות), ולא
-    // מהמגדר ההפוך — אותו סינון כמו ב"אבא ואמא" (formAddParents)
+    // ההורים: כל מי שאינו העלה עצמו או צאצא שלו (לולאה בהורות), לא
+    // מהמגדר ההפוך ולא מתחת לגיל 18 — אותו סינון כמו ב"אבא ואמא"
+    // (formAddParents). ההורה הנוכחי נשאר ברשימה בכל מקרה, אחרת שמירה
+    // של שינוי אחר הייתה מוחקת אותו בשקט
     const blocked = NS.store.descendantsOf(id);
     blocked.add(id);
     const parentOptions = (notGender, current) =>
       `<option value="">ללא</option>` +
       NS.store.all()
-        .filter((q) => !blocked.has(q.id) && (q.gender !== notGender || q.id === current))
+        .filter((q) => q.id === current ||
+          (!blocked.has(q.id) && q.gender !== notGender && NS.store.canHaveChildren(q.id)))
         .sort((a, b) => a.name.localeCompare(b.name, 'he'))
         .map((q) => `<option value="${esc(q.id)}" ${q.id === current ? 'selected' : ''}>${esc(describe(q))}</option>`)
         .join('');
@@ -585,7 +588,7 @@
     blocked.add(id);
     const candidates = (notGender) =>
       NS.store.all()
-        .filter((q) => !blocked.has(q.id) && q.gender !== notGender)
+        .filter((q) => !blocked.has(q.id) && q.gender !== notGender && NS.store.canHaveChildren(q.id))
         .sort((a, b) => a.name.localeCompare(b.name, 'he'))
         .map((q) => `<option value="${esc(q.id)}">${esc(describe(q))}</option>`)
         .join('');
@@ -752,9 +755,9 @@
         <div id="self-new" hidden>
           ${personFieldsHTML('se', null)}
           <div class="field"><label>אבא (אם כבר בעץ)</label>
-            <select id="se-father"><option value="">ללא / לא בעץ</option>${opts((q) => q.gender !== 'f')}</select></div>
+            <select id="se-father"><option value="">ללא / לא בעץ</option>${opts((q) => q.gender !== 'f' && NS.store.canHaveChildren(q.id))}</select></div>
           <div class="field"><label>אמא (אם כבר בעץ)</label>
-            <select id="se-mother"><option value="">ללא / לא בעץ</option>${opts((q) => q.gender !== 'm')}</select></div>
+            <select id="se-mother"><option value="">ללא / לא בעץ</option>${opts((q) => q.gender !== 'm' && NS.store.canHaveChildren(q.id))}</select></div>
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">שמירה</button>
