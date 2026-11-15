@@ -430,14 +430,18 @@ export async function getPendingRequests(
 ): Promise<PendingRequest[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createClient();
-  const { data } = await supabase
+  // ל-join_requests יש שני מפתחות זרים ל-profiles (user_id ו-decided_by).
+  // בלי `!join_requests_user_id_fkey` PostgREST לא יודע איזה מהם לצרף,
+  // מחזיר שגיאה (PGRST201) — והתור נראה ריק לכל מנהל.
+  const { data, error } = await supabase
     .from("join_requests")
     .select(
-      "*, team:teams(id, name, color, animal), profile:profiles(id, full_name, avatar_url)"
+      "*, team:teams(id, name, color, animal), profile:profiles!join_requests_user_id_fkey(id, full_name, avatar_url)"
     )
     .eq("race_id", raceId)
     .eq("status", "pending")
     .order("created_at");
+  if (error) console.error("getPendingRequests", error);
   return (data ?? []) as unknown as PendingRequest[];
 }
 
