@@ -124,10 +124,14 @@ export async function getMyMembership(): Promise<Membership | null> {
   const teamIds = (memberships ?? []).map((row) => row.team_id as string);
   if (teamIds.length === 0) return null;
 
-  const { data } = await supabase
+  // מאז 0015 יש שני קשרים בין teams ל-races: teams.race_id (המירוץ של
+  // הקבוצה) ו-races.winner_team_id (האלופים). בלי `!teams_race_id_fkey`
+  // PostgREST מחזיר PGRST201, ואף משתתף מאושר לא נמצא חבר בשום קבוצה.
+  const { data, error } = await supabase
     .from("teams")
-    .select("*, race:races(*)")
+    .select("*, race:races!teams_race_id_fkey(*)")
     .in("id", teamIds);
+  if (error) console.error("getMyMembership", error);
 
   const rows = (data ?? []) as unknown as (Team & { race: Race })[];
 
