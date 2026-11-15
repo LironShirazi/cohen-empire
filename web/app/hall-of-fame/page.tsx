@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { HallOfFameEditor } from "@/components/family/hall-of-fame-editor";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { HallOfFameList } from "@/components/family/hall-of-fame-list";
 import { Card } from "@/components/ui/card";
-import { PageShell } from "@/components/ui/page";
+import { CornerBack, PageShell } from "@/components/ui/page";
 import { getHallOfFame, getProfile, getUser } from "@/lib/data";
 import { Icon, IconTile } from "@/components/ui/icon";
 
@@ -25,7 +24,8 @@ export default async function HallOfFamePage() {
 
   if (!user) {
     return (
-      <PageShell className="flex flex-col items-center gap-6 text-center">
+      <PageShell className="relative flex flex-col items-center gap-6 pt-16 text-center">
+        <CornerBack href="/" label="לדף הבית" />
         <IconTile name="hall" size={80} className="bg-yellow-soft text-brand" />
         <h1 className="font-display text-h1 text-brand">היכל התהילה</h1>
         <Card className="flex flex-col items-center gap-4">
@@ -44,7 +44,8 @@ export default async function HallOfFamePage() {
     <main className="flex flex-1 flex-col">
       {/* כותרת קוסמית (סקיצה 2d) — היכל התהילה הוא ראוט יעד ולא מסך
           שירות, והזהב הוא כל הנקודה שלו */}
-      <header className="cosmic rounded-b-[26px] px-5 pt-14 pb-6 text-center shadow-navy">
+      <header className="cosmic relative rounded-b-[26px] px-5 pt-16 pb-6 text-center shadow-navy">
+        <CornerBack href="/" label="לדף הבית" tone="navy" />
         <Icon name="trophy" size={44} className="mx-auto text-gold-lite" />
         <h1 className="goldtext font-display text-4xl leading-[1.05]">
           היכל התהילה
@@ -76,14 +77,6 @@ export default async function HallOfFamePage() {
             <HallOfFameEditor />
           </div>
         ) : null}
-
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-1 mt-auto pt-4 text-center text-small font-bold text-muted hover:text-brand"
-        >
-          <Icon name="back" size={16} />
-          לדף הבית
-        </Link>
       </div>
     </main>
   );

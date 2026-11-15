@@ -5,6 +5,7 @@ import { WinnerWatcher } from "@/components/game/winner-watcher";
 import { TeamBanner } from "@/components/team/team-banner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CornerBack } from "@/components/ui/page";
 import { UnreadBadge } from "@/components/notifications/unread-badge";
 import {
   getLeaderboard,
@@ -62,7 +63,8 @@ export default async function TeamPage() {
               : race.name;
 
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="relative flex flex-1 flex-col">
+      <CornerBack href="/" label="לדף הבית" />
       <TeamBanner team={team} rank={myRank} note={race.name} />
 
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-3 px-5 pt-4 pb-10">
@@ -115,13 +117,6 @@ export default async function TeamPage() {
         <div className="mt-auto pt-2">
           <QuoteCard quote={quote} />
         </div>
-
-        <Link
-          href="/"
-          className="text-center text-small font-bold text-muted hover:text-brand"
-        >
-          לדף הבית
-        </Link>
       </div>
 
       {race.status === "live" ? (

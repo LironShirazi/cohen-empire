@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GameCodeForm } from "@/components/join/join-forms";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
-import { PageShell } from "@/components/ui/page";
+import { CornerBack, PageShell } from "@/components/ui/page";
 import { getMyJoinRequest, getMyMembership, getUser } from "@/lib/data";
 import { Icon } from "@/components/ui/icon";
 
@@ -18,7 +17,8 @@ export default async function JoinPage() {
   }
 
   return (
-    <PageShell className="flex flex-col items-center gap-4 pt-10 text-center">
+    <PageShell className="relative flex flex-col items-center gap-4 pt-16 text-center">
+      <CornerBack href="/" label="לדף הבית" />
       <Chip>שלב 1 מתוך 3</Chip>
 
       {/* המצפן — סימן הניווט של המותג (foundations/brand.html) */}
@@ -45,14 +45,6 @@ export default async function JoinPage() {
           </Card>
         </>
       )}
-
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1 mt-auto text-small font-bold text-muted hover:text-brand"
-      >
-        <Icon name="back" size={16} />
-        לדף הבית
-      </Link>
     </PageShell>
   );
 }
