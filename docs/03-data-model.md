@@ -81,7 +81,10 @@ erDiagram
 | status | enum | `pending` / `approved` / `rejected` |
 | decided_by, decided_at | | מי מהמנהלים אישר |
 
-אישור בקשה ⇐ יצירת שורת `team_members`.
+אישור בקשה ⇐ יצירת שורת `team_members`. הוצאת משתתף רשום מההרכב
+(`admin_remove_member`, 0027) מוחקת **גם** את הבקשה שלו — `join_race`
+מחזירה בקשה מאושרת כמו שהיא, ובלי המחיקה הוא לא היה יכול לבקש מחדש.
+המבקש עצמו יכול למחוק רק בקשה `pending` (`cancel_join_request`).
 
 ### `stations` — תחנות (קטעי מירוץ)
 

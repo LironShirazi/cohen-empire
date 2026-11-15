@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { QuoteCard } from "@/components/family/quote-card";
+import { CancelRequestButton } from "@/components/join/cancel-request-button";
 import { WaitingWatcher } from "@/components/join/waiting-watcher";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -80,6 +81,12 @@ export default async function WaitingPage() {
         <p className="text-sm text-muted">
           ברגע שהמנהל התורן יאשר — המסך יתחלף לבד ותיכנסו לקבוצה.
         </p>
+
+        <CancelRequestButton
+          requestId={request.id}
+          gameCode={request.race.game_code}
+          teamName={team.name}
+        />
       </Card>
 
       <QuoteCard quote={quote} className="mt-6" />
