@@ -56,3 +56,24 @@ export async function joinTeam(
 
   redirect("/waiting");
 }
+
+/**
+ * ביטול בקשה ממתינה — למי שהזין קוד קבוצה שגוי. השרת מוחק רק בקשה
+ * של הקורא ורק במצב `pending` (0027); בקשה שאושרה בינתיים מחזירה
+ * שגיאה, והמסך יתרענן ל-/team.
+ *
+ * חוזרים ישר לקוד הקבוצה עם קוד המשחק שכבר הוזן — הטעות הייתה במספר
+ * הקבוצה, לא במשחק.
+ */
+export async function cancelJoinRequest(
+  requestId: string,
+  gameCode: string
+): Promise<JoinFormState> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("cancel_join_request", {
+    p_request_id: requestId,
+  });
+  if (error) return { error: error.message };
+
+  redirect(`/join/team?code=${encodeURIComponent(gameCode)}`);
+}

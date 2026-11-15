@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import {
   addManualMemberAction,
-  removeManualMemberAction,
+  removeMemberAction,
   type AdminFormState,
 } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
@@ -18,10 +18,10 @@ import { Icon } from "@/components/ui/icon";
  * הרכב הקבוצה (docs/01 §3.4, docs/04 §4).
  *
  * שני סוגי שורות באותה רשימה: מי שהצטרף עם חשבון Google (נכנס דרך
- * אישור בקשה, ולכן לקריאה בלבד כאן), ומשתתף ידני שהמנהל הוסיף —
- * ילד קטן או מי שבלי טלפון. רק השני ניתן להסרה, וזה נאכף ב-RLS
- * ולא רק בממשק: הוצאת משתתף רשום הייתה משאירה אחריה בקשת הצטרפות
- * מאושרת ותוקעת אותו בלי דרך לבקש מחדש.
+ * אישור בקשה), ומשתתף ידני שהמנהל הוסיף — ילד קטן או מי שבלי טלפון.
+ * שניהם ניתנים להסרה דרך `admin_remove_member` (0027). למשתתף רשום
+ * השרת מוחק גם את בקשת ההצטרפות שלו, כך שהוא יכול לבקש מחדש — לקבוצה
+ * הזו או לאחרת — כאילו מעולם לא ביקש.
  */
 export function TeamMembersEditor({
   team,
@@ -35,7 +35,35 @@ export function TeamMembersEditor({
     {} as AdminFormState
   );
   const [removing, startRemove] = useTransition();
+  const [removeError, setRemoveError] = useState<string>();
   const confirm = useConfirm();
+
+  async function remove(member: TeamMember) {
+    const ok = await confirm({
+      title: "הסרה מהקבוצה",
+      message: member.user_id
+        ? `להסיר את ${member.display_name} מהקבוצה? אם זו טעות — אפשר לבקש להצטרף שוב עם קוד קבוצה.`
+        : `להסיר את ${member.display_name} מהקבוצה?`,
+      confirmLabel: "כן, להסיר",
+    });
+    if (!ok) return;
+    setRemoveError(undefined);
+    startRemove(async () => {
+      const result = await removeMemberAction(member.id);
+      if (result.error) setRemoveError(result.error);
+    });
+  }
+
+  const removeButton = (member: TeamMember) => (
+    <button
+      type="button"
+      disabled={removing}
+      onClick={() => remove(member)}
+      className="flex min-h-11 shrink-0 items-center rounded-full border-2 border-line px-4 text-sm font-bold text-muted hover:text-brand active:bg-brand-soft active:text-brand disabled:opacity-50"
+    >
+      הסרה
+    </button>
+  );
 
   const registered = members.filter((member) => member.user_id);
   const manual = members.filter((member) => !member.user_id);
@@ -71,6 +99,7 @@ export function TeamMembersEditor({
                 <Icon name="check" size={14} className="text-ok" />
                 עם חשבון
               </span>
+              {removeButton(member)}
             </li>
           ))}
 
@@ -87,28 +116,13 @@ export function TeamMembersEditor({
                   </span>
                 ) : null}
               </span>
-              <button
-                type="button"
-                disabled={removing}
-                onClick={async () => {
-                  const ok = await confirm({
-                    title: "הסרה מהקבוצה",
-                    message: `להסיר את ${member.display_name} מהקבוצה?`,
-                    confirmLabel: "כן, להסיר",
-                  });
-                  if (!ok) return;
-                  startRemove(async () => {
-                    await removeManualMemberAction(member.id);
-                  });
-                }}
-                className="flex min-h-11 shrink-0 items-center rounded-full border-2 border-line px-4 text-sm font-bold text-muted hover:text-brand active:bg-brand-soft active:text-brand disabled:opacity-50"
-              >
-                הסרה
-              </button>
+              {removeButton(member)}
             </li>
           ))}
         </ul>
       ) : null}
+
+      <FormError>{removeError}</FormError>
 
       <form action={action} className="flex flex-col gap-3">
         {/* התווית הארוכה יושבת מעל השורה ולא בתוך התא הצר: בנייד היא

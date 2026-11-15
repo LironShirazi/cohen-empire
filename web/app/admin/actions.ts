@@ -189,14 +189,16 @@ export async function addManualMemberAction(
   return {};
 }
 
-export async function removeManualMemberAction(memberId: string) {
+/**
+ * הוצאה מההרכב — משתתף ידני או רשום. RPC ולא מחיקה ישירה, כי למשתתף
+ * רשום צריך למחוק גם את בקשת ההצטרפות המאושרת שלו, אחרת `join_race`
+ * לא תיתן לו לבקש מחדש (0009, 0027).
+ */
+export async function removeMemberAction(memberId: string) {
   const supabase = await createClient();
-  // ה-RLS (0009) מרשה מחיקה רק לשורות ידניות — חבר רשום פשוט לא יימחק
-  const { error } = await supabase
-    .from("team_members")
-    .delete()
-    .eq("id", memberId)
-    .is("user_id", null);
+  const { error } = await supabase.rpc("admin_remove_member", {
+    p_member_id: memberId,
+  });
   if (error) return { error: error.message };
   refresh();
   return {};
