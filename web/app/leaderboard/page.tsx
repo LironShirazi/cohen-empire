@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LeaderboardList } from "@/components/leaderboard-list";
 import { Card } from "@/components/ui/card";
-import { PageHeader, PageShell } from "@/components/ui/page";
+import { CornerBack, PageHeader, PageShell } from "@/components/ui/page";
 import {
   getActiveRace,
   getLeaderboard,
@@ -34,7 +33,8 @@ export default async function LeaderboardPage() {
     // מסך קוסמי מלא ולא PageShell על נייר (סקיצה 2b): הלידרבורד הוא
     // רגע דרמטי ולא מסך שירות, והוא אחד משלושת המסכים שה-DS מייעד
     // לרקע הכהה יחד עם פתיחת הרמז ומסך הזוכים.
-    <main className="cosmic flex flex-1 flex-col gap-3 px-5 pt-12 pb-10 text-center">
+    <main className="cosmic relative flex flex-1 flex-col gap-3 px-5 pt-16 pb-10 text-center">
+      <CornerBack href={back} label={membership ? "לקבוצה" : "לדף הבית"} tone="navy" />
       <h1 className="goldtext font-display text-[34px] leading-tight">
         לוח מובילים
       </h1>
@@ -50,14 +50,6 @@ export default async function LeaderboardPage() {
         <Icon name="hidden" size={16} className="me-1 inline align-[-3px]" />
         לא מגלים באיזו תחנה כל קבוצה — כדי לשמור על המתח
       </p>
-
-      <Link
-        href={back}
-        className="inline-flex items-center justify-center gap-1 text-sm font-bold text-on-navy-muted hover:text-yellow"
-      >
-        <Icon name="back" size={16} />
-        {membership ? "לקבוצה" : "לדף הבית"}
-      </Link>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ResultsRefresher } from "@/components/game/results-refresher";
 import { Button } from "@/components/ui/button";
+import { CornerBack } from "@/components/ui/page";
 import type { Race, RaceResultRow } from "@/lib/supabase/types";
 import { Icon, RankBadge, TeamGlyph } from "@/components/ui/icon";
 
@@ -111,7 +112,8 @@ export function WinnersScreen({
   const rest = results.slice(3);
 
   return (
-    <main className="cosmic relative flex-1 overflow-hidden px-5 pt-12 pb-10 text-center">
+    <main className="cosmic relative flex-1 overflow-hidden px-5 pt-16 pb-10 text-center">
+      <CornerBack href="/" label="לדף הבית" tone="navy" />
       <div
         aria-hidden
         className="cheer pointer-events-none absolute start-1/2 top-[120px] size-2.5"
@@ -262,14 +264,7 @@ export function WinnersScreen({
               <Icon name="hall" size={22} />
               היכל התהילה
             </Button>
-          </Link>
-          <Link
-            href="/"
-            className="mt-1 text-sm font-bold text-on-navy-muted hover:text-yellow"
-          >
-            לדף הבית
-          </Link>
-        </div>
+          </Link>        </div>
       </div>
     </main>
   );
