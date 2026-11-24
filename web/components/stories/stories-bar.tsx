@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AppSettingsButton } from "@/components/pwa/app-settings-button";
 import { StoryAvatar, StoryRing } from "@/components/stories/story-avatar";
 import { StoryComposer } from "@/components/stories/story-composer";
 import { StoryViewer } from "@/components/stories/story-viewer";
@@ -78,7 +79,10 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
 
   return (
     <>
-      <div className="-mx-5 -mt-8 mb-4 flex gap-2.5 overflow-x-auto border-b border-white/10 px-3.5 pt-1.5 pb-3.5 [scrollbar-width:none] md:-mt-14">
+      {/* ⚠️ שני חלקים: הסטוריז גוללים, ו"התראות" נעוץ בקצה השמאלי מחוץ
+          לגלילה — כפריט אחרון הוא היה נדחק מהמסך (CLAUDE.md §23) */}
+      <div className="-mx-5 -mt-8 mb-4 flex items-start border-b border-white/10 pt-1.5 pb-3.5 md:-mt-14">
+      <div className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto px-3.5 [scrollbar-width:none]">
         <button
           type="button"
           onClick={() =>
@@ -125,6 +129,10 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
             </span>
           </button>
         ))}
+      </div>
+      <div className="flex flex-none items-start border-r border-white/15 ps-2.5 pe-3">
+        <AppSettingsButton />
+      </div>
       </div>
 
       {viewing ? (
