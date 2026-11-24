@@ -25,6 +25,8 @@ import { useConfirm } from "@/components/ui/confirm";
 
 import { startNavProgress } from "@/components/ui/navigation-progress";
 import { Icon } from "@/components/ui/icon";
+import { canDeletePhoto, deletePhotos } from "@/lib/gallery-actions";
+import { useMediaActions } from "@/components/gallery/use-media-actions";
 /**
  * אלבום בגלריה: שם שאפשר לתקן, מדיה שכל בן משפחה מוסיף, ותצוגה מוגדלת.
  *
@@ -56,7 +58,66 @@ export function AlbumScreen({
   const [error, setError] = useState<string | null>(null);
   const [openPhotoId, setOpenPhotoId] = useState<string | null>(null);
 
+  // מצב בחירה: הקשה על פריט מסמנת אותו במקום לפתוח את התצוגה המוגדלת
+  const [selecting, setSelecting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const media = useMediaActions(album.name, photos);
+
   const openIndex = photos.findIndex((p) => p.id === openPhotoId);
+  // לפי סדר האלבום ולא לפי סדר ההקשה — כך גם שמות הקבצים בהורדה
+  const selected = photos.filter((p) => selectedIds.has(p.id));
+  const deletable = selected.filter((p) =>
+    canDeletePhoto(p, myUserId, isOwner)
+  );
+
+  function toggle(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function stopSelecting() {
+    setSelecting(false);
+    setSelectedIds(new Set());
+    media.setError(null);
+  }
+
+  /**
+   * מחיקה מרובה — רק של מה שמותר (מי שהעלה, או מנהל-על). מה שנבחר
+   * ושייך לאחרים נשאר, וההודעה אומרת את זה מראש ולא בדיעבד.
+   * ה-RLS (`gallery_delete`, 0013) הוא הקובע; הסינון כאן הוא נימוס.
+   */
+  async function deleteSelected() {
+    if (deletable.length === 0) return;
+    const others = selected.length - deletable.length;
+    const ok = await confirm({
+      title: "מחיקה מהגלריה",
+      message:
+        (deletable.length === 1
+          ? "למחוק פריט אחד מהאלבום?"
+          : `למחוק ${deletable.length} פריטים מהאלבום?`) +
+        (others > 0
+          ? ` ${others === 1 ? "פריט אחד שהעלו אחרים יישאר" : `${others} פריטים שהעלו אחרים יישארו`} — רק מי שהעלה יכול למחוק.`
+          : "") +
+        " פעולה זו אינה הפיכה.",
+    });
+    if (!ok) return;
+
+    setBusy("מוחק...");
+    setError(null);
+    try {
+      await deletePhotos(deletable);
+      stopSelecting();
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "המחיקה נכשלה — ננסה שוב?");
+    } finally {
+      setBusy(null);
+    }
+  }
   const canDeleteAlbum = album.created_by === myUserId || isOwner;
 
   async function saveName() {
@@ -99,9 +160,9 @@ export function AlbumScreen({
           : deleteError.message
       );
     }
+    startNavProgress("/gallery");
     router.push("/gallery");
   }
-    startNavProgress("/gallery");
 
   async function uploadFiles(files: File[]) {
     if (files.length === 0) return;
@@ -267,15 +328,73 @@ export function AlbumScreen({
           </p>
         </Card>
       ) : (
-        // רשת masonry (סקיצה 2e): הפריט הראשון תופס 2×2 והרביעי
-        // נמתח לרוחב, כדי שהאלבום ייראה כמו קיר תמונות ולא כמו
-        // גיליון. `grid-auto-rows: 1fr` שומר על השורות שוות גובה.
-        <div className="mt-6 grid auto-rows-[1fr] grid-cols-3 gap-1.5">
-          {photos.map((photo, index) => (
+        <>
+        <div className="mt-6 flex min-h-11 items-center gap-2">
+          {selecting ? (
+            <>
+              <span className="font-bold">
+                {selected.length === 0
+                  ? "הקישו על פריטים לבחירה"
+                  : `נבחרו ${selected.length}`}
+              </span>
+              <button
+                onClick={() =>
+                  setSelectedIds(
+                    selected.length === photos.length
+                      ? new Set()
+                      : new Set(photos.map((p) => p.id))
+                  )
+                }
+                className="inline-flex min-h-11 items-center rounded-card-sm px-2 text-sm font-bold text-brand"
+              >
+                {selected.length === photos.length ? "ניקוי" : "בחירת הכל"}
+              </button>
+              <button
+                onClick={stopSelecting}
+                className="ms-auto inline-flex min-h-11 items-center gap-1.5 rounded-card-sm px-2 text-sm font-bold text-muted"
+              >
+                <Icon name="close" size={18} />
+                סיום
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="text-sm text-muted">
+                {photos.length === 1 ? "פריט אחד" : `${photos.length} פריטים`}
+              </span>
+              <button
+                onClick={() => setSelecting(true)}
+                className="ms-auto inline-flex min-h-11 items-center gap-1.5 rounded-card-sm px-2 text-sm font-bold text-muted"
+              >
+                <Icon name="check" size={18} />
+                בחירה
+              </button>
+            </>
+          )}
+        </div>
+        {/* רשת masonry (סקיצה 2e): הפריט הראשון תופס 2×2 והרביעי
+            נמתח לרוחב, כדי שהאלבום ייראה כמו קיר תמונות ולא כמו
+            גיליון. `grid-auto-rows: 1fr` שומר על השורות שוות גובה.
+            בזמן בחירה יש ריפוד תחתון — הסרגל הצף לא מסתיר את השורה האחרונה */}
+        <div
+          className={`mt-3 grid auto-rows-[1fr] grid-cols-3 gap-1.5 ${
+            selecting ? "pb-28" : ""
+          }`}
+        >
+          {photos.map((photo, index) => {
+            const isSelected = selectedIds.has(photo.id);
+            return (
             <button
               key={photo.id}
-              onClick={() => setOpenPhotoId(photo.id)}
-              className={`relative overflow-hidden rounded-card-sm border border-line bg-bg-2 ${
+              onClick={() =>
+                selecting ? toggle(photo.id) : setOpenPhotoId(photo.id)
+              }
+              aria-pressed={selecting ? isSelected : undefined}
+              className={`relative overflow-hidden rounded-card-sm border bg-bg-2 ${
+                isSelected
+                  ? "border-brand ring-[3px] ring-brand"
+                  : "border-line"
+              } ${
                 index === 0
                   ? "col-span-2 row-span-2 aspect-square"
                   : index === 3
@@ -314,14 +433,85 @@ export function AlbumScreen({
                   {photo.caption}
                 </span>
               ) : null}
+              {selecting ? (
+                <span
+                  className={`absolute start-1.5 top-1.5 flex size-7 items-center justify-center rounded-full border-2 border-white shadow ${
+                    isSelected ? "bg-brand text-white" : "bg-black/30"
+                  }`}
+                >
+                  {isSelected ? <Icon name="check" size={16} /> : null}
+                </span>
+              ) : null}
             </button>
-          ))}
+            );
+          })}
         </div>
+        </>
       )}
+
+      {selecting ? (
+        // סרגל הפעולות הצף. כפתור המחיקה מופיע רק כשיש בבחירה משהו
+        // שמותר לי למחוק, והמספר שעליו הוא מה שבאמת יימחק
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-6px_20px_rgba(0,0,0,0.08)] backdrop-blur">
+          <div className="mx-auto flex max-w-md flex-col gap-2 md:max-w-2xl">
+            {media.error || media.notice ? (
+              <p
+                className={`text-center text-sm font-bold ${
+                  media.error ? "text-danger" : "text-muted"
+                }`}
+              >
+                {media.error ?? media.notice}
+              </p>
+            ) : null}
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                className="flex-1 px-2"
+                disabled={selected.length === 0 || !!media.busy || !!busy}
+                onClick={() => void media.download(selected)}
+              >
+                <Icon name="download" />
+                {media.busy ?? "הורדה"}
+              </Button>
+              {media.pendingShare ? (
+                <Button
+                  variant="accent"
+                  className="flex-1 px-2"
+                  onClick={() => void media.sharePending()}
+                >
+                  <Icon name="share" />
+                  מוכן — לשיתוף
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  className="flex-1 px-2"
+                  disabled={selected.length === 0 || !!media.busy || !!busy}
+                  onClick={() => void media.share(selected)}
+                >
+                  <Icon name="share" />
+                  שיתוף
+                </Button>
+              )}
+              {deletable.length > 0 ? (
+                <Button
+                  className="flex-1 px-2"
+                  disabled={!!media.busy || !!busy}
+                  onClick={() => void deleteSelected()}
+                >
+                  <Icon name="trash" />
+                  מחיקה{deletable.length > 1 ? ` (${deletable.length})` : ""}
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {openIndex >= 0 ? (
         <PhotoLightbox
           key={openPhotoId}
+          albumName={album.name}
           photos={photos}
           index={openIndex}
           myUserId={myUserId}

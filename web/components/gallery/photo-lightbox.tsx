@@ -7,6 +7,8 @@ import { isVideoUrl } from "@/lib/media";
 import type { GalleryPhotoRow } from "@/lib/data";
 import { useConfirm } from "@/components/ui/confirm";
 import { Icon } from "@/components/ui/icon";
+import { canDeletePhoto } from "@/lib/gallery-actions";
+import { useMediaActions } from "@/components/gallery/use-media-actions";
 
 /**
  * תצוגה מוגדלת של תמונה מהגלריה, עם ניהול למי שרשאי.
@@ -20,6 +22,7 @@ import { Icon } from "@/components/ui/icon";
  * תמונה שבורה על המסך. זה החוב הידוע גם ב-chat-files.
  */
 export function PhotoLightbox({
+  albumName,
   photos,
   index,
   myUserId,
@@ -28,6 +31,7 @@ export function PhotoLightbox({
   onClose,
   onChanged,
 }: {
+  albumName: string;
   photos: GalleryPhotoRow[];
   index: number;
   myUserId: string;
@@ -42,6 +46,7 @@ export function PhotoLightbox({
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const media = useMediaActions(albumName, photos);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -58,7 +63,8 @@ export function PhotoLightbox({
   if (!photo) return null;
   // אותה הכרעה כמו במדיניות ה-UPDATE/DELETE (0013). מה שכאן הוא נימוס
   // — מי שינסה בכל זאת ייתקל ב-RLS
-  const mine = photo.uploaded_by === myUserId || isOwner;
+  const mine = canDeletePhoto(photo, myUserId, isOwner);
+  const shownError = error ?? media.error;
 
   async function saveCaption() {
     setBusy(true);
@@ -193,6 +199,41 @@ export function PhotoLightbox({
             {photo.caption ? (
               <p className="text-center text-lg">{photo.caption}</p>
             ) : null}
+            {/* הורדה ושיתוף — לכל בן משפחה, לא רק למי שהעלה */}
+            <div className="flex gap-2">
+              <Button
+                variant="quiet"
+                className="flex-1 bg-white/15 text-white"
+                disabled={busy || !!media.busy}
+                onClick={() => void media.download([photo])}
+              >
+                <Icon name="download" />
+                {media.busy ?? "הורדה"}
+              </Button>
+              {media.pendingShare ? (
+                <Button
+                  variant="accent"
+                  className="flex-1"
+                  onClick={() => void media.sharePending()}
+                >
+                  <Icon name="share" />
+                  מוכן — לשיתוף
+                </Button>
+              ) : (
+                <Button
+                  variant="quiet"
+                  className="flex-1 bg-white/15 text-white"
+                  disabled={busy || !!media.busy}
+                  onClick={() => void media.share([photo])}
+                >
+                  <Icon name="share" />
+                  שיתוף
+                </Button>
+              )}
+            </div>
+            {media.notice ? (
+              <p className="text-center text-sm opacity-80">{media.notice}</p>
+            ) : null}
             {mine ? (
               <div className="flex gap-2">
                 <Button
@@ -217,9 +258,9 @@ export function PhotoLightbox({
             ) : null}
           </>
         )}
-        {error ? (
+        {shownError ? (
           <p className="rounded-card-sm bg-danger px-3 py-2 text-center text-sm font-bold">
-            {error}
+            {shownError}
           </p>
         ) : null}
       </div>
