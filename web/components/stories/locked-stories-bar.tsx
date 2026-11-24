@@ -21,10 +21,10 @@ export function LockedStoriesBar({ count }: { count: number }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`יש סטוריז מהמשפחה — התחברו כדי לצפות`}
-        className="-mx-5 -mt-8 mb-4 flex w-[calc(100%+2.5rem)] cursor-pointer gap-2.5 overflow-hidden border-b border-white/10 px-3.5 pt-1.5 pb-3.5 md:-mt-14"
+        className="-mx-5 -mt-12 mb-3 flex w-[calc(100%+2.5rem)] cursor-pointer gap-2.5 overflow-hidden border-b border-white/10 px-3.5 pt-1 pb-2 md:-mt-[4.5rem]"
       >
         {Array.from({ length: Math.min(count, 6) }, (_, i) => (
-          <span key={i} aria-hidden className="flex w-[68px] flex-none flex-col items-center gap-1.5 opacity-55 blur-[2.5px]">
+          <span key={i} aria-hidden className="flex w-[68px] flex-none flex-col items-center gap-1 opacity-55 blur-[2.5px]">
             <span className="block rounded-full bg-white/30 p-[3px]">
               <span className="block size-[58px] rounded-full border-[2.5px] border-navy bg-story-avatar" />
             </span>

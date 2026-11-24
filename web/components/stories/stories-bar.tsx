@@ -80,8 +80,10 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
   return (
     <>
       {/* ⚠️ שני חלקים: הסטוריז גוללים, ו"התראות" נעוץ בקצה השמאלי מחוץ
-          לגלילה — כפריט אחרון הוא היה נדחק מהמסך (CLAUDE.md §23) */}
-      <div className="-mx-5 -mt-8 mb-4 flex items-start border-b border-white/10 pt-1.5 pb-3.5 md:-mt-14">
+          לגלילה — כפריט אחרון הוא היה נדחק מהמסך (CLAUDE.md §23).
+          ⚠️ הפס צמוד לראש ההיירו (‎-mt-12 מול pt-14): הוא תבלין, לא עיקר
+          המסך — עיגול, שם, ומעט אוויר. אותם מרווחים ב-LockedStoriesBar */}
+      <div className="-mx-5 -mt-12 mb-3 flex items-start border-b border-white/10 pt-1 pb-2 md:-mt-[4.5rem]">
       <div className="flex min-w-0 flex-1 gap-2.5 overflow-x-auto px-3.5 [scrollbar-width:none]">
         <button
           type="button"
@@ -89,7 +91,7 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
             mine ? setViewing({ groups: [mine], start: 0 }) : setComposing(true)
           }
           aria-label={mine ? "הסטורי שלך" : "הוספת סטורי"}
-          className="flex w-[68px] flex-none cursor-pointer flex-col items-center gap-1.5"
+          className="flex w-[68px] flex-none cursor-pointer flex-col items-center gap-1"
         >
           <span className="relative block">
             <StoryRing state={mine ? "new" : "none"}>
@@ -115,7 +117,7 @@ export function StoriesBar({ feed }: { feed: StoryFeed }) {
             type="button"
             onClick={() => setViewing({ groups: others, start: index })}
             aria-label={`הסטורי של ${group.name}${group.seen ? " (נצפה)" : " (חדש)"}`}
-            className="flex w-[68px] flex-none cursor-pointer flex-col items-center gap-1.5"
+            className="flex w-[68px] flex-none cursor-pointer flex-col items-center gap-1"
           >
             <StoryRing state={group.seen ? "seen" : "new"}>
               <StoryAvatar name={group.name} url={group.avatar_url} />

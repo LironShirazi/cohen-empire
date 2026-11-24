@@ -1,8 +1,7 @@
-import { sendNotification, setVapidDetails } from "web-push";
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/data";
+import { pushAdmin, sendToSubscriptions } from "@/lib/push-server";
 import { shortName } from "@/lib/stories";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -13,16 +12,10 @@ import { createClient } from "@/lib/supabase/server";
  * לעורר שליחה. ה-`story_push_log` מבטיח שליחה אחת לכל סטורי.
  */
 const FRESH_MS = 10 * 60 * 1000;
-const BATCH = 20;
-
-const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-const privateKey = process.env.VAPID_PRIVATE_KEY;
-
-type Sub = { endpoint: string; p256dh: string; auth: string };
 
 export async function POST(request: Request) {
-  const admin = createAdminClient();
-  if (!publicKey || !privateKey || !admin) {
+  const admin = pushAdmin();
+  if (!admin) {
     // Push לא מוגדר בסביבה הזו — לא שגיאה, האפליקציה עובדת בלעדיו
     return NextResponse.json({ sent: 0, reason: "not-configured" });
   }
@@ -63,7 +56,8 @@ export async function POST(request: Request) {
     admin
       .from("push_subscriptions")
       .select("endpoint, p256dh, auth")
-      .neq("user_id", user.id),
+      .neq("user_id", user.id)
+      .eq("notify_stories", true),
   ]);
   if (subsError) {
     console.error("push_subscriptions", subsError.message);
@@ -71,46 +65,17 @@ export async function POST(request: Request) {
   }
 
   const name = shortName(leaf?.name || profile?.full_name || "") || "מישהו מהמשפחה";
-  // ⚠️ הניסוח "שיתף/ה" כי המגדר לא ידוע; ובלי תוכן הסטורי — ההתראה
-  // מופיעה על מסך נעול
-  const payload = JSON.stringify({
+  // ⚠️ "שיתף/ה" כי המגדר לא ידוע; ובלי תוכן הסטורי — ההתראה מופיעה על מסך נעול
+  const payload = {
     title: "סטורי חדש",
     body: `${name} שיתף/ה סטורי`,
     tag: `story-${user.id}`,
     url: "/",
-  });
+  };
 
-  setVapidDetails(
-    process.env.VAPID_SUBJECT ?? "mailto:admin@example.com",
-    publicKey,
-    privateKey
+  const result = await sendToSubscriptions(
+    admin,
+    (subs ?? []).map((sub) => ({ sub, payload }))
   );
-
-  const dead: string[] = [];
-  let sent = 0;
-  const list = (subs ?? []) as Sub[];
-  for (let i = 0; i < list.length; i += BATCH) {
-    await Promise.all(
-      list.slice(i, i + BATCH).map(async (s) => {
-        try {
-          await sendNotification(
-            { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
-            payload,
-            { TTL: 60 * 60 * 24, urgency: "normal", timeout: 8000 }
-          );
-          sent++;
-        } catch (e) {
-          const status = (e as { statusCode?: number }).statusCode;
-          // 404/410: המנוי בוטל (הוסרה ההתקנה / נמחקה ההרשאה) — מנקים
-          if (status === 404 || status === 410) dead.push(s.endpoint);
-          else console.warn("push failed", status, (e as Error).message);
-        }
-      })
-    );
-  }
-  if (dead.length) {
-    await admin.from("push_subscriptions").delete().in("endpoint", dead);
-  }
-
-  return NextResponse.json({ sent, removed: dead.length });
+  return NextResponse.json(result);
 }

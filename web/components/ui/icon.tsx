@@ -29,6 +29,9 @@ const paths = {
   save: <><path d="M5 4h11l3 3v13H5z" /><path d="M9 4v5h6V4" /><path d="M8 20v-6h8v6" /></>,
   trash: <><path d="M4 7h16" /><path d="M9 7V4h6v3" /><path d="M6.5 7l1 13h9l1-13" /><path d="M10.5 11v6M13.5 11v6" /></>,
   share: <><circle cx="18" cy="6" r="2.6" /><circle cx="6" cy="12" r="2.6" /><circle cx="18" cy="18" r="2.6" /><path d="M15.6 7.3 8.4 10.7M8.4 13.3l7.2 3.4" /></>,
+  // כפתור השיתוף של ספארי — ריבוע פתוח וחץ שיוצא ממנו למעלה. מופיע
+  // רק בהוראות "הוספה למסך הבית" ב-iPhone: שם המשתמש מחפש בדיוק אותו
+  shareIos: <><path d="M12 3.5v11" /><path d="M8.3 7.2 12 3.5l3.7 3.7" /><path d="M8.5 10.5h-2v10h11v-10h-2" /></>,
   download: <><path d="M12 4v10" /><path d="M8 10.5 12 14.5 16 10.5" /><path d="M4 17v3h16v-3" /></>,
   reset: <><path d="M20 12a8 8 0 1 1-2.6-5.9" /><path d="M20 4v4h-4" /></>,
   shuffle: <><path d="M3 7h5l8 10h4M3 17h5l2.6-3.2" /><path d="M17 14l3 3-3 3M17 4l3 3-3 3" /></>,

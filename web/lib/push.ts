@@ -65,22 +65,44 @@ export async function currentSubscription(): Promise<PushSubscription | null> {
   return reg.pushManager.getSubscription();
 }
 
-async function saveToServer(sub: PushSubscription): Promise<void> {
+/** מה המכשיר הזה מקבל (0029). שני המתגים נפרדים, וברירת המחדל דלוקה */
+export type PushPrefs = { stories: boolean; mentions: boolean };
+
+async function saveToServer(sub: PushSubscription, prefs?: PushPrefs): Promise<void> {
   const json = sub.toJSON();
   const { error } = await createClient().rpc("save_push_subscription", {
     p_endpoint: sub.endpoint,
     p_p256dh: json.keys?.p256dh ?? "",
     p_auth: json.keys?.auth ?? "",
     p_user_agent: navigator.userAgent,
+    // בלי העדפות (סנכרון בכניסה) = `null` = השרת משאיר את מה שנבחר
+    p_stories: prefs?.stories ?? null,
+    p_mentions: prefs?.mentions ?? null,
   });
   if (error) throw error;
+}
+
+/** ההעדפות השמורות של המכשיר הזה, או `null` כשאין לו מנוי */
+export async function currentPrefs(): Promise<PushPrefs | null> {
+  const sub = await currentSubscription();
+  if (!sub) return null;
+  const { data } = await createClient()
+    .from("push_subscriptions")
+    .select("notify_stories, notify_mentions")
+    .eq("endpoint", sub.endpoint)
+    .maybeSingle();
+  // מנוי בדפדפן בלי שורה (נמחקה, או משתמש אחר) — הסנכרון ישמור אותו
+  // עם ברירת המחדל, שהיא דלוק
+  return data
+    ? { stories: data.notify_stories, mentions: data.notify_mentions }
+    : { stories: true, mentions: true };
 }
 
 /**
  * מבקש הרשאה ומנוי. ⚠️ חייב להיקרא ישירות מתוך לחיצה — ב-iOS בקשת
  * הרשאה שלא מגיעה ממחווה של המשתמש נדחית בשקט.
  */
-export async function enablePush(): Promise<"enabled" | "denied"> {
+export async function enablePush(prefs: PushPrefs): Promise<"enabled" | "denied"> {
   const permission = await Notification.requestPermission();
   if (permission !== "granted") return "denied";
   const reg = await registration();
@@ -90,7 +112,7 @@ export async function enablePush(): Promise<"enabled" | "denied"> {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     }));
-  await saveToServer(sub);
+  await saveToServer(sub, prefs);
   return "enabled";
 }
 
@@ -102,6 +124,28 @@ export async function disablePush(): Promise<void> {
 }
 
 /**
+ * שינוי מתג. שניהם כבויים = אין סיבה להחזיק מנוי, והוא נמחק; מכשיר
+ * בלי מנוי שמדליק מתג — עובר בקשת הרשאה (ולכן גם זה מתוך לחיצה).
+ */
+export async function setPushPrefs(
+  prefs: PushPrefs,
+  subscribed: boolean
+): Promise<"enabled" | "disabled" | "denied"> {
+  if (!prefs.stories && !prefs.mentions) {
+    await disablePush();
+    return "disabled";
+  }
+  // ⚠️ בלי `await` לפני הבקשה: `enablePush` מתחיל ב-`requestPermission`,
+  // וכל המתנה קודם (גם רישום ה-SW) מנתקת אותה מהלחיצה ב-iOS. לכן מי
+  // שקורא כבר יודע אם יש מנוי, ולא שואלים כאן
+  if (!subscribed) return enablePush(prefs);
+  const sub = await currentSubscription();
+  if (!sub) return enablePush(prefs);
+  await saveToServer(sub, prefs);
+  return "enabled";
+}
+
+/**
  * מיישר קו בכל כניסה: אם ההרשאה כבר ניתנה, המנוי נשמר שוב על המשתמש
  * המחובר עכשיו (מכשיר משותף) ונרענן אם הדפדפן החליף אותו.
  */
@@ -109,6 +153,11 @@ export async function syncPushSubscription(): Promise<void> {
   if (pushSupport() !== "ready" || Notification.permission !== "granted") return;
   const sub = await currentSubscription();
   if (sub) await saveToServer(sub);
+}
+
+/** אחרי הודעה עם אזכור — השרת מחפש בעצמו מה לשלוח ולמי */
+export function notifyChatPush(): void {
+  void fetch("/api/push/chat", { method: "POST", keepalive: true }).catch(() => {});
 }
 
 /** מודיע לשרת שעלה סטורי — הוא זה ששולח. כשל כאן לא צריך לעצור כלום */

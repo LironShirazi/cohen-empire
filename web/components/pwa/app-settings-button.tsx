@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Sheet } from "@/components/ui/sheet";
 import {
-  currentSubscription,
-  disablePush,
-  enablePush,
+  currentPrefs,
   isIos,
   isStandalone,
   pushSupport,
+  setPushPrefs,
   syncPushSubscription,
+  type PushPrefs,
   type PushSupport,
 } from "@/lib/push";
 
@@ -50,18 +50,19 @@ export function AppSettingsButton() {
   const [ios, setIos] = useState(false);
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
   const [support, setSupport] = useState<PushSupport>("unsupported");
-  const [enabled, setEnabled] = useState(false);
+  // `null` = למכשיר אין מנוי (שני המתגים כבויים)
+  const [prefs, setPrefs] = useState<PushPrefs | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState(true);
 
   const refresh = useCallback(async () => {
-    const sub = await currentSubscription().catch(() => null);
+    const saved = await currentPrefs().catch(() => null);
     setInstalled(isStandalone());
     setIos(isIos());
     setSupport(pushSupport());
-    setEnabled(!!sub);
+    setPrefs(saved);
     setSeen(readSeen());
     setReady(true);
   }, []);
@@ -110,20 +111,23 @@ export function AppSettingsButton() {
     if (outcome === "accepted") void refresh();
   };
 
-  const toggle = async () => {
+  /**
+   * מתג אחד. במכשיר בלי מנוי הדלקה של כל אחד מהם מדליקה **גם את
+   * האזכורים** — זו ברירת המחדל שביקשו (0029); לכבות אותם אפשר מיד אחר-כך.
+   */
+  const toggle = async (key: keyof PushPrefs) => {
+    const next: PushPrefs = prefs
+      ? { ...prefs, [key]: !prefs[key] }
+      : { stories: key === "stories", mentions: true };
     setBusy(true);
     setError(null);
     try {
-      if (enabled) {
-        await disablePush();
-      } else {
-        // ⚠️ ישירות מהלחיצה — ב-iOS בקשת הרשאה שלא ממחווה נדחית בשקט
-        const result = await enablePush();
-        if (result === "denied") setError("ההתראות לא אושרו. אפשר לשנות בהגדרות הדפדפן.");
-      }
+      // ⚠️ ישירות מהלחיצה — ב-iOS בקשת הרשאה שלא ממחווה נדחית בשקט
+      const result = await setPushPrefs(next, prefs !== null);
+      if (result === "denied") setError("ההתראות לא אושרו. אפשר לשנות בהגדרות הדפדפן.");
     } catch (e) {
       console.error("push toggle", e);
-      setError(enabled ? "לא הצלחנו לכבות. נסו שוב." : "לא הצלחנו להפעיל. נסו שוב בעוד רגע.");
+      setError("לא הצלחנו לשמור. נסו שוב בעוד רגע.");
     } finally {
       await refresh();
       setBusy(false);
@@ -137,7 +141,7 @@ export function AppSettingsButton() {
   if (installed && !canNotify) return null;
 
   // מה שהעיגול אומר במבט: הכל מסודר / חסום / יש מה לעשות
-  const status: "ok" | "blocked" | "todo" = enabled
+  const status: "ok" | "blocked" | "todo" = prefs
     ? "ok"
     : support === "denied"
       ? "blocked"
@@ -149,7 +153,7 @@ export function AppSettingsButton() {
         type="button"
         onClick={openSheet}
         aria-label="התראות והוספה למסך הבית"
-        className="flex w-[68px] flex-none cursor-pointer flex-col items-center gap-1.5"
+        className="flex w-[68px] flex-none cursor-pointer flex-col items-center gap-1"
       >
         <span className="relative block">
           {!seen && status === "todo" ? (
@@ -199,33 +203,36 @@ export function AppSettingsButton() {
                   ? "ב-iPhone התראות עובדות רק אחרי הוספה למסך הבית (למטה)."
                   : support === "unsupported"
                     ? "הדפדפן הזה לא תומך בהתראות."
-                    : enabled
-                      ? "פועלות במכשיר הזה. נעדכן כשמישהו מעלה סטורי."
-                      : "נעדכן כשמישהו מהמשפחה מעלה סטורי."}
+                    : "כשמישהו מהמשפחה מעלה סטורי."}
             </p>
           </div>
           {support === "ready" ? (
-            <button
-              type="button"
-              role="switch"
-              aria-checked={enabled}
-              aria-label="התראות על סטוריז"
-              onClick={toggle}
+            <Switch
+              label="התראות על סטוריז"
+              checked={!!prefs?.stories}
               disabled={busy}
-              className={`relative mt-1 h-8 w-[52px] flex-none cursor-pointer rounded-full transition-colors disabled:opacity-60 ${
-                enabled ? "bg-ok" : "bg-muted/40"
-              }`}
-            >
-              {/* ב-RTL "פועל" = הידית בצד שמאל, כמו במתגים של iOS בעברית */}
-              <span
-                aria-hidden
-                className={`absolute top-1 size-6 rounded-full bg-white shadow-card transition-[right] ${
-                  enabled ? "right-[24px]" : "right-1"
-                }`}
-              />
-            </button>
+              onChange={() => toggle("stories")}
+            />
           ) : null}
         </section>
+
+        {support === "ready" ? (
+          <section className="mt-4 flex items-start gap-3">
+            <span className="grid size-11 flex-none place-items-center rounded-full bg-brand-soft text-brand">
+              <Icon name="megaphone" size={24} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-bold">אזכורים והודעות מהמנהל</p>
+              <p className="text-small text-muted">כשמזכירים אותך בצ&apos;אט, או כשהמנהל שולח הודעה לכולם.</p>
+            </div>
+            <Switch
+              label="אזכורים והודעות מהמנהל"
+              checked={!!prefs?.mentions}
+              disabled={busy}
+              onChange={() => toggle("mentions")}
+            />
+          </section>
+        ) : null}
         {error ? <p className="mt-2 text-small font-bold text-danger">{error}</p> : null}
 
         <div aria-hidden className="my-4 h-px bg-line" />
@@ -261,7 +268,7 @@ export function AppSettingsButton() {
               <>
                 <li>
                   לוחצים על כפתור השיתוף{" "}
-                  <Icon name="share" size={18} className="inline-block align-text-bottom text-brand" />{" "}
+                  <Icon name="shareIos" size={20} className="inline-block align-text-bottom text-brand" />{" "}
                   בסרגל של ספארי.
                 </li>
                 <li>בוחרים &quot;הוספה למסך הבית&quot;.</li>
@@ -281,5 +288,39 @@ export function AppSettingsButton() {
         </Button>
       </Sheet>
     </>
+  );
+}
+
+/** מתג הפעלה/כיבוי. ב-RTL "דלוק" = הידית בצד שמאל, כמו במתגים של iOS בעברית */
+function Switch({
+  label,
+  checked,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  disabled: boolean;
+  onChange: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={onChange}
+      disabled={disabled}
+      className={`relative mt-1 h-8 w-[52px] flex-none cursor-pointer rounded-full transition-colors disabled:opacity-60 ${
+        checked ? "bg-ok" : "bg-muted/40"
+      }`}
+    >
+      <span
+        aria-hidden
+        className={`absolute top-1 size-6 rounded-full bg-white shadow-card transition-[right] ${
+          checked ? "right-[24px]" : "right-1"
+        }`}
+      />
+    </button>
   );
 }
