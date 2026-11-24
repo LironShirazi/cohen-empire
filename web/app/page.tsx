@@ -17,6 +17,7 @@ import {
 } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { countActiveStoryUsers, getStoryFeed } from "@/lib/stories-data";
+import { AppInstallCard } from "@/components/pwa/app-install-card";
 import { StoriesBar } from "@/components/stories/stories-bar";
 import { LockedStoriesBar } from "@/components/stories/locked-stories-bar";
 import { Icon, type IconName } from "@/components/ui/icon";
@@ -102,6 +103,9 @@ export default async function Home() {
           נשארים ברוחב כף יד גם שם */}
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-3.5 px-5 pt-4.5 pb-2 md:max-w-3xl">
         <QuoteCard quote={quote} variant="feature" />
+
+        {/* התקנה למסך הבית + התראות Push (CLAUDE.md §23) — למחוברים בלבד */}
+        {user ? <AppInstallCard /> : null}
 
         {/* מירוץ שהסתיים — ההכרזה היא הדבר הראשון שרוצים לראות,
             גם כמה ימים אחרי (מסך הזוכים הוא ראוט קבוע, לא רגע) */}

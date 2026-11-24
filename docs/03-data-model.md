@@ -204,6 +204,13 @@ erDiagram
 - `count_active_story_users()` — מספר בלבד, גם ל-anon (העיגולים המטושטשים)
 - bucket **`stories`** (5MB): תיקייה לפי מזהה המעלה
 
+### התראות Push (0028)
+- **`push_subscriptions`** — `endpoint` (מפתח ראשי, מכשיר אחד), `user_id`, `p256dh`,
+  `auth`, `user_agent`. המשתמש קורא ומוחק רק את שלו; כתיבה דרך
+  `save_push_subscription()` בלבד (מכשיר משותף יכול להחליף משתמש).
+- **`story_push_log`** — `story_id` מפתח ראשי; מונע שליחה כפולה. ללא מדיניות —
+  נכתב רק מ-service role. פירוט: CLAUDE.md §23.
+
 ### `page_views` — אנליטיקה (0020)
 
 | שדה | סוג | הערות |

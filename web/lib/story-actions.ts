@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { GALLERY_IMAGE_MAX_BYTES, prepareImage } from "@/lib/image";
+import { notifyStoryPosted } from "@/lib/push";
 import { STORIES_BUCKET, STORY_MAX_PX, type StoryItem } from "@/lib/stories";
 import type { Story } from "@/lib/supabase/types";
 
@@ -65,6 +66,7 @@ export async function postPhotoStory(
     await supabase.storage.from(STORIES_BUCKET).remove([path]);
     throw error;
   }
+  notifyStoryPosted((data as Story).id);
   return toItem(supabase, data as Story);
 }
 
@@ -86,6 +88,7 @@ export async function postTextStory(
     .select()
     .single();
   if (error) throw error;
+  notifyStoryPosted((data as Story).id);
   return toItem(supabase, data as Story);
 }
 
