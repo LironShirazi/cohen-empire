@@ -98,11 +98,42 @@ await sharp({ create: { width: OG_W, height: OG_H, channels: 3, background: YELL
   .png({ compressionLevel: 9 })
   .toFile("app/opengraph-image.png");
 
+// ── PWA (CLAUDE.md §23) ─────────────────────────────────────────
+// אייקון ההתקנה: אותו מדליון כמו אייקון מסך הבית, על נייבי, בלי שקיפות.
+// ה-maskable קטן יותר: אנדרואיד חותך אותו לצורה לפי המכשיר (עיגול,
+// טיפה...) ושומר רק את 80% המרכזיים — מדליון מלא היה נחתך בפנים.
+async function medallionIcon(size, fraction, out) {
+  const inner = Math.round(size * fraction);
+  const m = await sharp(`${BRAND}/profile-image.png`).resize(inner, inner).toBuffer();
+  await sharp({ create: { width: size, height: size, channels: 3, background: NAVY } })
+    .composite([{ input: m, gravity: "center" }])
+    .removeAlpha()
+    .png({ compressionLevel: 9 })
+    .toFile(out);
+}
+await medallionIcon(192, 0.94, `${BRAND}/pwa-192.png`);
+await medallionIcon(512, 0.94, `${BRAND}/pwa-512.png`);
+await medallionIcon(512, 0.7, `${BRAND}/pwa-maskable-512.png`);
+
+// ה-badge בשורת הסטטוס של אנדרואיד: רק ערוץ השקיפות נקרא, והצבע
+// נקבע ע"י המערכת — לכן סילואטה לבנה מהסמל
+const badge = await sharp(`${BRAND}/emblem.png`)
+  .resize(96, 96, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .toBuffer();
+await sharp({ create: { width: 96, height: 96, channels: 3, background: "#ffffff" } })
+  .joinChannel(await sharp(badge).extractChannel("alpha").toBuffer())
+  .png()
+  .toFile(`${BRAND}/pwa-badge.png`);
+
 for (const f of [
   "app/icon.png",
   "app/icon1.png",
   "app/apple-icon.png",
   "app/opengraph-image.png",
+  `${BRAND}/pwa-192.png`,
+  `${BRAND}/pwa-512.png`,
+  `${BRAND}/pwa-maskable-512.png`,
+  `${BRAND}/pwa-badge.png`,
 ]) {
   const m = await sharp(f).metadata();
   console.log(f, `${m.width}x${m.height}`, m.hasAlpha ? "alpha" : "opaque");

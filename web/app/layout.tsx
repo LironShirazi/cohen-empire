@@ -40,6 +40,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: TITLE,
   description: DESCRIPTION,
+  // iOS: בלי זה "הוסף למסך הבית" פותח קיצור דרך לדפדפן ולא אפליקציה
+  // במסך מלא (ה-manifest לבדו לא מספיק לספארי) — CLAUDE.md §23
+  appleWebApp: { capable: true, title: "אימפריית כהן", statusBarStyle: "black-translucent" },
   openGraph: {
     type: "website",
     locale: "he_IL",
