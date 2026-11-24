@@ -2,6 +2,9 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
+import { getUser } from "@/lib/data";
+import { pushChatNotifications } from "@/lib/push-server";
 import { createClient } from "@/lib/supabase/server";
 import type { FinishResult, Race, RaceStatus } from "@/lib/supabase/types";
 
@@ -353,6 +356,11 @@ export async function broadcastAction(
     p_team_id: teamId,
   });
   if (error) return { error: error.message };
+  // Push לחברי הקבוצות (CLAUDE.md §23) — אחרי התגובה, כדי שהמנהל לא
+  // יחכה לשירותי ה-Push. ה-RPC כבר אימת שהוא מנהל; השליחה מחפשת רק
+  // התראות מהודעות שהוא עצמו שלח
+  const user = await getUser();
+  if (user) after(() => pushChatNotifications(user.id).catch((e) => console.error("push broadcast", e)));
   refresh();
   return { teams: data as number };
 }

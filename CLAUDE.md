@@ -838,7 +838,7 @@ web/lib/stories.ts · stories-data.ts · story-actions.ts
 מחיקה מורידה מיד. `router.refresh()` רץ ברקע, אבל לבדו הוא השאיר את
 הסטורי החדש בלתי נראה עד רענון ידני.
 
-## 23. PWA והתראות Push (סטוריז)
+## 23. PWA והתראות Push (סטוריז, אזכורים, הודעות רוחב)
 
 ```
 web/app/manifest.ts                          ההתקנה: שם, צבעים, אייקונים (`/manifest.webmanifest`)
@@ -846,9 +846,12 @@ web/public/sw.js                             Service Worker — push + notificat
 web/public/brand/pwa-*.png                   192/512/maskable + badge (נגזרים ב-gen-app-icons.mjs)
 web/lib/push.ts                              צד הדפדפן: תמיכה, הרשאה, מנוי, שמירה, ניקוי
 web/components/pwa/app-settings-button.tsx   עיגול "התראות" בפס הסטוריז + הגיליון
-web/app/api/push/story/route.ts              השליחה — נקרא מהקליינט אחרי כל סטורי
+web/lib/push-server.ts                       השליחה עצמה + pushChatNotifications (שרת בלבד)
+web/app/api/push/story/route.ts              סטורי — נקרא מהקליינט אחרי כל סטורי
+web/app/api/push/chat/route.ts               אזכור — נקרא מהצ'אט אחרי הודעה עם @
 web/lib/supabase/admin.ts                    לקוח service role (היחיד באפליקציה)
 supabase/migrations/0028_push.sql            push_subscriptions + save_push_subscription + story_push_log
+supabase/migrations/0029_push_chat.sql       שני מתגים לכל מכשיר + notification_push_log
 ```
 
 ⚠️⚠️ **ה-SW לא מקאשר ובכוונה אין בו `fetch`** (docs/02 §3.10): מצב משחק,
@@ -865,7 +868,8 @@ supabase/migrations/0028_push.sql            push_subscriptions + save_push_subs
 ⚠️ **iOS: Push עובד רק מאפליקציה שהותקנה למסך הבית** (16.4+). בספארי
 רגיל אין `PushManager` בכלל, ולכן שם אין מתג אלא הסבר להתקנה — בקשת
 הרשאה לא הייתה עושה כלום. והתקנה ב-iOS אין לה API — רק הוראות ("שיתוף ← הוספה
-למסך הבית"). ⚠️ ל-PWA ב-iOS **אחסון נפרד מספארי**: צריך להתחבר בה מחדש
+למסך הבית"), עם אייקון `shareIos` (ריבוע וחץ למעלה) — זה מה שהמשתמש
+מחפש בסרגל של ספארי, ולא אייקון השיתוף הכללי. ⚠️ ל-PWA ב-iOS **אחסון נפרד מספארי**: צריך להתחבר בה מחדש
 פעם אחת. `appleWebApp` ב-`layout.tsx` נחוץ — בלעדיו iOS פותח קיצור לדפדפן.
 
 ⚠️ **בקשת ההרשאה חייבת לבוא ישירות מלחיצה** (`enablePush` מתוך `onClick`).
@@ -891,8 +895,24 @@ supabase/migrations/0028_push.sql            push_subscriptions + save_push_subs
 העיגול לא מוצג וה-route מחזיר `not-configured` — האפליקציה עובדת כרגיל.
 ⚠️ `NEXT_PUBLIC_*` נצרב בבנייה — אחרי שמוסיפים אותו צריך redeploy.
 
-**המתג** בכיבוי מוחק את המנוי של המכשיר. התראות שחסמו בהגדרות הדפדפן
+**כיבוי שני המתגים** מוחק את המנוי של המכשיר. התראות שחסמו בהגדרות הדפדפן
 אי אפשר לבקש שוב — הגיליון אומר זאת במקום להציג מתג מת.
 
-**פתוח:** Push לאזכורים והודעות רוחב — אותו מנגנון, חסר רק מי שקורא לו
-(טריגר/RPC שמדווח לשרת). לא נבנה כי הצ'אט כבר מקפיץ באנר In-App.
+### אזכורים והודעות רוחב (0029)
+
+**שני מתגים לכל מכשיר** (`notify_stories`, `notify_mentions` על השורה של
+המנוי), ו**ברירת המחדל של שניהם דלוקה**: מנוי קיים קיבל אזכורים בלי
+לעשות כלום, והדלקה של מתג כלשהו במכשיר בלי מנוי מדליקה גם את האזכורים.
+שניהם כבויים = המנוי נמחק. ⚠️ `setPushPrefs` מקבל מהמסך אם יש מנוי ולא
+בודק בעצמו — `await` לפני `requestPermission` מנתק אותה מהלחיצה ב-iOS.
+
+**הקליינט לא אומר למי לשלוח.** ההתראות כבר נוצרות בשרת (טריגר האזכורים,
+`admin_broadcast` — §7), ו-`pushChatNotifications(senderId)` רק מוסרת
+הלאה את מה שנוצר מהודעות **של המשתמש המחובר** ב-5 הדקות האחרונות.
+הצ'אט קורא ל-`/api/push/chat` (גוף ריק) אחרי הודעה עם אזכור; הודעת רוחב
+קוראת לה מ-`broadcastAction` דרך `after()`. `notification_push_log`
+(מפתח = `notifications.id`) מבטיח שליחה אחת לכל התראה. הקישור בהתראה
+זהה לבאנר: משתתף ← `/team/chat`, מנהל שלא בקבוצה ← מסך הניהול.
+
+בשונה מסטורי, **ההתראה כוללת את תחילת ההודעה** (עד 120 תווים) — כמו
+בכל צ'אט, זה כל הטעם שלה.

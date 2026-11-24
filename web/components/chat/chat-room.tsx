@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { notifyChatPush } from "@/lib/push";
 import { attachmentKind } from "@/lib/media";
 import {
   applyMention,
@@ -329,6 +330,9 @@ export function ChatRoom({
         .select(messageSelect)
         .single();
       if (insertError) throw insertError;
+      // אזכור ← Push למי שהוזכר. השרת מוצא בעצמו את ההתראות שהטריגר
+      // יצר; כשל כאן לא נוגע בהודעה שכבר נשלחה (CLAUDE.md §23)
+      if ((data as unknown as ChatMessage).mentioned_user_ids?.length) notifyChatPush();
 
       // מי ששלח רוצה תמיד לראות את ההודעה שלו, גם אם קרא היסטוריה
       atBottom.current = true;

@@ -208,8 +208,11 @@ erDiagram
 - **`push_subscriptions`** — `endpoint` (מפתח ראשי, מכשיר אחד), `user_id`, `p256dh`,
   `auth`, `user_agent`. המשתמש קורא ומוחק רק את שלו; כתיבה דרך
   `save_push_subscription()` בלבד (מכשיר משותף יכול להחליף משתמש).
+  `notify_stories` / `notify_mentions` (0029) — מתג לכל סוג, ברירת מחדל דלוק.
 - **`story_push_log`** — `story_id` מפתח ראשי; מונע שליחה כפולה. ללא מדיניות —
   נכתב רק מ-service role. פירוט: CLAUDE.md §23.
+- **`notification_push_log`** (0029) — `notification_id` מפתח ראשי; אותו תפקיד
+  לאזכורים ולהודעות רוחב.
 
 ### `page_views` — אנליטיקה (0020)
 
